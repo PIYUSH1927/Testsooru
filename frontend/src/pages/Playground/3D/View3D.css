@@ -1,0 +1,7 @@
+.camera-toggle-group {
+    position: fixed;
+    top: 30px;
+    left: 40px;
+    cursor: pointer;
+    z-index: 999;
+}
