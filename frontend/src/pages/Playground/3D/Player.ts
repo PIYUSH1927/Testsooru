@@ -10,13 +10,21 @@ export class Player {
 
     constructor(scene: t.Scene) {
         const loader = new FBXLoader();
-        loader.load("character.fbx",
+        // Use absolute path from public directory
+        loader.load("/character.fbx",
             (model: t.Object3D) => {
                 this.onLoad(model);
                 model.visible = false;
                 scene.add(model);
                 this.model = model;
-            }, () => { }, (error: any) => console.log(error));
+                console.log("Character model loaded successfully"); // Add logging
+            }, 
+            (progress) => {
+                console.log(`Loading character: ${(progress.loaded / progress.total * 100).toFixed(2)}%`);
+            }, 
+            (error: any) => {
+                console.error("Error loading character model:", error);
+            });
     }
 
     onLoad(model: t.Object3D): void {

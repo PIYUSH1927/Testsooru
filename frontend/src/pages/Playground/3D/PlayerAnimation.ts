@@ -9,13 +9,16 @@ export class PlayerAnimation {
 
     constructor(mixer: t.AnimationMixer) {
         this.mixer = mixer;
-        this.loadAnimation("character_idle.fbx", (action: t.AnimationAction) => {
+        // Use absolute paths from public directory
+        this.loadAnimation("/character_idle.fbx", (action: t.AnimationAction) => {
             this.currAnimation = action;
             this.idleAnimation = action;
             this.currAnimation.play();
+            console.log("Idle animation loaded successfully");
         });
-        this.loadAnimation("character_walk.fbx", (action: t.AnimationAction) => {
+        this.loadAnimation("/character_walk.fbx", (action: t.AnimationAction) => {
             this.walkAnimation = action;
+            console.log("Walk animation loaded successfully");
         });
     }
 
@@ -25,8 +28,12 @@ export class PlayerAnimation {
             const clip = anim.animations[0];
             onLoad(this.mixer.clipAction(clip));
         },
-            () => { },
-            (error: any) => { console.log(error); });
+        (progress) => {
+            console.log(`Loading animation ${path}: ${(progress.loaded / progress.total * 100).toFixed(2)}%`);
+        },
+        (error: any) => { 
+            console.error(`Error loading animation ${path}:`, error); 
+        });
     }
 
     setCurrentAnimation(animationAction: t.AnimationAction | undefined) {
