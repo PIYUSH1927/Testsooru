@@ -12,7 +12,7 @@ export const GlobalStyle = createGlobalStyle`
     --border: #E2E8F0;
     --button-bg: #000000;
     --button-text: #FFFFFF;
-    --button-hover: #3366EE;
+    --button-hover: black;
     --shadow: rgba(0, 0, 0, 0.1);
     --backdrop: rgba(255, 255, 255, 0.95);
   }
@@ -25,7 +25,7 @@ export const GlobalStyle = createGlobalStyle`
       --border: #374151;
       --button-bg: #3366EE;
       --button-text: #FFFFFF;
-      --button-hover: #2952BD;
+      --button-hover: black;
       --shadow: rgba(0, 0, 0, 0.3);
       --backdrop: rgba(17, 24, 39, 0.95);
     }
@@ -209,3 +209,4 @@ export const LogoContainer = styled.div<LogoContainerProps>`
     color: var(--text-hover);
   }
 `;
+

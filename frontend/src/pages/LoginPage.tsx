@@ -1,164 +1,335 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import './LoginPage.css';
-import SooruAILogo from '../SooruAI.png';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import "./LoginPage.css";
+import SooruAILogo from "../SooruAI.png";
+
+const backendURL = "https://backend-3sh6.onrender.com/api/auth";
+
+// Add this styled component for the required field indicator
+const RequiredIndicator = {
+  color: "#ff0000",
+  marginLeft: "3px",
+  fontSize: "0.8em"
+};
 
 interface LoginFormProps {
   onRegisterClick: () => void;
+  successMessage: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => (
-  
-  
-  <motion.div 
-    className="form-wrapper"
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: 20 }}
-    transition={{ duration: 0.5 }}
-  >
-    <div className="form-header">
-      <h2>Sign In</h2>
-    </div>
+const LoginForm: React.FC<LoginFormProps> = ({
+  onRegisterClick,
+  successMessage,
+}) => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-    <form>
-      <div className="form-group">
-        <label className="form-label">Email address</label>
-        <input
-          type="email"
-          className="form-input"
-          placeholder="johndoe@gmail.com"
-          required
-        />
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${backendURL}/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("access_token", data.access);
+        localStorage.setItem("refresh_token", data.refresh);
+        window.location.href = "/";
+      } else {
+        setError(
+          data.message || "Login failed, incorrect username or password"
+        );
+      }
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <motion.div
+      className="form-wrapper"
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="form-header">
+        <h2>Sign In</h2>
       </div>
 
-      <div className="form-group">
-        <label className="form-label">Password</label>
-        <input
-          type="password"
-          className="form-input"
-          required
-        />
+      {successMessage && <p className="success-message">{successMessage}</p>}
+      {error && <p className="error-message">{error}</p>}
+
+      <form onSubmit={handleLogin}>
+        <div className="form-group">
+          <label className="form-label">
+            Email / Phone Number
+            <span style={RequiredIndicator}>*</span>
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            placeholder=""
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            Password
+            <span style={RequiredIndicator}>*</span>
+          </label>
+          <input
+            type="password"
+            className="form-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <button type="submit" className="submit-button" disabled={loading}>
+          {loading ? <span className="spinner"></span> : "Sign In"}
+        </button>
+      </form>
+
+      <div className="register-section">
+        Don't have an account?{" "}
+        <button onClick={onRegisterClick} className="register-link">
+          Register here
+        </button>
       </div>
-
-      <a href="/forgot-password" className="forgot-password">
-        Forgot password?
-      </a>
-
-      <button type="submit" className="submit-button">
-        Sign In
-      </button>
-    </form>
-
-    <div className="register-section">
-      Don't have an account?{' '}
-      <button onClick={onRegisterClick} className="register-link">
-        Register here
-      </button>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 interface RegisterFormProps {
-  onBackToLogin: () => void;
+  onBackToLogin: (successMessage: string) => void;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => (
+const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => {
+  const [companyName, setCompanyName] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  
-  <motion.div 
-    className="form-wrapper fmw "
-    initial={{ opacity: 0, x: 20 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -20 }}
-    transition={{ duration: 0.5 }}
-    style={{maxWidth:"36rem"}}
-  >
-    <div className="form-header">
-      <h2>Create Account</h2>
-    </div>
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    <form >
-      <div className="form-group">
-        <label className="form-label">Company Name</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="Your Company Name"
-          required
-        />
+    try {
+      const response = await fetch(`${backendURL}/register/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          company_name: companyName,
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          phone_number: phone,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("Registration response:", response.status, data);
+
+      if (response.ok) {
+        onBackToLogin("Registration successful! Please log in.");
+      } else {
+        if (data.email) {
+          setError(Array.isArray(data.email) ? data.email[0] : data.email);
+        } else if (data.phone_number) {
+          setError(
+            Array.isArray(data.phone_number)
+              ? data.phone_number[0]
+              : data.phone_number
+          );
+        } else if (data.password) {
+          const passwordErrors = Array.isArray(data.password)
+            ? data.password
+            : [data.password];
+          const messages: string[] = [];
+
+          if (passwordErrors.some((err: string) => err.includes("too short"))) {
+            messages.push("be at least 8 characters long");
+          }
+          if (
+            passwordErrors.some((err: string) => err.includes("too common"))
+          ) {
+            messages.push("not be too common");
+          }
+          if (
+            passwordErrors.some((err: string) =>
+              err.includes("entirely numeric")
+            )
+          ) {
+            messages.push("not be entirely numeric");
+          }
+
+          if (messages.length > 0) {
+            setError(`Your password must ${messages.join(", ")}.`);
+          } else {
+            setError(passwordErrors[0]);
+          }
+        } else if (data.error) {
+          setError(data.error);
+        } else if (data.detail) {
+          setError(data.detail);
+        } else if (data.message) {
+          setError(data.message);
+        } else if (data.non_field_errors) {
+          setError(
+            Array.isArray(data.non_field_errors)
+              ? data.non_field_errors[0]
+              : data.non_field_errors
+          );
+        } else {
+          setError("Registration failed. Please try again.");
+        }
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <motion.div
+      className="form-wrapper"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="form-header">
+        <h2>Create Account</h2>
       </div>
 
-      <div className="form-group">
-        <label className="form-label">First Name</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="First Name"
-          required
-        />
+      {error && <p className="error-message">{error}</p>}
+
+      <form onSubmit={handleRegister}>
+        <div className="form-group">
+          <label className="form-label">Company Name</label>
+          <input
+            type="text"
+            className="form-input"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            First Name
+            <span style={RequiredIndicator}>*</span>
+          </label>
+          <input
+            type="text"
+            className="form-input"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Last Name</label>
+          <input
+            type="text"
+            className="form-input"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            Email
+            <span style={RequiredIndicator}>*</span>
+          </label>
+          <input
+            type="email"
+            className="form-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            Phone Number
+            <span style={RequiredIndicator}>*</span>
+          </label>
+          <input
+            type="tel"
+            className="form-input"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            Password
+            <span style={RequiredIndicator}>*</span>
+          </label>
+          <input
+            type="password"
+            className="form-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <button type="submit" className="submit-button" disabled={loading}>
+          {loading ? <span className="spinner"></span> : "Create Account"}
+        </button>
+      </form>
+
+      <div className="register-section">
+        Already have an account?{" "}
+        <button onClick={() => onBackToLogin("")} className="register-link">
+          Sign in here
+        </button>
       </div>
-
-      <div className="form-group">
-        <label className="form-label">Last Name</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="Last Name"
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">Email Address</label>
-        <input
-          type="email"
-          className="form-input"
-          placeholder="email@company.com"
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">Phone Number</label>
-        <input
-          type="tel"
-          className="form-input"
-          placeholder="555 000 0000"
-          pattern="[0-9]{10}"
-          maxLength={10}
-          onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Please enter a valid 10-digit phone number')}
-  onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
-          required
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">Password</label>
-        <input
-          type="password"
-          className="form-input"
-          placeholder="Create a strong password"
-          required
-        />
-      </div>
-
-      <button type="submit" className="submit-button">
-        Create Account
-      </button>
-    </form>
-
-    <div className="register-section">
-      Already have an account?{' '}
-      <button onClick={onBackToLogin} className="register-link">
-        Sign in here
-      </button>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 const LoginPage: React.FC = () => {
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>("");
+
+  const handleSuccessMessage = (message: string) => {
+    setSuccessMessage(message);
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 10000);
+  };
 
   return (
     <div className="auth-container">
@@ -173,7 +344,7 @@ const LoginPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           />
-          <motion.h1 
+          <motion.h1
             className="brand-title"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -181,7 +352,7 @@ const LoginPage: React.FC = () => {
           >
             SOORU.AI
           </motion.h1>
-          <motion.h2 
+          <motion.h2
             className="tagline"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -190,7 +361,7 @@ const LoginPage: React.FC = () => {
             Where Vision Meets Precision!
           </motion.h2>
           <motion.div className="slogans">
-            <motion.p 
+            <motion.p
               className="slogan"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -198,7 +369,7 @@ const LoginPage: React.FC = () => {
             >
               Build Your Dreams with Our AI!
             </motion.p>
-            <motion.p 
+            <motion.p
               className="slogan"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -209,19 +380,23 @@ const LoginPage: React.FC = () => {
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Right Section */}
       <div className="right-section">
         <AnimatePresence mode="wait">
           {!isRegistering ? (
-            <LoginForm 
+            <LoginForm
               key="login"
-              onRegisterClick={() => setIsRegistering(true)} 
+              onRegisterClick={() => setIsRegistering(true)}
+              successMessage={successMessage}
             />
           ) : (
-            <RegisterForm 
+            <RegisterForm
               key="register"
-              onBackToLogin={() => setIsRegistering(false)} 
+              onBackToLogin={(msg) => {
+                setIsRegistering(false);
+                if (msg) {
+                  handleSuccessMessage(msg);
+                }
+              }}
             />
           )}
         </AnimatePresence>
@@ -231,4 +406,3 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
-
