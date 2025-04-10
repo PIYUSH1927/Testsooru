@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Menu, Close } from "@mui/icons-material";
+import React, { useState, useEffect, useRef } from "react";
+import { Menu, Close, Person } from "@mui/icons-material";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -47,33 +47,59 @@ const MobileLoginLink = styled(ScrollLink)`
   }
 `;
 
-const LogoutText = styled.span`
-  color: #ff0000;
-  cursor: pointer;
-  font-weight: 500;
-  margin-left: 20px;
-  &:hover {
-    transform: scale(1.1);
-  }
-`;
-
 const ProfileIcon = styled.div`
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #27ae60;
+ background-color: #1976D2;
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
   cursor: pointer;
-  margin-left: 20px;
   transition: transform 0.2s ease;
   
   &:hover {
     transform: scale(1.1);
   }
+`;
+
+const ProfileDropdown = styled.div`
+  position: absolute;
+  top: 60px;
+  right: -20px;
+  width: 200px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+`;
+
+const DropdownContainer = styled.div`
+  position: relative;
+`;
+
+const DropdownItem = styled.div`
+  padding: 12px 16px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
+const LogoutItem = styled(DropdownItem)`
+  color: #ff0000;
+  border-top: 1px solid #eee;
+  margin-top: 5px;
 `;
 
 const Spinner = styled.div`
@@ -202,7 +228,6 @@ const LogoutModal: React.FC<LogoutModalProps> = ({
     </ModalOverlay>
   );
 };
-// 
 
 const SooruLogo: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
@@ -251,11 +276,13 @@ const Navbar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
   const [showLogoutModal, setShowLogoutModal] = useState<boolean>(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage: boolean = location.pathname === "/";
   const backendURL = "https://backend-3sh6.onrender.com/api/auth";
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const fetchUserProfile = async (): Promise<void> => {
     const token = localStorage.getItem("access_token");
@@ -284,6 +311,20 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     checkAuthStatus();
   }, [location.pathname]);
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowProfileDropdown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const checkAuthStatus = (): void => {
     const token = localStorage.getItem("access_token");
@@ -346,6 +387,21 @@ const Navbar: React.FC = () => {
 
   const handleProfileNavigation = (): void => {
     navigate("/profile");
+    setShowProfileDropdown(false);
+  };
+  
+  const handleHomeNavigation = (): void => {
+    navigate("/");
+    setShowProfileDropdown(false);
+  };
+
+  const handleSettingsNavigation = (): void => {
+    navigate("/profile"); // For now, also navigate to profile as requested
+    setShowProfileDropdown(false);
+  };
+
+  const toggleProfileDropdown = (): void => {
+    setShowProfileDropdown(!showProfileDropdown);
   };
 
   const handleLogout = async (): Promise<void> => {
@@ -413,18 +469,18 @@ const Navbar: React.FC = () => {
 
   const navItems = getNavItems();
 
-  const getProfileInitial = (): string => {
+  const getProfileInitial = (): React.ReactNode => {
     if (userProfile && userProfile.first_name) {
       return userProfile.first_name.charAt(0).toUpperCase();
     }
-    return " ";
+    return <Person fontSize="small" />;
   };
 
   return (
     <>
       <GlobalStyle />
       <Nav>
-        <div className="logo-link">
+        <div className="logo-link" >
           <SooruLogo />
         </div>
 
@@ -439,14 +495,22 @@ const Navbar: React.FC = () => {
         <NavControls>
           <ResponsiveAuthContainer>
             {isLoggedIn ? (
-              <>
-                <LogoutText onClick={handleAuth}>
-                  Logout {isLoggingOut && <Spinner />}
-                </LogoutText>
-                <ProfileIcon onClick={handleProfileNavigation}>
+              <DropdownContainer ref={dropdownRef}>
+                <ProfileIcon onClick={toggleProfileDropdown}>
                   {getProfileInitial()}
                 </ProfileIcon>
-              </>
+                {showProfileDropdown && (
+                  <ProfileDropdown>
+                    <DropdownItem onClick={handleHomeNavigation}>Home</DropdownItem>
+                    <DropdownItem onClick={handleProfileNavigation}>Profile</DropdownItem>
+                    <DropdownItem onClick={handleSettingsNavigation}>Settings</DropdownItem>
+                    <LogoutItem onClick={() => setShowLogoutModal(true)}>
+                      Logout
+                      {isLoggingOut && <Spinner />}
+                    </LogoutItem>
+                  </ProfileDropdown>
+                )}
+              </DropdownContainer>
             ) : (
               <AuthButton as="button" onClick={handleAuth}>
                 {location.pathname === "/LoginPage"
@@ -476,6 +540,16 @@ const Navbar: React.FC = () => {
 
         {isLoggedIn ? (
           <>
+             <ScrollLink
+              onClick={(e) => {
+                setIsOpen(false);
+                handleProfileNavigation();
+                e.preventDefault();
+              }}
+              style={{fontWeight:"bolder"}}
+            >
+              My Profile
+            </ScrollLink>
             <MobileLogoutLink
               onClick={(e) => {
                 if (!isLoggingOut) {
@@ -487,16 +561,7 @@ const Navbar: React.FC = () => {
             >
               Logout {isLoggingOut && <Spinner />}
             </MobileLogoutLink>
-            <ScrollLink
-              onClick={(e) => {
-                setIsOpen(false);
-                handleProfileNavigation();
-                e.preventDefault();
-              }}
-              style={{fontWeight:"bolder"}}
-            >
-              My Profile
-            </ScrollLink>
+
           </>
         ) : (
           <MobileLoginLink

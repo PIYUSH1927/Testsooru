@@ -19,7 +19,7 @@ export const GlobalStyle = createGlobalStyle`
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: rgba(17, 24, 39, 0.95);
+      --background: black;
       --text: #D1D5DB;
       --text-hover: #FFFFFF;
       --border: #374151;
@@ -43,20 +43,27 @@ export const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid var(--border);
+  padding: 2.5rem 2.5rem;
+  /* border-bottom: 1px solid var(--border); */
   z-index: 1000;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 
-    &::before {
+  @media screen and (max-width: 768px) {
+    padding: 2.5rem 2rem;
+  }
+
+
+ /* 
+  &::before {
     content: "";
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 95px; /* Adjust width as needed */
+    width: 95px; 
     height: 1px;
     background-color: black;
   }
+  */
 `;
 
 
@@ -90,6 +97,8 @@ export const MobileNav = styled.div<MobileNavProps>`
   @media screen and (max-width: 768px) {
     display: flex;
     flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    text-align: center; /* Center text within items */
     gap: 1rem;
     z-index:100;
   }
@@ -169,6 +178,7 @@ export const ScrollLink = styled.button`
   padding: 0.5rem 1rem;
   transition: color 0.2s ease;
   text-align: left;
+  font-weight: bold;
 
   &:hover {
     color: var(--text-hover);
@@ -197,8 +207,8 @@ export const LogoContainer = styled.div<LogoContainerProps>`
   }
 
   img {
-    width: 2rem;
-    height: 2rem;
+    width: 3rem;
+    height: 3rem;
     object-fit: contain;
     filter: ${({ theme }) => (theme === "dark" ? "invert(1)" : "none")};
   }
