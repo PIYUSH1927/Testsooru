@@ -67,7 +67,6 @@
   
   .contact-container {
     min-height: 100vh;
-    padding-top: 70px;
     background: var(--bg-primary);
     color: var(--text-primary);
   }
@@ -75,13 +74,13 @@
   .contact-wrapper {
     max-width: 1300px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0.5rem;
   }
   
   .contact-title {
     text-align: center;
     font-size: clamp(2rem, 5vw, 3.5rem);
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
     color: var(--text-primary);
   }
   
@@ -238,7 +237,7 @@
     }
   
     .contact-wrapper {
-        padding: 1rem;
+        padding: 0.6rem;
     }
   
     .form-row {

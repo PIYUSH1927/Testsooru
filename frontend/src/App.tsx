@@ -86,7 +86,7 @@ const App: React.FC = () => {
           element={
             <>
               <Navbar />
-              <div style={{ paddingTop: "70px" }}>
+              <div style={{ paddingTop: "80px" }}>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/contact" element={<Contact />} />
@@ -95,25 +95,9 @@ const App: React.FC = () => {
                   <Route
                     path="/features"
                     element={
-                      <ProtectedRoute>
+                    
                         <Features />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/playground"
-                    element={
-                      <ProtectedRoute>
-                        <Playground />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/3D"
-                    element={
-                      <ProtectedRoute>
-                       <View3D />
-                      </ProtectedRoute>
+                   
                     }
                   />
                   <Route

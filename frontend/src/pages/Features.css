@@ -53,7 +53,6 @@
   
   .features-container {
     min-height: 100vh;
-    padding-top: 70px;
     background: var(--bg-primary);
     color: var(--text-primary);
   }
@@ -182,7 +181,7 @@
     }
   
     .features-header {
-        padding: 3rem 1.5rem;
+        padding: 0,6rem 1.5rem;
     }
   
     .feature-list-item {

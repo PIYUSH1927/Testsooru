@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center; /* Ensures they stay aligned properly */
-    padding: 20px;
+    padding: 0px 30px;
     width: 100%;
     flex-wrap: wrap; /* Ensures proper wrapping on very small screens */
   }

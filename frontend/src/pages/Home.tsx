@@ -7,10 +7,10 @@ import "./Home.css";
 
 const HomeContent: React.FC = () => {
   return (
-    <div>
+    <div >
 
       {/* Hero Section */}
-      <div className="hero-container" style={{position:"relative", bottom:"70px"}}>
+      <div className="hero-container" style={{position:"relative", bottom:"80px"}}>
         <div className="hero-content">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -26,8 +26,7 @@ const HomeContent: React.FC = () => {
           </motion.div>
         </div>
       </div>
-
-      {/* Other sections */}
+      {/* Other sections 
       <section id="about" className="min-h-screen">
         <About />
       </section>
@@ -39,6 +38,7 @@ const HomeContent: React.FC = () => {
       <section id="contact" className="min-h-screen">
         <Contact />
       </section>
+      */}
     </div>
   );
 };

@@ -351,7 +351,17 @@ const Navbar: React.FC = () => {
       } else {
         navigate("/LoginPage");
       }
-    } else {
+    } 
+    // Handle navigation to About, Features, and Contact pages
+    else if (sectionId === "about") {
+      navigate("/about");
+    }
+    else if (sectionId === "features") {
+      navigate("/features");
+    }
+    else if (sectionId === "contact") {
+      navigate("/contact");
+    }else {
       if (isHomePage) {
         const element = document.getElementById(sectionId);
         if (element) {
