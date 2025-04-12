@@ -139,7 +139,7 @@ const AboutContent: React.FC = () => {
                 left: '-100px',
                 zIndex: '11',
               }} 
-              className='hide-on-mobile'
+              className='hide-on-mobile'               
             />
           </div>
           <div className="about-grid fs ">

@@ -204,11 +204,7 @@
 
 }
 
-.values-grid {
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 
-
-}
 
 .value-section{
   margin: auto;
@@ -220,7 +216,7 @@
 
 .fs{
   margin: auto;
-  width: 90%;
+  width: 100%;
   padding: 40px 10px;
 }
 
