@@ -44,7 +44,7 @@ export const Nav = styled.nav`
   justify-content: space-between;
   align-items: center;
   padding: 2.4rem 2.5rem;
-  /* border-bottom: 1px solid var(--border); */
+  border-bottom: 1px solid var(--border); 
   z-index: 1000;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 

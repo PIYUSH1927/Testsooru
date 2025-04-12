@@ -3,16 +3,17 @@ import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { DarkModeProvider, useDarkMode } from '../contexts/DarkModeContext';
 import ValueCard from '../components/ValueCard';
 import FeatureCard from '../components/FeatureCard';
+import { ReactNode } from 'react';
 import './AboutUs.css';
 
 // Define prop types for InfoCard component
 interface InfoCardProps {
   title: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
   color?: string;
   delay?: number;
-  className?: string; 
+  className?: string;
 }
 
 const InfoCard: React.FC<InfoCardProps> = ({ title, description, icon, color = "text-blue-600", delay = 0 }) => (
@@ -81,96 +82,175 @@ const AboutContent: React.FC = () => {
         {/* Vision & Mission Section */}
         <section className="about-section">
           <div className="about-grid">
-            <InfoCard
-              title="Vision"
-              icon="🔭"
-              description="To revolutionize the architectural and construction industries by democratizing 
-              access to intelligent design tools, enabling seamless creation, visualization, 
-              and modification of residential and commercial spaces globally."
-              color="text-purple-600"
-              delay={0.3}
-            />
-            <InfoCard
-              title="Mission"
-              icon="🎯"
-              description="Our mission is to empower architects, builders, and homeowners with AI-driven 
-              design solutions that simplify architectural planning, enhance creativity, and 
-              ensure regulatory compliance, fostering faster, more efficient, and cost-effective 
-              construction projects."
-              color="text-green-600"
-              delay={0.4}
-            />
+          <InfoCard
+  title="Vision"
+  icon={
+    <img
+      src="/i1.png"
+      alt="Vision Icon"
+      style={{ width: '50px', height: '50px'}}
+    />
+  }
+  description="We aim to revolutionize architecture and construction by making intelligent design tools accessible, enabling seamless creation, visualization, and modification of spaces worldwide."
+  color="text-blue-600"
+  delay={0.3}
+/>
+<InfoCard
+  title="Mission"
+  icon={
+    <img
+      src="/i2.png"
+      alt="Mission Icon"
+      style={{ width: '50px', height: '50px' }}
+    />
+  }
+  description="Our mission is to equip architects, builders, and homeowners with AI-driven design solutions that streamline planning, boost creativity, and ensure compliance, enabling faster, more efficient, and cost-effective construction."
+  color="text-blue-600"
+  delay={0.4}
+/>
           </div>
         </section>
 
         {/* Why Sooru.AI Section */}
         <section className="about-section" style={{maxWidth:"90%"}}>
-          <SectionTitle>Why Sooru.AI?</SectionTitle>
-          <div className="about-grid ">
+          <div style={{ position: 'relative' }}>
+            <SectionTitle>Why Sooru.AI?</SectionTitle>
+            <img 
+              src="/v1.png" 
+              alt="Sooru.AI Vector" 
+              style={{ 
+                width: '350px', 
+                height: 'auto', 
+                position: 'absolute',
+                top: '-880px',
+                right: '-30px',
+                zIndex: '11'
+              }} 
+            />
+            <img 
+              src="/v2.png" 
+              alt="Sooru.AI Vector" 
+              style={{ 
+                width: '350px', 
+                height: 'auto', 
+                position: 'absolute',
+                top: '-220px',
+                left: '-100px',
+                zIndex: '11',
+                
+              }} 
+              
+            />
+          </div>
+          <div className="about-grid fs ">
             <FeatureCard
-              icon="🔮"
+              icon={<img src="/i3.png" alt="Innovative Technology Icon" style={{ width: '50px', height: '50px' }}/>}
               title="Innovative Technology"
-              description="Leverage advanced AI to simplify complex design processes. At the heart of Sooru.AI lies innovation. We are committed to revolutionizing the way homes are designed, leveraging AI, AR/VR, and advanced technologies to bring groundbreaking solutions that redefine architectural creativity."
-              delay={0.3}
+              description="Leverage advanced AI to simplify complex design processes. Sooru.AI innovates home design with AI, AR/VR, and advanced tech, redefining architectural creativity."
+              delay={0.1}
               className='feature-card'
               
             />
             <FeatureCard
-              icon="🎯"
+              icon={<img src="/i4.png" alt="Personalized Solutions Icon" style={{ width: '50px', height: '50px' }}/>}
               title="Personalized Solutions"
-              description="Every design is tailored to your needs and preferences. At the heart of Sooru.AI lies innovation. We are committed to revolutionizing the way homes are designed, leveraging AI, AR/VR, and advanced technologies to bring groundbreaking solutions that redefine architectural creativity."
-              delay={0.4}
+              description="Every design is tailored to your needs and preferences. Sooru.AI tailors every design to your needs, using AI, AR/VR, and advanced tech to revolutionize home architecture with innovation."
+              delay={0.2}
               className='feature-card'
             />
             <FeatureCard
-              icon="🔄"
+              icon={<img src="/i5.png" alt="Comprehensive Features Icon" style={{ width: '50px', height: '50px',color:"white" }}/>}
               title="Comprehensive Features"
-              description="From conceptualization to visualization, we cover every step. At the heart of Sooru.AI lies innovation. We are committed to revolutionizing the way homes are designed, leveraging AI, AR/VR, and advanced technologies to bring groundbreaking solutions that redefine architectural creativity."
-              delay={0.5}
+              description="From conceptualization to visualization, we cover every step. Sooru.AI drives innovation in home design, using AI, AR/VR, and advanced tech to revolutionize architecture from concept to visualization."
+              delay={0.3}
               className='feature-card'
             />
           </div>
         </section>
 
         {/* Values Section */}
-        <section className="about-section" style={{maxWidth:"90%"}}>
-          <SectionTitle>Our Values</SectionTitle>
-          <div className="values-grid">
-            <ValueCard
-              icon="🔺"
-              title=" Innovation"
-              description="At the heart of Sooru.AI lies innovation. We are committed to revolutionizing the way homes are designed, leveraging AI, AR/VR, and advanced technologies to bring groundbreaking solutions that redefine architectural creativity."
-              color="text-blue-600 dark:text-blue-400"
-              delay={0.3}
-              className='value-card'
-              
-            />
-            <ValueCard
-              icon="🟢"
-              title=" Curiosity"
-              description="Curiosity drives us to explore, learn, and adapt. We continuously seek out new possibilities, question traditional methods, and embrace creative problem-solving to deliver exceptional experiences for our users."
-              color="text-purple-600 dark:text-purple-400"
-              delay={0.4}
-                className='value-card'
-            />
-            <ValueCard
-              icon="🟦"
-              title=" Collaboration"
-              description="We believe great ideas thrive in collaboration. By fostering a culture of teamwork and open communication, we empower architects, designers, and homeowners to co-create extraordinary living spaces together."
-              color="text-green-600 dark:text-green-400"
-              delay={0.5}
-                className='value-card'
-            />
-            <ValueCard
-              icon="🔶"
-              title=" Accountability"
-              description="We hold ourselves accountable to our users and partners by delivering reliable, high-quality solutions. Integrity and responsibility guide every aspect of our work, ensuring trust and long-lasting relationships."
-              color="text-red-600 dark:text-red-400"
-              delay={0.6}
-                className='value-card'
-            />
-          </div>
-        </section>
+{/* Values Section */}
+<div className="dark-value-bg" style={{background:"rgba(207, 226, 243, 0.75)"}}>
+  {/* Values Section */}
+<div className="values-new-container">
+  <div className="values-new-grid">
+    {/* Innovation Card - stays in top left */}
+    <motion.div
+      className="values-new-card innovation-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.1 }}
+    >
+      <img src="/i6.png" alt="Innovation Icon" className="values-new-icon" />
+      <h3 className="values-new-title">Innovation</h3>
+      <p className="values-new-text">
+        Sooru.AI innovates home design with AI, AR/VR, and advanced tech, redefining architectural creativity.
+      </p>
+    </motion.div>
+
+    {/* Curiosity Card - moved down */}
+    <motion.div
+      className="values-new-card curiosity-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+    >
+      <img src="/i7.png" alt="Curiosity Icon" className="values-new-icon" />
+      <h3 className="values-new-title">Curiosity</h3>
+      <p className="values-new-text">
+        Driven by curiosity, we explore, learn, and innovate, challenging traditions to create exceptional user experiences.
+      </p>
+    </motion.div>
+
+    {/* Collaboration Card - bottom left */}
+    <motion.div
+      className="values-new-card collaboration-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.3 }}
+    >
+      <img src="/i8.png" alt="Collaboration Icon" className="values-new-icon" />
+      <h3 className="values-new-title">Collaboration</h3>
+      <p className="values-new-text">
+        Collaboration fuels great ideas. We unite architects, designers, and homeowners to co-create extraordinary spaces.
+      </p>
+    </motion.div>
+
+    {/* Accountability Card - moved further down */}
+    <motion.div
+      className="values-new-card accountability-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+    >
+      <img src="/i9.png" alt="Accountability Icon" className="values-new-icon" />
+      <h3 className="values-new-title">Accountability</h3>
+      <p className="values-new-text">
+        We prioritize integrity and reliability, delivering quality solutions that build trust and lasting relationships.
+      </p>
+    </motion.div>
+
+    {/* Our Values Heading Section - moved more to the right */}
+    <motion.div
+      className="values-heading-container"
+      initial={{ opacity: 0, x: 20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, delay: 0.5 }}
+    >
+      <h2 className="values-heading">Our Values</h2>
+      <p className="values-subtitle">
+        Innovating, collaborating, and building a better future through intelligent design.
+      </p>
+      <button className="values-explore-button" onClick={() => window.location.href = '/Loginpage'}>Explore</button>
+    </motion.div>
+  </div>
+</div>
+</div>
       </main>
     </div>
   );

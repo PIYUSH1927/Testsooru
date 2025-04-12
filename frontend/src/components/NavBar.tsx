@@ -326,6 +326,12 @@ const Navbar: React.FC = () => {
     };
   }, []);
 
+  const activeLinkStyle: React.CSSProperties = {
+    color: "#0F77FF",
+    fontWeight: "bold",
+    textDecoration:"underline"
+  };
+
   const checkAuthStatus = (): void => {
     const token = localStorage.getItem("access_token");
     setIsLoggedIn(!!token);
@@ -494,13 +500,25 @@ const Navbar: React.FC = () => {
           <SooruLogo />
         </div>
 
-        <NavMenu>
-          {navItems.map((item) => (
-            <ScrollLink key={item.id} onClick={() => handleNavigation(item.id)}>
-              {item.label}
-            </ScrollLink>
-          ))}
-        </NavMenu>
+<NavMenu>
+  {navItems.map((item) => (
+    <ScrollLink
+      key={item.id}
+      onClick={() => handleNavigation(item.id)}
+      style={
+        location.pathname.includes(item.id) ||
+        (item.id === "projects" && location.pathname === "/projects") ||
+        (item.id === "about" && location.pathname === "/about") ||
+        (item.id === "features" && location.pathname === "/features") ||
+        (item.id === "contact" && location.pathname === "/contact")
+          ? activeLinkStyle
+          : undefined
+      }
+    >
+      {item.label}
+    </ScrollLink>
+  ))}
+</NavMenu>
 
         <NavControls>
           <ResponsiveAuthContainer>

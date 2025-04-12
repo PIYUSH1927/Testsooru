@@ -4,7 +4,7 @@ import { useDarkMode } from '../contexts/DarkModeContext';
 import clsx from 'clsx';
 
 interface FeatureCardProps {
-  icon: string;
+  icon: string | React.ReactNode;
   title: string;
   description: string;
   delay?: number; 
@@ -27,9 +27,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, del
       )}
     >
       <div className="text-2xl mb-4">{icon}</div>
-      <h3 className={`text-xl md:text-2xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+      <h2 className={`text-xl md:text-2xl font-semibold mb-3 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
         {title}
-      </h3>
+      </h2>
       <p className={`leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
         {description}
       </p>
