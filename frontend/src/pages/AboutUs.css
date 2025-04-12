@@ -305,6 +305,9 @@
   .feature-card {
       width: 100%;
   }
+  .about-card{
+    
+  }
 
   .about-grid,
   .values-grid {
@@ -322,6 +325,10 @@
   .value-card,
   .feature-card {
       padding: 1.5rem;
+  }
+
+  .about-card{
+    padding: 1rem;
   }
 
   .feature-item,
