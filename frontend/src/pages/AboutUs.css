@@ -303,6 +303,7 @@
       margin-left: 0px;
   }
 
+
   .about-card,
   .value-card,
   .feature-card {
@@ -394,8 +395,8 @@
     padding: 0.6rem 0.5rem; /* Reduce horizontal padding */
   }
 
-  .fs{
-    width: 97vw;
+  .about-container{
+    padding: 15px;
   }
 }
 

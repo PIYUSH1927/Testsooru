@@ -67,8 +67,8 @@ const AboutContent: React.FC = () => {
       {/* Main Content */}
       <main className="about-content">
         {/* Who We Are Section */}
-        <section className="about-section">
-          <SectionTitle>About Us</SectionTitle>
+        <section className="about-section" >
+          <SectionTitle><b>About Us</b></SectionTitle>
           <InfoCard
             title="Who Are We?"
             icon=""
@@ -93,7 +93,7 @@ const AboutContent: React.FC = () => {
   }
   description="We aim to revolutionize architecture and construction by making intelligent design tools accessible, enabling seamless creation, visualization, and modification of spaces worldwide."
   color="text-blue-600"
-  delay={0.3}
+  delay={0.2}
 />
 <InfoCard
   title="Mission"
@@ -112,8 +112,8 @@ const AboutContent: React.FC = () => {
         </section>
 
         {/* Why Sooru.AI Section */}
-        <section className="about-section" style={{maxWidth:"90%"}}>
-          <div style={{ position: 'relative' }}>
+        <section className="about-section" >
+          <div >
             <SectionTitle>Why Sooru.AI?</SectionTitle>
             <img 
               src="/v1.png" 
@@ -126,6 +126,7 @@ const AboutContent: React.FC = () => {
                 right: '-30px',
                 zIndex: '11'
               }} 
+              className='hide-on-mobile'
             />
             <img 
               src="/v2.png" 
@@ -137,9 +138,8 @@ const AboutContent: React.FC = () => {
                 top: '-220px',
                 left: '-100px',
                 zIndex: '11',
-                
               }} 
-              
+              className='hide-on-mobile'
             />
           </div>
           <div className="about-grid fs ">
@@ -162,7 +162,7 @@ const AboutContent: React.FC = () => {
               icon={<img src="/i5.png" alt="Comprehensive Features Icon" style={{ width: '50px', height: '50px',color:"white" }}/>}
               title="Comprehensive Features"
               description="From conceptualization to visualization, we cover every step. Sooru.AI drives innovation in home design, using AI, AR/VR, and advanced tech to revolutionize architecture from concept to visualization."
-              delay={0.3}
+              delay={0.2}
               className='feature-card'
             />
           </div>
@@ -210,7 +210,7 @@ const AboutContent: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.3 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
     >
       <img src="/i8.png" alt="Collaboration Icon" className="values-new-icon" />
       <h3 className="values-new-title">Collaboration</h3>
