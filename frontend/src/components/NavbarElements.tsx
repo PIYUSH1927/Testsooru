@@ -142,8 +142,7 @@ export const AuthButton = styled.button`
 
 
   &:hover {
-    background-color: var(--button-hover);
-    transform: translateY(-1px);
+    transform: translateY(-1.5px);
     box-shadow: 0 2px 4px var(--shadow);
   }
 `;

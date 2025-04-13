@@ -122,9 +122,10 @@ const AboutContent: React.FC = () => {
                 width: '350px', 
                 height: 'auto', 
                 position: 'absolute',
-                top: '-880px',
-                right: '-30px',
-                zIndex: '11'
+                top: '-770px',
+                right: '50px',
+                zIndex: '11',
+                opacity:"0.5"
               }} 
               className='hide-on-mobile'
             />
@@ -135,8 +136,8 @@ const AboutContent: React.FC = () => {
                 width: '350px', 
                 height: 'auto', 
                 position: 'absolute',
-                top: '-220px',
-                left: '-100px',
+                top: '-175px',
+                left: '-170px',
                 zIndex: '11',
               }} 
               className='hide-on-mobile'               
@@ -246,7 +247,7 @@ const AboutContent: React.FC = () => {
       <p className="values-subtitle">
         Innovating, collaborating, and building a better future through intelligent design.
       </p>
-      <button className="values-explore-button" onClick={() => window.location.href = '/Loginpage'}>Explore</button>
+      <button className="values-explore-button" onClick={() => window.location.href = '/'}>Explore</button>
     </motion.div>
   </div>
 </div>

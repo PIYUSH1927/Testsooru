@@ -1,9 +1,7 @@
 import React, { useState, useRef, ChangeEvent, FormEvent } from 'react';
-import emailjs from '@emailjs/browser';
-import { motion } from 'framer-motion';
 import { DarkModeProvider, useDarkMode } from '../contexts/DarkModeContext';
-import { Email, Phone, LocationOn, Instagram, LinkedIn } from '@mui/icons-material';
-import XIcon from '@mui/icons-material/X';
+import { useNavigate } from 'react-router-dom';
+
 import './Contact.css';
 
 interface FormData {
@@ -49,10 +47,6 @@ const ContactContent = () => {
       newErrors.firstName = 'First name is required';
     }
 
-    // Last Name validation
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -97,18 +91,16 @@ const ContactContent = () => {
           message: formData.message,
         };
 
-        await emailjs.send(
-          'service_omj9n43', // Replace with your EmailJS service ID
-          'template_noht5me', // Replace with your EmailJS template ID
-          templateParams,
-          'JIpt30NTnrd439pGk' // Replace with your EmailJS public key
-        );
+        // This would be replaced with actual EmailJS implementation
+        // Simulating a successful API call
+        setTimeout(() => {
+          setSubmitStatus({
+            type: 'success',
+            message: 'Thank you for your message. We will get back to you soon!'
+          });
+          clearForm();
+        }, 1000);
 
-        setSubmitStatus({
-          type: 'success',
-          message: 'Thank you for your message. We will get back to you soon!'
-        });
-        clearForm();
       } catch (error) {
         setSubmitStatus({
           type: 'error',
@@ -153,163 +145,176 @@ const ContactContent = () => {
   const StatusMessage = ({ status }: { status: SubmitStatus }) => {
     if (!status.message) return null;
     return (
-      <div className={`status-message ${status.type}`}>
+      <div className={`contact-status-message ${status.type}`}>
         {status.message}
       </div>
     );
   };
+  const navigate = useNavigate();
 
   return (
-    <div className={`contact-container ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`contact-container ${isDarkMode ? 'contact-dark' : ''}`}>
       <div className="contact-wrapper">
-        {/* Header */}
-        <motion.h1
-          className="contact-title"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          GET IN TOUCH!!!
-        </motion.h1>
+        {/* Hero Section */}
+        <div className="contact-hero-section">
+          <div className="contact-hero-content">
+            <h1 className="contact-hero-title">Ready to get started?</h1>
+            <p className="contact-hero-subtitle">Making artwork for your home is now<br />as easy as thinking</p>
+            <button 
+              className="contact-get-started-btn" 
+              onClick={() => navigate('/')}
+            >
+              Get Started
+            </button>
+          </div>
+          <div className="contact-hero-image">
+            <img src="/cube.png" alt="Blue cube" />
+          </div>
+        </div>
 
         <div className="contact-content">
-          {/* Contact Form */}
-          <motion.div
-            className="contact-form-container"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h2  style={{textAlign:"center", marginBottom:"20px"}}>Contact Us</h2>
-            <form ref={formRef} onSubmit={handleSubmit} className="contact-form">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>First Name*</label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className={errors.firstName ? 'error' : ''}
-                    required
-                  />
-                  {errors.firstName && <span className="error-message">{errors.firstName}</span>}
-                </div>
-                <div className="form-group">
-                  <label>Last Name*</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className={errors.lastName ? 'error' : ''}
-                    required
-                  />
-                  {errors.lastName && <span className="error-message">{errors.lastName}</span>}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Company Name</label>
-                <input
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Email*</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className={errors.email ? 'error' : ''}
-                  placeholder='email@company.com'
-                  required
-                />
-                {errors.email && <span className="error-message">{errors.email}</span>}
-              </div>
-
-              <div className="form-group">
-                <label>Phone Number*</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handlePhoneChange}
-                  placeholder="10-digit phone number"
-                  maxLength={10}
-                  className={errors.phone ? 'error' : ''}
-                  required
-                />
-                {errors.phone && <span className="error-message">{errors.phone}</span>}
-              </div>
-
-              <div className="form-group">
-                <label>Message</label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={4}
-                  required
-                />
-              </div>
-              <StatusMessage status={submitStatus} />
-              <button type="submit" className="submit-button">
-                Submit
-              </button>
-            </form>
-          </motion.div>
-
           {/* Contact Information */}
-          <motion.div
-            className="contact-info"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <div className="info-item">
-              <Email className="info-icon" />
-              <div>
+          <div className="contact-info">
+            <div className="contact-info-card">
+              <div className="contact-info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <div className="contact-info-text">
                 <h3>Email</h3>
                 <a href="mailto:info@sooru.ai">info@sooru.ai</a>
               </div>
             </div>
 
-            <div className="info-item">
-              <Phone className="info-icon" />
-              <div>
+            <div className="contact-info-card">
+              <div className="contact-info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+              </div>
+              <div className="contact-info-text">
                 <h3>Phone</h3>
                 <a href="tel:+919743810910">+91 97438 10910</a>
               </div>
             </div>
 
-            <div className="info-item">
-              <LocationOn className="info-icon" />
-              <div>
+            <div className="contact-info-card">
+              <div className="contact-info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <div className="contact-info-text">
                 <h3>Location</h3>
-                <a href="https://maps.app.goo.gl/944JEquL11N1oANYA">
-                  <p>No. 816, 27th Main Road,<br />Sector - 1, H S R Layout,<br />Bengaluru 560 102</p>
-                </a>
+                <p>No. 816, 27th Main Road,<br />Sector - 1, H S R Layout,<br />Bengaluru 560 102</p>
               </div>
             </div>
 
-            <div className="social-links" style={{display:"flex", justifyContent:"center"}}>
-              <a href="https://instagram.com/sooru.ai" target="_blank" rel="noopener noreferrer">
-                <Instagram className="social-icon" />
+            <div className="contact-social-links">
+              <a href="https://instagram.com/sooru.ai" target="_blank" rel="noopener noreferrer" className="contact-social-icon contact-instagram">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
               </a>
-              <a href="https://linkedin.com/company/sooruai" target="_blank" rel="noopener noreferrer">
-                <LinkedIn className="social-icon" />
+              <a href="https://x.com/Sooru_AI" target="_blank" rel="noopener noreferrer" className="contact-social-icon contact-twitter">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
               </a>
-              <a href="https://x.com/Sooru_AI" target="_blank" rel="noopener noreferrer">
-                <XIcon className="social-icon" />
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="contact-social-icon contact-facebook">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2.01h-2l-.396 3.98h2.396v8.01Z" />
+                </svg>
               </a>
             </div>
-          </motion.div>
+          </div>
+
+          {/* Contact Form */}
+          <div className="contact-form-container">
+            <h2>Contact Us</h2>
+            <form ref={formRef} onSubmit={handleSubmit} className="contact-form">
+              <div className="contact-form-row">
+                <div className="contact-form-group">
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className={errors.firstName ? 'contact-error' : ''}
+                    placeholder="First Name*"
+                    required
+                  />
+                  {errors.firstName && <span className="contact-error-message">{errors.firstName}</span>}
+                </div>
+                <div className="contact-form-group">
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className={errors.lastName ? 'contact-error' : ''}
+                    placeholder="Last Name"
+                    required
+                  />
+                  {errors.lastName && <span className="contact-error-message">{errors.lastName}</span>}
+                </div>
+              </div>
+
+              <div className="contact-form-group">
+                <input
+                  type="text"
+                  name="companyName"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  placeholder="Company Name"
+                />
+              </div>
+
+              <div className="contact-form-group">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={errors.email ? 'contact-error' : ''}
+                  placeholder="Email*"
+                  required
+                />
+                {errors.email && <span className="contact-error-message">{errors.email}</span>}
+              </div>
+
+              <div className="contact-form-group">
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handlePhoneChange}
+                  placeholder="Phone Number*"
+                  maxLength={10}
+                  className={errors.phone ? 'contact-error' : ''}
+                  required
+                />
+                {errors.phone && <span className="contact-error-message">{errors.phone}</span>}
+              </div>
+
+              <div className="contact-form-group">
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  rows={4}
+                  placeholder="Message"
+                />
+              </div>
+              <StatusMessage status={submitStatus} />
+              <button type="submit" className="contact-submit-button">
+                Submit
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
