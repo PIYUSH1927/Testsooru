@@ -1,214 +1,544 @@
 /* Features.css */
 
 :root {
-    /* Light theme */
-    --bg-primary: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.8);
-    --text-primary: #1a1a1a;
-    --text-secondary: #666666;
-    --color-accent: #0066ff;
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Dark theme */
-  @media (prefers-color-scheme: dark) {
-    :root {
-        --bg-primary: #000000;
-        --bg-card: rgba(29, 29, 31, 0.8);
-        --text-primary: #ffffff;
-        --text-secondary: #ffffff;
-        --color-accent: #3b82f6;
-        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-    }
-  
-    /* Force dark mode styles */
-    .features-container {
-        background-color: #000000 !important;
-    }
-  
-    .feature-card {
-        background: rgba(29, 29, 31, 0.8) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-  
-    .feature-list-item {
-        background: rgba(29, 29, 31, 0.8) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #ffffff !important;
-    }
-  
-    .feature-title,
-    .features-title {
-        color: #ffffff !important;
-    }
-  
-    .feature-description,
-    .features-subtitle,
-    .feature-text {
-        color: #ffffff !important;
-    }
-  }
-  
-  .features-container {
-    min-height: 100vh;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-  }
-  
-  /* Header Styles */
-  .features-header {
-    padding: 0rem 2rem;
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .features-title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-  
-  .features-subtitle {
-    font-size: clamp(1.1rem, 2vw, 1.25rem);
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
-  
-  /* Features Grid */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
-    padding-top: 1rem;
-    max-width: 1400px;
-    margin: 0 auto;
+  /* Light theme */
+  --bg-primary: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --color-accent: #0066ff;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+      --bg-primary: #000000;
+      --bg-card: rgba(29, 29, 31, 0.8);
+      --text-primary: #ffffff;
+      --text-secondary: #ffffff;
+      --color-accent: #3b82f6;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
   }
 
-  .upcoming-title {
-    text-align: center; /* Centers the title */
-    font-size: 2.5rem; /* Increased size */
-    font-weight: 700;
-    margin-bottom: 1rem;
+  /* Force dark mode styles */
+  .ftrs-container {
+      background-color: #000000 !important;
+  }
+
+  .ftrs-card {
+      background: rgba(29, 29, 31, 0.8) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .ftrs-list-item {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+  }
+
+  .ftrs-card-title,
+  .ftrs-title {
+      color: #ffffff !important;
+  }
+
+  .ftrs-title {
+    color: #1078FF;
 }
+
+  .ftrs-card-description,
+  .ftrs-subtitle,
+  .ftrs-item-text {
+      color: #ffffff !important;
+  }
   
-  /* Feature Card */
-  .feature-card {
-    background: var(--bg-card);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 1.5rem;
-    padding: 2.5rem;
-    transition: all 0.3s ease;
-    height: 100%;
+  .ftrs-timeline-line {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  .ftrs-timeline-node {
+      background-color: #3b82f6 !important;
+      border: 2px solid #ffffff !important;
+  }
+  
+  .ftrs-timeline-card-content {
+      background: rgba(29, 29, 31, 0.8) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.ftrs-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Header Styles */
+.ftrs-header {
+  padding: 0rem 2rem;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ftrs-title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0rem;
+  margin-top: 1rem;
+}
+.ftrs-title{
+  background: linear-gradient(90deg, #1078FF 0%, #05479E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.ftrs-subtitle {
+  font-size: clamp(1.4rem, 2vw, 1.25rem);
+  color: #0A4899;
+  line-height: 1;
+  margin-bottom: 0.8rem;
+}
+
+/* Features Grid */
+.ftrs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2.5rem;
+  padding: 2rem;
+  padding-top: 1rem;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.ftrs-upcoming-title {
+  text-align: center; /* Centers the title */
+  font-size: 2.5rem; /* Increased size */
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Feature Card */
+.ftrs-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2.5rem;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #0F77FF;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.12); /* Added shadow for 3D effect */
+}
+
+.ftrs-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.ftrs-icon {
+  font-size: 2.5rem;
+}
+
+.ftrs-card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1078FF;
+}
+
+.ftrs-card-description {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* Feature List */
+.ftrs-item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0rem;
+}
+
+.ftrs-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  background: transparent;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.ftrs-list-item:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.ftrs-check-icon {
+  color: #22c55e; /* Green color for check icons */
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.ftrs-item-text {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Section Styles */
+.ftrs-section {
+  padding: 0rem 0;
+}
+
+.ftrs-section-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.ftrs-section-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.ftrs-section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ftrs-section-description {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+.ftrs-section-dark {
+  background-color: var(--bg-primary);
+}
+
+/* Timeline Styles for Upcoming Features */
+.ftrs-timeline-container {
+  position: relative;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 2rem 0;
+  min-height: 1000px; /* Increased height for more spacing between boxes */
+}
+
+.ftrs-timeline-line {
+  position: absolute;
+  top: 30px;
+  bottom: -100px; /* Extend the line below the container */
+  left: 50%;
+  width: 2px;
+  background-color: #0F77FF;
+  transform: translateX(-50%);
+}
+.pos{
+  position: relative;
+  top: 800px;
+}
+
+.ftrs-timeline-nodes {
+  position: absolute;
+  top: 35px;
+  bottom: 0px;
+  left: 50%;
+  width: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  transform: translateX(-50%);
+}
+
+.ftrs-timeline-node {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #0F77FF;
+  border: 2px solid white;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.ftrs-timeline-card {
+  position: absolute;
+  width: 35%;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.12); /* Added shadow for 3D effect */
+  transition: all 0.3s ease; /* Smooth transition for any interactions */
+}
+
+/* Optional: Add hover effect to enhance 3D feeling */
+.ftrs-timeline-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12);
+}
+
+.ftrs-timeline-card-left {
+  left: 8%; /* Moved closer to center */
+}
+
+.ftrs-timeline-card-right {
+  right: 8%; /* Moved closer to center */
+}
+
+.ftrs-timeline-card-content {
+  background: var(--bg-card);
+  border-radius: 0; /* Remove border radius for square boxes */
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid #0F77FF;
+  position: relative;
+}
+
+.ftrs-timeline-card-left .ftrs-timeline-card-content:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #0F77FF;
+  transform: translateY(-50%);
+}
+
+.ftrs-timeline-card-right .ftrs-timeline-card-content:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #0F77FF;
+  transform: translateY(-50%);
+}
+
+/* Position timeline cards */
+.ftrs-timeline-node:nth-child(1) {
+  top: 10%;
+}
+
+.ftrs-timeline-node:nth-child(4) {
+  top: 40%;
+  position: relative;
+  top: 90px;
+}
+
+.ftrs-timeline-node:nth-child(3) {
+  top: 70%;
+  position: relative;
+  top: 60px;
+}
+
+.ftrs-timeline-node:nth-child(2) {
+  top: 90%;
+  position: relative;
+  top: 20px;
+}
+
+.ftrs-timeline-card:nth-of-type(1) {
+  top: 6%;
+}
+
+.ftrs-timeline-card:nth-of-type(4) {
+  top: 31%;
+  
+}
+
+.ftrs-timeline-card:nth-of-type(3) {
+  top: 56%;
+}
+
+.ftrs-timeline-card:nth-of-type(2) {
+  top: 81%;
+}
+
+.pos1{
+  position: relative;
+  top: 250px;
+}
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .ftrs-grid {
+      padding: 1rem;
+      gap: 1.5rem;
+  }
+
+  .ftrs-card {
+      padding: 1.5rem;
+  }
+
+  .ftrs-header {
+      padding: 0rem 1.5rem;
+  }
+
+  .ftrs-list-item {
+      padding: 0.75rem;
+  }
+  
+  /* Timeline responsive adjustments */
+  .ftrs-timeline-line {
+    left: 30px;
+  }
+  
+  .ftrs-timeline-nodes {
+    left: 30px;
+  }
+  
+  .ftrs-timeline-card {
+    width: calc(100% - 80px);
+    left: 60px !important;
+    right: auto !important;
+  }
+  
+  .ftrs-timeline-card-left .ftrs-timeline-card-content:after,
+  .ftrs-timeline-card-right .ftrs-timeline-card-content:after {
+    left: -10px;
+    right: auto;
+    border-left: 0;
+    border-right: 10px solid #0F77FF;
+  }
+}
+
+/* Media query to hide center line on screens less than 992px */
+@media screen and (max-width: 992px) {
+  .ftrs-timeline-line {
+    display: none;
+  }
+  
+  .ftrs-timeline-node {
+    display: none;
+  }
+  
+  .ftrs-timeline-card {
+    position: relative;
+    width: 90%;
+    margin: 0 auto 2rem;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+  }
+  
+  .ftrs-timeline-container {
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: auto;
+    min-height: auto;
+    padding: 1rem 0;
   }
   
-  .feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
+  .ftrs-timeline-card-left .ftrs-timeline-card-content:after,
+  .ftrs-timeline-card-right .ftrs-timeline-card-content:after {
+    display: none;
+  }
+  .pos{
+    position: relative;
+    top: 0px;
+  }
+  .pos1{
+    position: relative;
+    top: 0px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .ftrs-grid {
+      grid-template-columns: 1fr;
+  }
+
+  .ftrs-card {
+      padding: 1.25rem;
   }
   
-  .feature-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
+  .ftrs-timeline-container {
+    padding-left: 0rem;
+    padding-right: 0rem;
   }
   
-  .feature-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
+  .ftrs-timeline-card {
+    width: calc(100% - 60px);
   }
-  
-  .feature-description {
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
+}
+
+/* Animation Support */
+@media (prefers-reduced-motion: reduce) {
+  .ftrs-card,
+  .ftrs-list-item,
+  .ftrs-timeline-card {
+      transition: none;
   }
-  
-  /* Feature List */
-  .feature-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ftrs-bottom-space {
+  height: 25vh; 
+}
+
+@media screen and (max-width: 992px) {
+  .ftrs-bottom-space {
+    height: 2vh; 
   }
-  
-  .feature-list-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: var(--bg-card);
-    border-radius: 0.75rem;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .feature-list-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-  }
-  
-  .feature-check {
-    color: var(--color-accent);
-    flex-shrink: 0;
-    margin-top: 0.25rem;
-  }
-  
-  .feature-text {
-    color: var(--text-secondary);
-    line-height: 1.5;
-  }
-  
-  /* Responsive Design */
-  @media screen and (max-width: 768px) {
-    .features-grid {
-        padding: 1rem;
-        gap: 1.5rem;
-    }
-  
-    .feature-card {
-        padding: 1.5rem;
-    }
-  
-    .features-header {
-        padding: 0,6rem 1.5rem;
-    }
-  
-    .feature-list-item {
-        padding: 0.75rem;
-    }
-  }
-  
-  @media screen and (max-width: 480px) {
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
-  
-    .feature-card {
-        padding: 1.25rem;
-    }
-  }
-  
-  /* Animation Support */
-  @media (prefers-reduced-motion: reduce) {
-    .feature-card,
-    .feature-list-item {
-        transition: none;
-    }
-  }
-  
-  /* Better text rendering */
-  * {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+}
+
+/* Special styles for Automated Cost Estimation box */
+.pos1 .ftrs-timeline-card-content {
+  background: linear-gradient(to right, #0A499C, #1868d9) !important; /* Gradient matching the image */
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.pos1 .ftrs-card-title,
+.pos1 .ftrs-card-description,
+.pos1 .ftrs-icon {
+  color: white !important;
+}
+
+/* Special styles for Customizable Components card (in features grid) */
+.ftrs-grid .ftrs-card:nth-of-type(2) {
+  background: linear-gradient(to right, #0A499C, #1868d9) !important;
+  border: none !important;
+}
+
+.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-card-title,
+.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-card-description,
+.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-icon,
+.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-item-text{
+  color: white !important;
+}
+.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-check-icon {
+  color: #09c34d;
+}
+
+/* Special styles for the list items in all blue gradient cards */
+.ftrs-card[style*="gradient"],
+.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-list-item .ftrs-check-icon,
+.pos1 .ftrs-timeline-card-content .ftrs-list-item .ftrs-check-icon {
+  color: #09c34d !important; /* White check icons for blue cards */
+}
+
+/* Ensure all list items across all cards have green checks */
+.ftrs-check-icon {
+  color: #09c34d; /* Green color for check icons */
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}

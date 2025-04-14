@@ -2,23 +2,29 @@
     display: flex;
     justify-content: space-between;
     align-items: center; /* Ensures they stay aligned properly */
-    padding: 0px 30px;
+    padding: 10px 30px;
     width: 100%;
     flex-wrap: wrap; /* Ensures proper wrapping on very small screens */
   }
   
   .project-title {
-    font-size: 35px;
+    font-size: 45px;
     font-weight: bold;
     margin: 0;
     white-space: nowrap; 
+
+    background: linear-gradient(90deg, #1078FF 0%, #05479E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   
   .create-project-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: black;
+    background: linear-gradient(to right, #0A499C, #1868d9);
+    border: none;
+    box-shadow: none;
     color: white;
     border: 2px solid white;
     border-radius: 8px;
@@ -32,8 +38,7 @@
   
   .create-project-btn:hover {
     background-color: white;
-    color: black;
-    border: 2px solid black;
+    border: 2px solid green;
   }
   
   .create-project-btn:active {

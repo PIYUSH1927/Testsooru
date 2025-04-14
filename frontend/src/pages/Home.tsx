@@ -1,44 +1,37 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import About from './AboutUs';
-import Features from './Features';
-import Contact from './Contact';
 import "./Home.css";
 
 const HomeContent: React.FC = () => {
   return (
-    <div >
-
-      {/* Hero Section */}
-      <div className="hero-container" style={{position:"relative", bottom:"80px"}}>
-        <div className="hero-content">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <h1 className="hero-title">
-              SOORU.AI
-            </h1>
-            <h2 className="hero-subtitle">
-              Where Vision Meets Precision!
-            </h2>
-          </motion.div>
+    <div className="home-container">
+      <div className="blueprint-left"></div>
+      {/* Main Content Container */}
+      <div className="content-wrapper">
+        {/* Hero Section */}
+        <div className="hero-section">
+          <h1 className="hero-title">SOORU.AI</h1>
+          <h2 className="hero-subtitle">Where Vision Meets Precision!</h2>
+          <p className="subtitle">
+            Democratizing architecture with generative AI— Maket allows
+            anyone to design & plan their new build or renovation project
+            in a few simple steps.
+          </p>
+          
+          <button className="get-started-btn">Get Started</button>
+        </div>
+        
+        {/* Building Visualization with YouTube Video */}
+        <div className="building-visual-container">
+          <iframe 
+            src="https://www.youtube.com/embed/VPaeZWgt4TI?si=7PfsYS18afDDbr6_" 
+            title="YouTube video player" 
+            frameBorder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowFullScreen
+          ></iframe>
         </div>
       </div>
-      {/* Other sections 
-      <section id="about" className="min-h-screen">
-        <About />
-      </section>
-
-      <section id="features" className="min-h-screen">
-        <Features />
-      </section>
-
-      <section id="contact" className="min-h-screen">
-        <Contact />
-      </section>
-      */}
+      <div className="blueprint-right"></div>
     </div>
   );
 };

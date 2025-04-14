@@ -22,7 +22,7 @@ export default function Project() {
 
   return (
     <div className="project-header">
-      <h1 className="project-title">Projects</h1>
+      <h1 className=" project-title">Projects</h1>
       <button className="create-project-btn" onClick={handleCreateProject}>
         <span className="plus-sign">+</span> New Project
       </button>

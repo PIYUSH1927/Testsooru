@@ -48,25 +48,26 @@ export const Nav = styled.nav`
   z-index: 1000;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 15% 20%, rgba(15, 119, 255, 0.08) 0%, rgba(15, 119, 255, 0) 30%),
+        radial-gradient(circle at 85% 20%, rgba(15, 119, 255, 0.08) 0%, rgba(15, 119, 255, 0) 30%),
+        radial-gradient(circle at 10% 40%, rgba(15, 119, 255, 0.06) 0%, rgba(15, 119, 255, 0) 20%),
+        radial-gradient(circle at 90% 40%, rgba(15, 119, 255, 0.06) 0%, rgba(15, 119, 255, 0) 20%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
   @media screen and (max-width: 768px) {
     padding: 2.5rem 2rem;
   }
-
-
- /* 
-  &::before {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 95px; 
-    height: 1px;
-    background-color: black;
-  }
-  */
 `;
-
-
 
 export const NavMenu = styled.div`
   display: flex;
@@ -176,7 +177,7 @@ export const ScrollLink = styled.button`
   color: var(--text);
   background: none;
   border: none;
-  font-size: inherit;
+  font-size: 1.15rem;
   cursor: pointer;
   padding: 0.5rem 1rem;
   transition: color 0.2s ease;
@@ -191,6 +192,10 @@ export const ScrollLink = styled.button`
     color: var(--text-hover);
     font-weight: 600;
   }
+`;
+
+export const NavbarContainer = styled.div`
+
 `;
 
 interface LogoContainerProps {

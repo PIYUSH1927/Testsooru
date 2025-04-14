@@ -122,23 +122,23 @@ const AboutContent: React.FC = () => {
                 width: '350px', 
                 height: 'auto', 
                 position: 'absolute',
-                top: '-770px',
-                right: '50px',
-                zIndex: '11',
-                opacity:"0.5"
+                top: '-1100px',
+                right: '-100px',
+                zIndex: '1',
               }} 
               className='hide-on-mobile'
             />
             <img 
-              src="/v2.png" 
+              src="/v1.png" 
               alt="Sooru.AI Vector" 
               style={{ 
                 width: '350px', 
                 height: 'auto', 
                 position: 'absolute',
-                top: '-175px',
-                left: '-170px',
-                zIndex: '11',
+                top: '-1100px',
+                left: '-100px',
+                zIndex: '1',
+                transform: 'scaleX(-1)'
               }} 
               className='hide-on-mobile'               
             />

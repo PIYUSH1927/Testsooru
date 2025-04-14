@@ -12,6 +12,7 @@ import {
   NavControls,
   ScrollLink,
   MobileNav,
+  NavbarContainer,
 } from "./NavbarElements";
 
 import SooruAILogo from "../SooruAI.png";
@@ -51,7 +52,7 @@ const ProfileIcon = styled.div`
   width: 32px;
   height: 32px;
   border-radius: 50%;
- background-color: #1976D2;
+  background: linear-gradient(to right, #0A499C, #1868d9);
   color: white;
   display: flex;
   justify-content: center;
@@ -76,8 +77,9 @@ const ProfileDropdown = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  z-index: 100;
+  z-index: 1050;
 `;
+
 
 const DropdownContainer = styled.div`
   position: relative;
@@ -137,24 +139,25 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: white;
+  background-color: var(--background); // uses global theme value
+  color: var(--text);                  // uses global text color
   padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 90%;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
   text-align: center;
+  box-shadow: 0 5px 15px var(--shadow);
+  border: 1px solid white;
 `;
 
 const ModalTitle = styled.h3`
-  margin-top: 0;
+  color: var(--text); // uses global text color
   margin-bottom: 15px;
-  color: #333;
 `;
 
 const ModalText = styled.p`
+  color: var(--text); // again, from theme
   margin-bottom: 25px;
-  color: #555;
 `;
 
 const ModalButtons = styled.div`
@@ -165,11 +168,12 @@ const ModalButtons = styled.div`
 
 const CancelButton = styled.button`
   padding: 8px 20px;
-  background-color: #ccc;
+  background-color: #444;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
+  color:white;
   
   &:hover {
     background-color: #bbb;
@@ -495,6 +499,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       <GlobalStyle />
+      <NavbarContainer>
       <Nav>
         <div className="logo-link" >
           <SooruLogo />
@@ -529,11 +534,11 @@ const Navbar: React.FC = () => {
                 </ProfileIcon>
                 {showProfileDropdown && (
                   <ProfileDropdown>
-                    <DropdownItem onClick={handleHomeNavigation}>Home</DropdownItem>
-                    <DropdownItem onClick={handleProfileNavigation}>Profile</DropdownItem>
-                    <DropdownItem onClick={handleSettingsNavigation}>Settings</DropdownItem>
+                    <DropdownItem onClick={handleHomeNavigation}><b>Home</b></DropdownItem>
+                    <DropdownItem onClick={handleProfileNavigation}><b>Profile</b></DropdownItem>
+                    <DropdownItem onClick={handleSettingsNavigation}><b>Settings</b></DropdownItem>
                     <LogoutItem onClick={() => setShowLogoutModal(true)}>
-                      Logout
+                      <b>Logout</b>
                       {isLoggingOut && <Spinner />}
                     </LogoutItem>
                   </ProfileDropdown>
@@ -612,6 +617,7 @@ const Navbar: React.FC = () => {
         onConfirm={handleLogout}
         isLoggingOut={isLoggingOut}
       />
+       </NavbarContainer>
     </>
   );
 };
