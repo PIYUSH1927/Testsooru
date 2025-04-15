@@ -16,6 +16,7 @@ import About from "./pages/AboutUs";
 import Playground from "./pages/Playground";
 import Profile from "./pages/Profile";
 import View3D from "./pages/Playground/3D/View3D";
+import { NavbarProvider } from "./components/NavbarContext";
 import "./App.css";
 
 interface ProtectedRouteProps {
@@ -62,79 +63,81 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/playground"
-          element={
-            <ProtectedRoute>
-              <Playground />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/3D"
-          element={
-            <ProtectedRoute>
-              <View3D />
-            </ProtectedRoute>
-          }
-        />
+    <NavbarProvider>
+      <Router>
+        <Routes>
+          <Route
+            path="/playground"
+            element={
+              <ProtectedRoute>
+                <Playground />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/3D"
+            element={
+              <ProtectedRoute>
+                <View3D />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="*"
-          element={
-            <>
-              <Navbar />
-              <div style={{ paddingTop: "80px" }}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/about" element={<About />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <Navbar />
+                <div style={{ paddingTop: "80px" }}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/about" element={<About />} />
 
-                  <Route
-                    path="/features"
-                    element={
-                    
-                        <Features />
-                   
-                    }
-                  />
-                  <Route
-                    path="/projects"
-                    element={
-                      <ProtectedRoute>
-                        <Project />
-                      </ProtectedRoute>
-                    }
-                  />
+                    <Route
+                      path="/features"
+                      element={
+                      
+                          <Features />
+                     
+                      }
+                    />
+                    <Route
+                      path="/projects"
+                      element={
+                        <ProtectedRoute>
+                          <Project />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute>
-                        <Profile />
-                      </ProtectedRoute>
-                    }
-                  />
+                    <Route
+                      path="/profile"
+                      element={
+                        <ProtectedRoute>
+                          <Profile />
+                        </ProtectedRoute>
+                      }
+                    />
 
-                  <Route
-                    path="/LoginPage"
-                    element={
-                      <PublicOnlyRoute>
-                        <LoginPage />
-                      </PublicOnlyRoute>
-                    }
-                  />
+                    <Route
+                      path="/LoginPage"
+                      element={
+                        <PublicOnlyRoute>
+                          <LoginPage />
+                        </PublicOnlyRoute>
+                      }
+                    />
 
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </div>
-            </>
-          }
-        />
-      </Routes>
-    </Router>
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </div>
+              </>
+            }
+          />
+        </Routes>
+      </Router>
+    </NavbarProvider>
   );
 };
 

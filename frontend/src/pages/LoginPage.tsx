@@ -5,7 +5,6 @@ import SooruAILogo from "../SooruAI.png";
 
 const backendURL = "https://backend-3sh6.onrender.com/api/auth";
 
-// Add this styled component for the required field indicator
 const RequiredIndicator = {
   color: "#ff0000",
   marginLeft: "3px",

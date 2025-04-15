@@ -1,4 +1,4 @@
-/* Contact.css */
+
 :root {
   --primary-blue: #0054a6;
   --light-blue: #d5e7ff;
@@ -11,7 +11,6 @@
   --error-color: #ff3b30;
 }
 
-/* Base styles */
 .contact-container {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: var(--text-color);
@@ -24,7 +23,6 @@
   padding: 1rem 0;
 }
 
-/* Hero Section */
 .contact-hero-section {
   display: flex;
   justify-content: space-between;
@@ -91,7 +89,6 @@
   max-width: 15rem;
 }
 
-/* Contact Content Section */
 .contact-content {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
@@ -99,7 +96,6 @@
   margin-top: 1rem;
 }
 
-/* Contact Info Styles */
 .contact-info {
   display: flex;
   flex-direction: column;
@@ -178,7 +174,6 @@
   transform: translateY(-2px);
 }
 
-/* Contact Form Styles */
 .contact-form-container {
   background: #dceafe;
   border: 0.1px solid #429aff;
@@ -285,7 +280,6 @@
   transform: translateY(-2px);
 }
 
-/* Responsive Styles */
 @media (max-width: 992px) {
   .contact-hero-section {
     text-align: left;
@@ -377,7 +371,6 @@
   }
 }
 
-/* Dark Mode Styles */
 .contact-container.contact-dark {
   background-color: #121212;
   color: var(--white);

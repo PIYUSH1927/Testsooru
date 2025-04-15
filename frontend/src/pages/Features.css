@@ -1,7 +1,4 @@
-/* Features.css */
-
 :root {
-  /* Light theme */
   --bg-primary: #ffffff;
   --bg-card: rgba(255, 255, 255, 0.8);
   --text-primary: #1a1a1a;
@@ -11,7 +8,6 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-/* Dark theme */
 @media (prefers-color-scheme: dark) {
   :root {
       --bg-primary: #000000;
@@ -23,7 +19,6 @@
       --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
   }
 
-  /* Force dark mode styles */
   .ftrs-container {
       background-color: #000000 !important;
   }
@@ -74,7 +69,6 @@
   color: var(--text-primary);
 }
 
-/* Header Styles */
 .ftrs-header {
   padding: 0rem 2rem;
   text-align: center;
@@ -103,7 +97,6 @@
   margin-bottom: 0.8rem;
 }
 
-/* Features Grid */
 .ftrs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -115,30 +108,44 @@
 }
 
 .ftrs-upcoming-title {
-  text-align: center; /* Centers the title */
-  font-size: 2.5rem; /* Increased size */
+  text-align: center;
+  font-size: 2.5rem; 
   font-weight: 700;
   margin-bottom: 1rem;
 }
 
-/* Feature Card */
 .ftrs-card {
   background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 1.5rem;
-  padding: 2.5rem 2.5rem;
+  padding: 2.5rem 2.3rem;
   transition: all 0.3s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid #0F77FF;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.12); /* Added shadow for 3D effect */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.12); 
 }
 
 .ftrs-card:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
+  background: linear-gradient(to right, #0A499C, #1868d9) !important;
+  border: none !important;
+}
+
+/* Change text colors on hover for all cards */
+.ftrs-card:hover .ftrs-card-title,
+.ftrs-card:hover .ftrs-card-description,
+.ftrs-card:hover .ftrs-icon,
+.ftrs-card:hover .ftrs-item-text {
+  color: white !important;
+}
+
+/* Keep the check icon color on hover */
+.ftrs-card:hover .ftrs-check-icon {
+  color: #09c34d !important;
 }
 
 .ftrs-icon {
@@ -158,7 +165,6 @@
   line-height: 1.6;
 }
 
-/* Feature List */
 .ftrs-item-list {
   list-style: none;
   padding: 0;
@@ -185,7 +191,7 @@
 }
 
 .ftrs-check-icon {
-  color: #22c55e; /* Green color for check icons */
+  color: #09c34d;
   flex-shrink: 0;
   margin-top: 0.25rem;
 }
@@ -195,7 +201,6 @@
   line-height: 1.5;
 }
 
-/* Section Styles */
 .ftrs-section {
   padding: 0rem 0;
 }
@@ -227,19 +232,18 @@
   background-color: var(--bg-primary);
 }
 
-/* Timeline Styles for Upcoming Features */
 .ftrs-timeline-container {
   position: relative;
   max-width: 1300px;
   margin: 0 auto;
   padding: 2rem 0;
-  min-height: 1000px; /* Increased height for more spacing between boxes */
+  min-height: 1000px; 
 }
 
 .ftrs-timeline-line {
   position: absolute;
   top: 30px;
-  bottom: -100px; /* Extend the line below the container */
+  bottom: -100px;
   left: 50%;
   width: 2px;
   background-color: #0F77FF;
@@ -276,27 +280,26 @@
   position: absolute;
   width: 35%;
   margin-bottom: 2rem;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.12); /* Added shadow for 3D effect */
-  transition: all 0.3s ease; /* Smooth transition for any interactions */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.12); 
+  transition: all 0.3s ease; 
 }
 
-/* Optional: Add hover effect to enhance 3D feeling */
 .ftrs-timeline-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12);
 }
 
 .ftrs-timeline-card-left {
-  left: 8%; /* Moved closer to center */
+  left: 8%; 
 }
 
 .ftrs-timeline-card-right {
-  right: 8%; /* Moved closer to center */
+  right: 8%; 
 }
 
 .ftrs-timeline-card-content {
   background: var(--bg-card);
-  border-radius: 0; /* Remove border radius for square boxes */
+  border-radius: 0; 
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
   border: 1px solid #0F77FF;
@@ -329,7 +332,6 @@
   transform: translateY(-50%);
 }
 
-/* Position timeline cards */
 .ftrs-timeline-node:nth-child(1) {
   top: 10%;
 }
@@ -373,7 +375,7 @@
   position: relative;
   top: 250px;
 }
-/* Responsive Design */
+
 @media screen and (max-width: 768px) {
   .ftrs-grid {
       padding: 1rem;
@@ -382,6 +384,8 @@
 
   .ftrs-card {
       padding: 1.5rem;
+      position: relative;
+      left: 0px;
   }
 
   .ftrs-header {
@@ -392,7 +396,6 @@
       padding: 0.75rem;
   }
   
-  /* Timeline responsive adjustments */
   .ftrs-timeline-line {
     left: 30px;
   }
@@ -416,7 +419,6 @@
   }
 }
 
-/* Media query to hide center line on screens less than 992px */
 @media screen and (max-width: 992px) {
   .ftrs-timeline-line {
     display: none;
@@ -459,11 +461,15 @@
 
 @media screen and (max-width: 480px) {
   .ftrs-grid {
-      grid-template-columns: 1fr;
+ 
   }
 
   .ftrs-card {
       padding: 1.25rem;
+      width: 95%;
+      margin: auto;
+      position: relative;
+      left: 0px;
   }
   
   .ftrs-timeline-container {
@@ -476,7 +482,6 @@
   }
 }
 
-/* Animation Support */
 @media (prefers-reduced-motion: reduce) {
   .ftrs-card,
   .ftrs-list-item,
@@ -500,9 +505,14 @@
   }
 }
 
-/* Special styles for Automated Cost Estimation box */
 .pos1 .ftrs-timeline-card-content {
-  background: linear-gradient(to right, #0A499C, #1868d9) !important; /* Gradient matching the image */
+  background: linear-gradient(to right, #0A499C, #1868d9) !important; 
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.pos .ftrs-timeline-card-content {
+  background: linear-gradient(to right, #0A499C, #1868d9) !important; 
   border: none !important;
   box-shadow: none !important;
 }
@@ -512,33 +522,8 @@
 .pos1 .ftrs-icon {
   color: white !important;
 }
-
-/* Special styles for Customizable Components card (in features grid) */
-.ftrs-grid .ftrs-card:nth-of-type(2) {
-  background: linear-gradient(to right, #0A499C, #1868d9) !important;
-  border: none !important;
-}
-
-.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-card-title,
-.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-card-description,
-.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-icon,
-.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-item-text{
+.pos .ftrs-card-title,
+.pos .ftrs-card-description,
+.pos .ftrs-icon {
   color: white !important;
-}
-.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-check-icon {
-  color: #09c34d;
-}
-
-/* Special styles for the list items in all blue gradient cards */
-.ftrs-card[style*="gradient"],
-.ftrs-grid .ftrs-card:nth-of-type(2) .ftrs-list-item .ftrs-check-icon,
-.pos1 .ftrs-timeline-card-content .ftrs-list-item .ftrs-check-icon {
-  color: #09c34d !important; /* White check icons for blue cards */
-}
-
-/* Ensure all list items across all cards have green checks */
-.ftrs-check-icon {
-  color: #09c34d; /* Green color for check icons */
-  flex-shrink: 0;
-  margin-top: 0.25rem;
 }

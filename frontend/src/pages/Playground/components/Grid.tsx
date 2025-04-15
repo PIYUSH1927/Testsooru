@@ -27,10 +27,12 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
     updateCanvasSize();
 
     const drawGrid = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
       const gridSize = 20 * scale;
       const smallGridSize = gridSize / 5; 
+      
       ctx.strokeStyle = "#E2E8F0";
       ctx.lineWidth = 1;
 
@@ -52,7 +54,7 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
       }
 
       if (scale > 2) {
-        ctx.strokeStyle = "#F0F4F8"; 
+        ctx.strokeStyle = "#F0F4F8";
         ctx.lineWidth = 0.5;
 
         const smallOffsetX = (position.x * scale) % smallGridSize;
@@ -74,7 +76,6 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
       }
     };
 
-    
     const handleResize = () => {
       updateCanvasSize();
       drawGrid();
@@ -92,7 +93,6 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
     <div
       style={{
         position: "relative",
-
       }}
     >
       <canvas
@@ -101,9 +101,9 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
           width: "100vw",
           height: "100vh",
           zIndex: -1,
+          backgroundColor: "#ffffff" 
         }}
       />
-
     </div>
   );
 };

@@ -83,8 +83,6 @@ export class PlayerControl {
 
         if (controls.moveForward) this.speed = MathUtils.clamp(this.speed + delta * this.frontAcceleration,
             this.maxReverseSpeed, this.maxSpeed);
-        //if (controls.moveBackward) this.speed = MathUtils.clamp(this.speed - delta * this.backAcceleration,
-        //      this.maxReverseSpeed, this.maxSpeed);
 
         const dir = 1;
 

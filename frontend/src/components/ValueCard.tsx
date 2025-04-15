@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import clsx from 'clsx';
 
-// Define types for the props
 interface ValueCardProps {
   icon: string | React.ReactNode;
   title: string;

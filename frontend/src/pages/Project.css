@@ -1,10 +1,10 @@
 .project-header {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Ensures they stay aligned properly */
+    align-items: center; 
     padding: 10px 30px;
     width: 100%;
-    flex-wrap: wrap; /* Ensures proper wrapping on very small screens */
+    flex-wrap: wrap; 
   }
   
   .project-title {

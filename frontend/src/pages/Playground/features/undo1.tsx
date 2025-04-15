@@ -1,6 +1,4 @@
 // features/undo1.tsx
-// Updated to accept the new selectedRoomIds type as string[]
-
 import React from "react";
 
 interface Point {

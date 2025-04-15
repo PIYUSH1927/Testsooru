@@ -417,7 +417,7 @@ const Playground = () => {
         <div className="modal-overlay1 mini">
           <div className="modal mini-modal">
             <div className="modal-header">
-              <h2 style={{ fontWeight: "bolder" }}>House Parameters</h2>
+              <h2 style={{ fontWeight: "bolder", color:"black" }}>House Parameters</h2>
               <button
                 className="close-btn"
                 onClick={() => {

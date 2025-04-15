@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import './Generated.css';
 import ReactDOM from "react-dom";
 import {
   renderOverlapAlert,
@@ -483,7 +484,7 @@ export default function InteractiveFloorPlan({
   `;
 
   return (
-    <div>
+    <div className="generated-container">
       {renderOverlapAlert({
         overlappingRooms,
         getOverlappingRoomNames: getOverlappingRoomNamesHelper,
@@ -495,7 +496,7 @@ export default function InteractiveFloorPlan({
 
         <div
           ref={floorPlanRef}
-          className="floor-plan-container"
+          className="floor-plan-container "
           style={{
             position: "absolute",
             left: "50%",
@@ -509,17 +510,28 @@ export default function InteractiveFloorPlan({
             alignItems: "center",
           }}
         >
-          <p style={{ textAlign: "center", marginBottom: "-30px" }}>
-            <b>Total Area:</b> {floorPlanData.total_area.toFixed(2)} m²
-            &nbsp;|&nbsp; <b>Total Rooms:</b> {floorPlanData.room_count}
-            {hasUndoState && !isMobile && (
-              <span
-                style={{ fontSize: "0.8em", marginLeft: "10px", color: "#666" }}
-              >
-                (Ctrl/Cmd+Z to undo last change)
-              </span>
-            )}
-          </p>
+<p
+  style={{
+    textAlign: "center",
+    marginBottom: "-30px",
+    color: "#000000" 
+  }}
+  className="always-black-text"
+>
+  <b>Total Area:</b> {floorPlanData.total_area.toFixed(2)} m²
+  &nbsp;|&nbsp; <b>Total Rooms:</b> {floorPlanData.room_count}
+  {hasUndoState && !isMobile && (
+    <span
+      style={{
+        fontSize: "0.8em",
+        marginLeft: "10px",
+        color: "#666" 
+      }}
+    >
+      (Ctrl/Cmd+Z to undo last change)
+    </span>
+  )}
+</p>
 
           <svg
             width="100%"
@@ -825,7 +837,7 @@ export default function InteractiveFloorPlan({
                     </foreignObject>
                   )}
                   <text
-                    className="room-label room-name"
+                    className="room-label room-name1"
                     x={centroid.x}
                     y={centroid.y - 3}
                     pointerEvents="none"

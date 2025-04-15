@@ -1,20 +1,17 @@
-/* Base Reset */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Main Container */
 .home-container {
   position: relative;
   width: 100%;
   min-height: 100vh;
   overflow-x: hidden;
-  font-family: Arial, sans-serif;
 }
 
-/* Content Wrapper */
 .content-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -24,7 +21,6 @@
   align-items: center;
 }
 
-/* Hero Section */
 .hero-section {
   text-align: center;
   margin-bottom: 30px;
@@ -32,7 +28,6 @@
   max-width: 900px;
 }
 
-/* Typography */
 .hero-title {
   font-size: clamp(2.5rem, 8vw, 6rem);
   font-weight: 900;
@@ -81,7 +76,6 @@
   transform: scale(1.05);
 }
 
-/* Building Visualization */
 .building-visual-container {
   width: 100%;
   max-width: 800px;
@@ -98,7 +92,6 @@ iframe {
   border: none;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .hero-title {
     font-size: clamp(2.5rem, 10vw, 6rem);
@@ -126,7 +119,7 @@ iframe {
 }
 
 .blueprint-left {
-  position: fixed; /* Change from absolute to fixed */
+  position: fixed; 
   left: 2%;
   top: 35%;
   transform: translateY(-50%) scaleX(-1);
@@ -136,12 +129,12 @@ iframe {
   background-repeat: no-repeat;
   background-position: left center;
   background-size: contain;
-  z-index: 1010; /* Even higher z-index */
-  pointer-events: none; /* This allows clicks to pass through the image */
+  z-index: 1010;
+  pointer-events: none;
 }
 
 .blueprint-right {
-  position: fixed; /* Change from absolute to fixed */
+  position: fixed; 
   right: 2%;
   top: 35%;
   transform: translateY(-50%);
@@ -151,8 +144,9 @@ iframe {
   background-repeat: no-repeat;
   background-position: right center;
   background-size: contain;
-  z-index: 1010; /* Even higher z-index */
-  pointer-events: none; /* This allows clicks to pass through the image */
+  z-index: 1010; 
+  pointer-events: none;
+  
 }
 
 @media (max-width: 992px) {

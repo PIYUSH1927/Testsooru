@@ -14,6 +14,7 @@ import {
   MobileNav,
   NavbarContainer,
 } from "./NavbarElements";
+import { useNavbar } from "./NavbarContext";
 
 import SooruAILogo from "../SooruAI.png";
 
@@ -151,12 +152,12 @@ const ModalContent = styled.div`
 `;
 
 const ModalTitle = styled.h3`
-  color: var(--text); // uses global text color
+  color: var(--text); 
   margin-bottom: 15px;
 `;
 
 const ModalText = styled.p`
-  color: var(--text); // again, from theme
+  color: var(--text); 
   margin-bottom: 25px;
 `;
 
@@ -287,6 +288,8 @@ const Navbar: React.FC = () => {
   const isHomePage: boolean = location.pathname === "/";
   const backendURL = "https://backend-3sh6.onrender.com/api/auth";
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const { setProfileDropdownOpen } = useNavbar();
 
   const fetchUserProfile = async (): Promise<void> => {
     const token = localStorage.getItem("access_token");
@@ -317,10 +320,10 @@ const Navbar: React.FC = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    // Close dropdown when clicking outside
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowProfileDropdown(false);
+        setProfileDropdownOpen(false);
       }
     }
 
@@ -328,7 +331,11 @@ const Navbar: React.FC = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [setProfileDropdownOpen]);
+
+  useEffect(() => {
+    setProfileDropdownOpen(showProfileDropdown);
+  }, [showProfileDropdown, setProfileDropdownOpen]);
 
   const activeLinkStyle: React.CSSProperties = {
     color: "#0F77FF",
@@ -362,7 +369,6 @@ const Navbar: React.FC = () => {
         navigate("/LoginPage");
       }
     } 
-    // Handle navigation to About, Features, and Contact pages
     else if (sectionId === "about") {
       navigate("/about");
     }
@@ -408,20 +414,24 @@ const Navbar: React.FC = () => {
   const handleProfileNavigation = (): void => {
     navigate("/profile");
     setShowProfileDropdown(false);
+    setProfileDropdownOpen(false);
   };
   
   const handleHomeNavigation = (): void => {
     navigate("/");
     setShowProfileDropdown(false);
+    setProfileDropdownOpen(false);
   };
 
   const handleSettingsNavigation = (): void => {
-    navigate("/profile"); // For now, also navigate to profile as requested
+    navigate("/profile"); 
     setShowProfileDropdown(false);
+    setProfileDropdownOpen(false);
   };
 
   const toggleProfileDropdown = (): void => {
     setShowProfileDropdown(!showProfileDropdown);
+    setProfileDropdownOpen(!showProfileDropdown);
   };
 
   const handleLogout = async (): Promise<void> => {

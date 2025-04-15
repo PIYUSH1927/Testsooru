@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { DarkModeProvider, useDarkMode } from '../contexts/DarkModeContext';
 import './Features.css';
+
+import ViewInArIcon from '@mui/icons-material/ViewInAr';
+import Vrpano from '@mui/icons-material/Vrpano';
 
 interface FeatureCardProps {
   title: string;
@@ -9,11 +12,25 @@ interface FeatureCardProps {
   items: string[];
   icon: React.ReactNode;
   delay?: number;
+  imagePath?: string; // Add this prop for image path
 }
 
-// FeatureCard Component
-const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, items, icon, delay = 0 }) => {
+const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, items, icon, delay = 0, imagePath }) => {
   const { isDarkMode } = useDarkMode();
+  const [isHovered, setIsHovered] = useState(false);
+
+  // If imagePath is provided, create a dynamic icon that changes on hover
+  let displayIcon = icon;
+  if (imagePath) {
+    const altImagePath = imagePath.replace('.png', 'i.png');
+    displayIcon = (
+      <img
+        src={isHovered ? altImagePath : imagePath}
+        alt={title}
+        style={{ width: '50px', height: '50px' }}
+      />
+    );
+  }
 
   return (
     <motion.div
@@ -22,8 +39,10 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, items, ic
       viewport={{ once: true }}
       transition={{ duration: 0.8, delay }}
       className="ftrs-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="ftrs-icon">{icon}</div>
+      <div className="ftrs-icon">{displayIcon}</div>
       <h3 className="ftrs-card-title">{title}</h3>
       <p className="ftrs-card-description">{description}</p>
       <ul className="ftrs-item-list">
@@ -45,7 +64,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, items, ic
   );
 };
 
-// Timeline Feature Card Component for Upcoming Features
+
 const TimelineFeatureCard: React.FC<FeatureCardProps & { position: 'left' | 'right' }> = ({ 
   title, 
   description, 
@@ -71,7 +90,6 @@ const TimelineFeatureCard: React.FC<FeatureCardProps & { position: 'left' | 'rig
   );
 };
 
-// FeatureSection Component
 const FeatureSection: React.FC<{ title: string; description?: string; children: React.ReactNode; dark?: boolean }> = ({
   title,
   description,
@@ -94,12 +112,12 @@ const FeatureSection: React.FC<{ title: string; description?: string; children: 
   </section>
 );
 
-// Define types for the feature data
 interface Feature {
   title: string;
   description: string;
   icon: React.ReactNode;
   items: string[];
+  imagePath?: string; // Add this for image path
 }
 
 interface SectionTitleProps {
@@ -119,20 +137,13 @@ const SectionTitle: React.FC<SectionTitleProps> = ({ children, delay = 0 }) => (
   </motion.h2>
 );
 
-
-// FeaturesContent Component
 const FeaturesContent: React.FC = () => {
   const features: Feature[] = [
     {
       title: 'Prompt-Based Design Input',
       description: 'A user-friendly prompt box for architects and customers to input house preferences.',
-      icon: (
-        <img
-          src="/i10.png"
-          alt="Prompt-Based Design Input"
-          style={{ width: '50px', height: '50px' }}
-        />
-      ),
+      imagePath: "/i10.png", // Add imagePath property
+      icon: null, // We'll generate this from imagePath
       items: [
         'Natural language input for design specifications',
         'Real-time suggestions and guidance',
@@ -143,13 +154,8 @@ const FeaturesContent: React.FC = () => {
     {
       title: 'Customizable Components',
       description: 'Mix and match different design elements to create your perfect space.',
-      icon: (
-        <img
-          src="/i11.png"
-          alt="Prompt-Based Design Input"
-          style={{ width: '50px', height: '50px' }}
-        />
-      ),
+      imagePath: "/i11.png", // Add imagePath property
+      icon: null, // We'll generate this from imagePath
       items: [
         'Select individual components from different sets',
         'Real-time modifications to components',
@@ -160,50 +166,29 @@ const FeaturesContent: React.FC = () => {
     {
       title: '2D and 3D Diagram Generation',
       description: 'Seamlessly generate and switch between 2D and 3D visualizations.',
-      icon: (
-        <img
-          src="/i12.png"
-
-          alt="Prompt-Based Design Input"
-          style={{ width: '50px', height: '50px'}}
-        />
-      ),
+      imagePath: "/i12.png", // Add imagePath property
+      icon: null, // We'll generate this from imagePath
       items: ['Automatic 2D and 3D diagram generation', 'Synchronized updates across views', 'Interactive viewing perspectives', 'Real-time visualization updates'],
     },
     {
       title: 'AI Integration',
       description: 'Intelligent design suggestions powered by advanced AI technology.',
-      icon: (
-        <img
-          src="/i13.png"
-          alt="Prompt-Based Design Input"
-          style={{ width: '50px', height: '50px' }}
-        />
-      ),
+      imagePath: "/i13.png", // Add imagePath property
+      icon: null, // We'll generate this from imagePath
       items: ['AI-powered design optimization', 'Smart space utilization suggestions', 'Adaptive customization', 'Aesthetic enhancement recommendations'],
     },
     {
       title: 'Export and Sharing Options',
       description: 'Multiple export formats and seamless sharing capabilities.',
-      icon: (
-        <img
-          src="/i14.png"
-          alt="Prompt-Based Design Input"
-          style={{ width: '50px', height: '50px' }}
-        />
-      ),
+      imagePath: "/i14.png", // Add imagePath property
+      icon: null, // We'll generate this from imagePath
       items: ['Export to PDF, CAD, and STL formats', 'Shareable project links', 'Collaborative review system', 'Multi-format support'],
     },
     {
       title: 'Cloud Storage',
       description: 'Secure cloud storage with comprehensive version control.',
-      icon: (
-        <img
-          src="/i15.png"
-          alt="Prompt-Based Design Input"
-          style={{ width: '50px', height: '50px' }}
-        />
-      ),
+      imagePath: "/i15.png", // Add imagePath property
+      icon: null, // We'll generate this from imagePath
       items: ['Secure project cloud storage', 'Automatic version control', 'Cross-device accessibility', 'Backup and recovery options'],
     },
   ];
@@ -261,7 +246,6 @@ const FeaturesContent: React.FC = () => {
 
   return (
     <div className="ftrs-container">
-      {/* Header */}
       <div className="ftrs-header">
       <SectionTitle><b>Features</b></SectionTitle>
         <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="ftrs-subtitle">
@@ -269,14 +253,17 @@ const FeaturesContent: React.FC = () => {
         </motion.p>
       </div>
 
-      {/* Features Grid */}
       <div className="ftrs-grid">
         {features.map((feature, index) => (
-          <FeatureCard key={index} {...feature} delay={0.2 + index * 0.1} />
+          <FeatureCard 
+            key={index} 
+            {...feature} 
+            delay={0.2 + index * 0.1} 
+            imagePath={feature.imagePath}
+          />
         ))}
       </div>
 
-      {/* Upcoming Features Section */}
       <FeatureSection title="">
         <SectionTitle>
           <p style={{fontSize: "clamp(2rem, 5vw, 3rem)"}}>Upcoming Features</p>
@@ -290,7 +277,6 @@ const FeaturesContent: React.FC = () => {
         <div className="ftrs-timeline-container">
           <div className="ftrs-timeline-line"></div>
           
-          {/* Timeline nodes */}
           <div className="ftrs-timeline-nodes">
             <div className="ftrs-timeline-node"></div>
             <div className="ftrs-timeline-node"></div>
@@ -298,11 +284,10 @@ const FeaturesContent: React.FC = () => {
             <div className="ftrs-timeline-node"></div>
           </div>
           
-          {/* Timeline feature cards - REORDERED to match design */}
           
           <TimelineFeatureCard 
             position="left" 
-            title={upcomingFeatures[3].title} /* AR/VR Integration */
+            title={upcomingFeatures[3].title} 
             description={upcomingFeatures[3].description}
             icon={upcomingFeatures[3].icon}
             items={upcomingFeatures[3].items}
@@ -313,7 +298,7 @@ const FeaturesContent: React.FC = () => {
           <div className='pos1'>
           <TimelineFeatureCard
             position="right" 
-            title={upcomingFeatures[1].title} /* Automated Cost Estimation */
+            title={upcomingFeatures[1].title} 
             description={upcomingFeatures[1].description}
             icon={upcomingFeatures[1].icon}
             items={upcomingFeatures[1].items}
@@ -321,11 +306,9 @@ const FeaturesContent: React.FC = () => {
           />
           </div>
           
-          
-          
           <TimelineFeatureCard 
             position="left" 
-            title={upcomingFeatures[2].title} /* Smart Energy Efficiency */
+            title={upcomingFeatures[2].title}
             description={upcomingFeatures[2].description}
             icon={upcomingFeatures[2].icon}
             items={upcomingFeatures[2].items}
@@ -336,7 +319,7 @@ const FeaturesContent: React.FC = () => {
           <div className="pos">
           <TimelineFeatureCard 
             position="right" 
-            title={upcomingFeatures[0].title} /* Collaborative Multi-User */
+            title={upcomingFeatures[0].title} 
             description={upcomingFeatures[0].description}
             icon={upcomingFeatures[0].icon}
             items={upcomingFeatures[0].items}
@@ -350,7 +333,6 @@ const FeaturesContent: React.FC = () => {
   );
 };
 
-// Main Features Component
 const Features: React.FC = () => (
   <DarkModeProvider>
     <FeaturesContent />

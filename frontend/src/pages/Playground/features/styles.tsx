@@ -14,18 +14,18 @@ export const roomColors: Record<string, string> = {
 export const floorPlanStyles = `
 .floor-plan {
   position: relative;
-  background-color: #f8f8f8;
-  border: 2px solid #000;
+  background-color: #f8f8f8 !important;
+  border: 2px solid #000 !important;
   overflow: hidden;
 }
 
 .room-polygon {
-  opacity: 0.8;
-  stroke: #000;  
-  stroke-width: 3px;  
+  opacity: 0.8 !important;
+  stroke: #000 !important;  
+  stroke-width: 3px !important;  
   cursor: move;
   transition: all 0.2s ease;
-  stroke-linejoin: miter; 
+  stroke-linejoin: miter !important; 
   shape-rendering: crispEdges;
   touch-action: none !important; 
 }
@@ -41,47 +41,47 @@ svg {
 
 /* Updated selection styles */
 .room-polygon.selected {
-  fill: rgba(224, 224, 255, 0.8);
-  stroke: #0000ff;
-  stroke-width: 4px; 
-  filter: drop-shadow(0px 0px 3px rgba(0, 0, 255, 0.3));
+  fill: rgba(224, 224, 255, 0.8) !important;
+  stroke: #0000ff !important;
+  stroke-width: 4px !important; 
+  filter: drop-shadow(0px 0px 3px rgba(0, 0, 255, 0.3)) !important;
 }
 
 /* Style for first selected room (primary selection) */
 .room-polygon.primary-selection {
-  stroke: #1e88e5;
-  stroke-width: 4px;
-  filter: drop-shadow(0px 0px 5px rgba(30, 136, 229, 0.5));
+  stroke: #1e88e5 !important;
+  stroke-width: 4px !important;
+  filter: drop-shadow(0px 0px 5px rgba(30, 136, 229, 0.5)) !important;
 }
 
 /* Secondary selection style */
 .room-polygon.secondary-selection {
-  stroke: #0000ff;
-  stroke-width: 3px;
-  stroke-dasharray: 0;
+  stroke: #0000ff !important;
+  stroke-width: 3px !important;
+  stroke-dasharray: 0 !important;
 }
 
 .room-polygon.overlapping {
-  stroke: #ff0000;
-  stroke-width: 4px;
-  stroke-dasharray: 5,5;
+  stroke: #ff0000 !important;
+  stroke-width: 4px !important;
+  stroke-dasharray: 5,5 !important;
 }
 
 /* Multi-selection indicator */
 .multi-select-indicator {
-  fill: rgba(66, 133, 244, 0.1);
-  stroke: #4285F4;
-  stroke-width: 1px;
-  stroke-dasharray: 5,3;
+  fill: rgba(66, 133, 244, 0.1) !important;
+  stroke: #4285F4 !important;
+  stroke-width: 1px !important;
+  stroke-dasharray: 5,3 !important;
   pointer-events: none;
 }
 
 /* Group selection count badge */
 .selection-badge {
-  fill: #4285F4;
-  stroke: white;
-  stroke-width: 1px;
-  font-size: 12px;
+  fill: #4285F4 !important;
+  stroke: white !important;
+  stroke-width: 1px !important;
+  font-size: 12px !important;
   font-weight: bold;
   text-anchor: middle;
   pointer-events: none;
@@ -90,52 +90,59 @@ svg {
 /* Edge handle styles */
 .resize-edge {
   cursor: move;
-  stroke-opacity: 0.1; /* Always slightly visible */
+  stroke-opacity: 0.1 !important; /* Always slightly visible */
   transition: stroke-opacity 0.2s;
   touch-action: none !important;
 }
 
 .resize-edge:hover {
-  stroke-opacity: 0.3;
-  stroke: #0000ff;
+  stroke-opacity: 0.3 !important;
+  stroke: #0000ff !important;
 }
 
 /* Edge indicators */
 .edge-indicator {
-  stroke-opacity: 0;
+  stroke-opacity: 0 !important;
   transition: stroke-opacity 0.2s ease-in-out;
   pointer-events: none;
 }
 
 .resize-edge:hover + .edge-indicator,
 .resize-edge:active + .edge-indicator {
-  stroke-opacity: 1;
-  stroke: #0000ff;
+  stroke-opacity: 1 !important;
+  stroke: #0000ff !important;
 }
 
 /* Vertex handle styles */
 .resize-handle {
-  fill: white;
-  stroke: black;
-  stroke-width: 2px;
+  fill: white !important;
+  stroke: black !important;
+  stroke-width: 2px !important;
   cursor: nwse-resize;
   touch-action: none !important;
 }
 
 .resize-handle:hover {
-  fill: #ffcc00;
+  fill: #ffcc00 !important;
 }
 
 .room-label {
   pointer-events: none;
   user-select: none;
-  font-size: 11px;
+  font-size: 9px !important;
   text-anchor: middle;
+  fill: #000000 !important;
 }
 
 .room-name {
   font-weight: bold;
-  font-size: 13px;
+  font-size: 13px !important;
+  fill: #000000 !important;
+}
+.room-name1 {
+  font-weight: bold;
+  font-size: 11px !important;
+  fill: #000000 !important;
 }
 
 .controls {
@@ -146,7 +153,7 @@ svg {
 
 .room-info {
   margin-top: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid #ccc !important;
   border-radius: 5px;
 }
 
@@ -159,38 +166,41 @@ svg {
 .input-group label {
   width: 100px;
   font-weight: bold;
+  color: #000000 !important;
 }
 
 .input-group input {
   padding: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid #ccc !important;
   border-radius: 3px;
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 
 button {
   padding: 8px 16px;
   margin: 0 5px;
-  border: none;
+  border: none !important;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .save-button {
-  background-color: #4CAF50;
-  color: white;
+  background-color: #4CAF50 !important;
+  color: white !important;
 }
 
 .save-button:hover {
-  background-color: #45a049;
+  background-color: #45a049 !important;
 }
 
 .undo-button {
-  background-color: #f44336;
-  color: white;
+  background-color: #f44336 !important;
+  color: white !important;
 }
 
 .undo-button:hover {
-  background-color: #d32f2f;
+  background-color: #d32f2f !important;
 }
 
 .buttons-container {
@@ -204,13 +214,13 @@ button {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: rgba(244, 67, 54, 0.8); 
-  color: white;
+  background-color: rgba(244, 67, 54, 0.8) !important; 
+  color: white !important;
   padding: 10px 15px;
   text-align: center;
   font-weight: bold;
   z-index: 9999;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
   pointer-events: none;
 }
 
@@ -220,10 +230,10 @@ button {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.9) !important;
   border-radius: 8px;
   padding: 8px 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -232,27 +242,27 @@ button {
 
 .selection-count {
   font-weight: bold;
-  color: #4285F4;
+  color: #4285F4 !important;
   margin-right: 8px;
 }
 
 .selection-action-button {
   padding: 4px 12px;
   border-radius: 4px;
-  border: none;
+  border: none !important;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s;
 }
 
 .selection-action-button.group {
-  background-color: #4285F4;
-  color: white;
+  background-color: #4285F4 !important;
+  color: white !important;
 }
 
 .selection-action-button.ungroup {
-  background-color: #EA4335;
-  color: white;
+  background-color: #EA4335 !important;
+  color: white !important;
 }
 
 .selection-action-button:hover {
@@ -266,16 +276,24 @@ button {
 
 @media (max-width: 850px) {
   .room-label {
-    font-size: 8px !important;
+    font-size: 6px !important;
+    fill: #000000 !important;
   }
   
   .room-name {
     font-size: 10px !important;
+    fill: #000000 !important;
+  }
+  .room-name1 {
+    font-size: 8px !important;
+    fill: #000000 !important;
   }
   
   /* Improve touch targets for mobile */
   .resize-handle {
     r: 8 !important; /* Bigger radius for touch */
+    fill: white !important;
+    stroke: black !important;
   }
   
   .resize-edge {
@@ -290,10 +308,12 @@ button {
   
   .room-polygon {
     stroke-width: 4px !important; /* More visible on mobile */
+    stroke: #000 !important;
   }
   
   .selection-toolbar {
     padding: 6px 12px;
+    background-color: rgba(255, 255, 255, 0.9) !important;
   }
   
   .selection-action-button {
@@ -302,14 +322,14 @@ button {
   }
 }
   .room-polygon.long-press-highlight {
-  filter: brightness(1.1) drop-shadow(0 0 8px rgba(255, 255, 0, 0.8));
-  stroke: #FFD700;
-  stroke-width: 3;
+  filter: brightness(1.1) drop-shadow(0 0 8px rgba(255, 255, 0, 0.8)) !important;
+  stroke: #FFD700 !important;
+  stroke-width: 3 !important;
   animation: pulse 0.5s infinite alternate;
 }
 
 @keyframes pulse {
-  from { filter: brightness(1.1) drop-shadow(0 0 8px rgba(255, 255, 0, 0.8)); }
-  to { filter: brightness(1.2) drop-shadow(0 0 12px rgba(255, 255, 0, 0.9)); }
+  from { filter: brightness(1.1) drop-shadow(0 0 8px rgba(255, 255, 0, 0.8)) !important; }
+  to { filter: brightness(1.2) drop-shadow(0 0 12px rgba(255, 255, 0, 0.9)) !important; }
 }
 `;

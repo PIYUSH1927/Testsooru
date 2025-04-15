@@ -511,8 +511,6 @@ export function handleMouseMove(
   }
 }
 
-// Updated handleTouchMove function that fixes the variable reassignment errors
-
 export function handleTouchMove(
   event: TouchEvent,
   dragState: DragState,

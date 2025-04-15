@@ -1,0 +1,30 @@
+.generated-container{
+    color: black;
+}
+
+/* Add this to your Playground.css file */
+
+/* Force black text regardless of theme */
+.always-black-text,
+.always-black-text b,
+.always-black-text span:not([style*="color"]) {
+  color: #000000 !important;
+}
+
+/* Target the specific span with the hint text */
+.always-black-text span[style*="color: #666"] {
+  color: #666 !important;
+}
+
+/* Make sure it applies in light and dark mode */
+@media (prefers-color-scheme: dark) {
+  .always-black-text,
+  .always-black-text b,
+  .always-black-text span:not([style*="color"]) {
+    color: #000000 !important;
+  }
+  
+  .always-black-text span[style*="color: #666"] {
+    color: #666 !important;
+  }
+}

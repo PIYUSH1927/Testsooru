@@ -23,7 +23,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, del
       className={clsx(
         "p-6 rounded-lg backdrop-blur-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out",
         isDarkMode ? "bg-gray-800/80 text-white" : "bg-white/80 text-gray-900",
-        className // Merge with external classes
+        className 
       )}
     >
       <div className="text-2xl mb-4">{icon}</div>

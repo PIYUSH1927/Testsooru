@@ -4,6 +4,7 @@
     align-items: center;
     justify-content: center;
     gap: 3px;
+    color: black;
   }
   
   .rotate-button {

@@ -6,7 +6,6 @@ import FeatureCard from '../components/FeatureCard';
 import { ReactNode } from 'react';
 import './AboutUs.css';
 
-// Define prop types for InfoCard component
 interface InfoCardProps {
   title: string;
   description: string;
@@ -33,7 +32,6 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, description, icon, color = "
   </motion.div>
 );
 
-// Define prop types for SectionTitle component
 interface SectionTitleProps {
   children: React.ReactNode;
   delay?: number;
@@ -58,17 +56,15 @@ const AboutContent: React.FC = () => {
 
   return (
     <div className={`${isDarkMode ? 'dark' : ''} about-container`}>
-      {/* Progress Bar */}
       <motion.div
         className="scroll-progress"
         style={{ scaleX }}
       />
 
-      {/* Main Content */}
       <main className="about-content">
-        {/* Who We Are Section */}
         <section className="about-section" >
           <SectionTitle><b>About Us</b></SectionTitle>
+          <br />
           <InfoCard
             title="Who Are We?"
             icon=""
@@ -78,8 +74,6 @@ const AboutContent: React.FC = () => {
             delay={0.2}
           />
         </section>
-
-        {/* Vision & Mission Section */}
         <section className="about-section">
           <div className="about-grid">
           <InfoCard
@@ -111,9 +105,81 @@ const AboutContent: React.FC = () => {
           </div>
         </section>
 
-        {/* Why Sooru.AI Section */}
-        <section className="about-section" >
-          <div >
+<div className="dark-value-bg" style={{background:"rgba(207, 226, 243, 0.75)"}}>
+<div className="values-new-container">
+  <div className="values-new-grid">
+    <motion.div
+      className="values-new-card innovation-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.1 }}
+    >
+      <img src="/i6.png" alt="Innovation Icon" className="values-new-icon" />
+      <h3 className="values-new-title">Innovation</h3>
+      <p className="values-new-text">
+        Sooru.AI innovates home design with AI, AR/VR, and advanced tech, redefining architectural creativity.
+      </p>
+    </motion.div>
+
+    <motion.div
+      className="values-new-card curiosity-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+    >
+      <img src="/i7.png" alt="Curiosity Icon" className="values-new-icon" />
+      <h3 className="values-new-title">Curiosity</h3>
+      <p className="values-new-text">
+        Driven by curiosity, we explore, learn, and innovate, challenging traditions to create exceptional user experiences.
+      </p>
+    </motion.div>
+    <motion.div
+      className="values-new-card collaboration-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+    >
+      <img src="/i8.png" alt="Collaboration Icon" className="values-new-icon" />
+      <h3 className="values-new-title">Collaboration</h3>
+      <p className="values-new-text">
+        Collaboration fuels great ideas. We unite architects, designers, and homeowners to co-create extraordinary spaces.
+      </p>
+    </motion.div>
+    <motion.div
+      className="values-new-card accountability-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+    >
+      <img src="/i9.png" alt="Accountability Icon" className="values-new-icon" />
+      <h3 className="values-new-title">Accountability</h3>
+      <p className="values-new-text">
+        We prioritize integrity and reliability, delivering quality solutions that build trust and lasting relationships.
+      </p>
+    </motion.div>
+    <motion.div
+      className="values-heading-container"
+      initial={{ opacity: 0, x: 20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, delay: 0.5 }}
+    >
+      <h2 className="values-heading">Our Values</h2>
+      <p className="values-subtitle">
+        Innovating, collaborating, and building a better future through intelligent design.
+      </p>
+      <button className="values-explore-button" onClick={() => window.location.href = '/'}>Explore</button>
+    </motion.div>
+  </div>
+</div>
+</div>
+
+<section className="about-section" >
+          <div style={{marginTop:"19px"}}>
             <SectionTitle>Why Sooru.AI?</SectionTitle>
             <img 
               src="/v1.png" 
@@ -122,7 +188,7 @@ const AboutContent: React.FC = () => {
                 width: '350px', 
                 height: 'auto', 
                 position: 'absolute',
-                top: '-1100px',
+                top: '-1820px',
                 right: '-100px',
                 zIndex: '1',
               }} 
@@ -135,7 +201,7 @@ const AboutContent: React.FC = () => {
                 width: '350px', 
                 height: 'auto', 
                 position: 'absolute',
-                top: '-1100px',
+                top: '-1820px',
                 left: '-100px',
                 zIndex: '1',
                 transform: 'scaleX(-1)'
@@ -168,90 +234,6 @@ const AboutContent: React.FC = () => {
             />
           </div>
         </section>
-
-        {/* Values Section */}
-{/* Values Section */}
-<div className="dark-value-bg" style={{background:"rgba(207, 226, 243, 0.75)"}}>
-  {/* Values Section */}
-<div className="values-new-container">
-  <div className="values-new-grid">
-    {/* Innovation Card - stays in top left */}
-    <motion.div
-      className="values-new-card innovation-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.1 }}
-    >
-      <img src="/i6.png" alt="Innovation Icon" className="values-new-icon" />
-      <h3 className="values-new-title">Innovation</h3>
-      <p className="values-new-text">
-        Sooru.AI innovates home design with AI, AR/VR, and advanced tech, redefining architectural creativity.
-      </p>
-    </motion.div>
-
-    {/* Curiosity Card - moved down */}
-    <motion.div
-      className="values-new-card curiosity-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
-      <img src="/i7.png" alt="Curiosity Icon" className="values-new-icon" />
-      <h3 className="values-new-title">Curiosity</h3>
-      <p className="values-new-text">
-        Driven by curiosity, we explore, learn, and innovate, challenging traditions to create exceptional user experiences.
-      </p>
-    </motion.div>
-
-    {/* Collaboration Card - bottom left */}
-    <motion.div
-      className="values-new-card collaboration-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
-      <img src="/i8.png" alt="Collaboration Icon" className="values-new-icon" />
-      <h3 className="values-new-title">Collaboration</h3>
-      <p className="values-new-text">
-        Collaboration fuels great ideas. We unite architects, designers, and homeowners to co-create extraordinary spaces.
-      </p>
-    </motion.div>
-
-    {/* Accountability Card - moved further down */}
-    <motion.div
-      className="values-new-card accountability-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.4 }}
-    >
-      <img src="/i9.png" alt="Accountability Icon" className="values-new-icon" />
-      <h3 className="values-new-title">Accountability</h3>
-      <p className="values-new-text">
-        We prioritize integrity and reliability, delivering quality solutions that build trust and lasting relationships.
-      </p>
-    </motion.div>
-
-    {/* Our Values Heading Section - moved more to the right */}
-    <motion.div
-      className="values-heading-container"
-      initial={{ opacity: 0, x: 20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: 0.5 }}
-    >
-      <h2 className="values-heading">Our Values</h2>
-      <p className="values-subtitle">
-        Innovating, collaborating, and building a better future through intelligent design.
-      </p>
-      <button className="values-explore-button" onClick={() => window.location.href = '/'}>Explore</button>
-    </motion.div>
-  </div>
-</div>
-</div>
       </main>
     </div>
   );

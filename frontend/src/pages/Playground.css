@@ -1,8 +1,10 @@
+
 .playground-container {
   position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  color: black;
 }
 
 html, body {
@@ -219,13 +221,14 @@ html, body {
     width: 100%;
   }
   
+
   .total-area, .total-rooms {
     font-size: 14px;
-    color: #666;
+    color: #666 !important;
   }
   
   .total-area span, .total-rooms span {
-    color: #222; 
+    color: #222 !important;
     margin-left: 4px;
   }
   
@@ -255,6 +258,9 @@ html, body {
     align-items: center;
   }
   
+  .modal{
+    color: black;
+  }
   .close-btn {
     background: none;
     border: none;
