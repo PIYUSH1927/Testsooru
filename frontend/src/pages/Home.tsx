@@ -1,9 +1,21 @@
 import React from 'react';
 import "./Home.css";
 import { useNavbar } from '../components/NavbarContext';
+import { useNavigate } from 'react-router-dom';
 
 const HomeContent: React.FC = () => {
   const { isProfileDropdownOpen } = useNavbar();
+  const navigate = useNavigate(); 
+
+  const handleGetStarted = () => {
+    const isAuthenticated = localStorage.getItem("access_token") !== null;
+    
+    if (isAuthenticated) {
+      navigate('/projects');
+    } else {
+      navigate('/LoginPage'); 
+    }
+  };
   
   return (
     <div className="home-container">
@@ -13,12 +25,14 @@ const HomeContent: React.FC = () => {
           <h1 className="hero-title">SOORU.AI</h1>
           <h2 className="hero-subtitle">Where Vision Meets Precision!</h2>
           <p className="subtitle">
-            Democratizing architecture with generative AI— Maket allows
+            Democratizing architecture with generative AI— Sooru allows
             anyone to design & plan their new build or renovation project
             in a few simple steps.
           </p>
           
-          <button className="get-started-btn">Get Started</button>
+          <button className="get-started-btn" onClick={handleGetStarted}>
+            Get Started
+          </button>
         </div>
         
         <div className="building-visual-container">

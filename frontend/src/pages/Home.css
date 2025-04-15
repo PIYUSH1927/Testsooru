@@ -94,11 +94,11 @@ iframe {
 
 @media (max-width: 768px) {
   .hero-title {
-    font-size: clamp(2.5rem, 10vw, 6rem);
+    font-size: clamp(2.5rem, 11vw, 6rem);
   }
   
   .hero-subtitle {
-    font-size: clamp(1rem, 2.5vw, 2rem);
+    font-size: clamp(1.6rem, 2.5vw, 2rem);
   }
   
   .subtitle {
@@ -114,7 +114,14 @@ iframe {
 
 @media (max-width: 480px) {
   .subtitle {
-    font-size: 14px;
+    font-size: 15px;
+  }
+
+  .home-container {
+    position: relative;
+    width: 100%;
+    min-height: 89vh;
+    overflow-x: hidden;
   }
 }
 
