@@ -418,7 +418,7 @@ export default function InteractiveFloorPlan({
       if (window.innerWidth > 850) {
         setLeftPosition("23%");
       } else {
-        setLeftPosition("10%");
+        setLeftPosition("17.5%");
       }
     };
 
@@ -513,7 +513,7 @@ export default function InteractiveFloorPlan({
 <p
   style={{
     textAlign: "center",
-    marginBottom: "-30px",
+    marginBottom: "-25px",
     color: "#000000" 
   }}
   className="always-black-text"
@@ -568,14 +568,14 @@ export default function InteractiveFloorPlan({
             <line
               x1={
                 transformCoordinates({ x: bounds.minX - 10, z: bounds.minZ })
-                  .x + 10
+                  .x + 4
               }
               y1={
                 transformCoordinates({ x: bounds.minX, z: bounds.minZ }).y + 10
               }
               x2={
                 transformCoordinates({ x: bounds.minX - 10, z: bounds.maxZ })
-                  .x + 10
+                  .x + 4
               }
               y2={
                 transformCoordinates({ x: bounds.minX, z: bounds.maxZ }).y + 10
@@ -585,25 +585,39 @@ export default function InteractiveFloorPlan({
               markerStart="url(#arrow1)"
               markerEnd="url(#arrow)"
             />
-            <text
-              x={
-                transformCoordinates({
-                  x: bounds.minX - 14,
-                  z: (bounds.minZ + bounds.maxZ) / 2,
-                }).x
-              }
-              y={
-                transformCoordinates({
-                  x: bounds.minX,
-                  z: (bounds.minZ + bounds.maxZ) / 2,
-                }).y
-              }
-              fontSize="11"
-              fill="black"
-              textAnchor="middle"
-            >
-              {tlength} m
-            </text>
+<text
+  x={
+    transformCoordinates({
+      x: bounds.minX - 10,
+      z: (bounds.minZ + bounds.maxZ) / 2,
+    }).x
+  }
+  y={
+    transformCoordinates({
+      x: bounds.minX,
+      z: (bounds.minZ + bounds.maxZ) / 2,
+    }).y
+  }
+  fontSize="11"
+  fill="black"
+  textAnchor="middle"
+  transform={`
+    rotate(
+      -90,
+      ${transformCoordinates({
+        x: bounds.minX - 12,
+        z: (bounds.minZ + bounds.maxZ) / 2,
+      }).x},
+      ${transformCoordinates({
+        x: bounds.minX - 12,
+        z: (bounds.minZ + bounds.maxZ) / 2,
+      }).y}
+    )
+  `}
+>
+  {tlength} m
+</text>
+
 
             <line
               x1={
@@ -838,8 +852,8 @@ export default function InteractiveFloorPlan({
                   )}
                   <text
                     className="room-label room-name1"
-                    x={centroid.x}
-                    y={centroid.y - 3}
+                    x={centroid.x }
+                    y={centroid.y -2}
                     pointerEvents="none"
                   >
                     {room.room_type}
@@ -849,7 +863,7 @@ export default function InteractiveFloorPlan({
                       <text
                         className="room-label"
                         x={centroid.x}
-                        y={centroid.y + 10}
+                        y={centroid.y + 7}
                         pointerEvents="none"
                       >
                         {room.width.toFixed(1)}' × {room.height.toFixed(1)}'
@@ -857,7 +871,7 @@ export default function InteractiveFloorPlan({
                       <text
                         className="room-label"
                         x={centroid.x}
-                        y={centroid.y + 20}
+                        y={centroid.y + 15}
                         pointerEvents="none"
                       >
                         ({room.area.toFixed(2)} m²)
@@ -884,7 +898,7 @@ export default function InteractiveFloorPlan({
               style={{
                 position: "fixed",
                 display: "flex",
-                gap: "10px",
+                gap: "15px",
                 width: "80%",
                 bottom: "80",
                 left: leftPosition,

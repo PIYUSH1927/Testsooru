@@ -136,7 +136,7 @@ svg {
 
 .room-name {
   font-weight: bold;
-  font-size: 13px !important;
+  font-size: 14px !important;
   fill: #000000 !important;
 }
 .room-name1 {
@@ -281,12 +281,13 @@ button {
   }
   
   .room-name {
-    font-size: 10px !important;
+    font-size: 11px !important;
     fill: #000000 !important;
   }
   .room-name1 {
     font-size: 8px !important;
     fill: #000000 !important;
+
   }
   
   /* Improve touch targets for mobile */
@@ -320,6 +321,19 @@ button {
     padding: 3px 8px;
     font-size: 12px;
   }
+
+  .save-button {
+  font-size: 10px;
+  padding: 6px 7px;
+}
+
+.undo-button {
+  font-size: 10px;
+  padding: 6px 7px;
+}
+
+
+
 }
   .room-polygon.long-press-highlight {
   filter: brightness(1.1) drop-shadow(0 0 8px rgba(255, 255, 0, 0.8)) !important;

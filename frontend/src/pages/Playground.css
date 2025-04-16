@@ -361,8 +361,29 @@ html, body {
         pointer-events: none; 
     }
 
+    .always-black-text{
+      font-size: small;
+    }
+
     .mini-modal {
       width: 93%;
+  }
+
+  .room-list {
+    padding-top: 5px;
+    max-height: 40vh;
+    
+  }
+
+  
+  .input-container {
+    font-size: small;
+    gap: 6px;
+    margin: 10px 0px;
+  }
+
+  .room-details {
+    font-size: small;
   }
 }
 
@@ -388,7 +409,7 @@ html, body {
   .three-d-icon {
     top: auto; 
     right: auto; 
-    bottom: 45px; 
+    bottom: 30px; 
     left: 30px;
   }
 

@@ -248,7 +248,7 @@ const Playground = () => {
 
       <div className="compass-container">
         <Compass
-          size={window.innerWidth < 768 ? 58 : 60}
+          size={window.innerWidth < 768 ? 45 : 60}
           rotation={rotation}
           onRotate={setRotation}
         />

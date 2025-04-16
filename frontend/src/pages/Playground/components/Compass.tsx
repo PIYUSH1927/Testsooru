@@ -19,15 +19,15 @@ export const Compass = ({ size, rotation, onRotate }: CompassProps) => {
   return (
     <div
       className="compass-container"
-      style={{ width: size + size * 2.85, height: size * 2.2}}
+      style={{ width: size + size * 2.85, height: size * 2.2 }}
     >
       <button onClick={handleRotateLeft} className="rotate-button" aria-label="Rotate Left">
         <svg
           viewBox="0 0 24 24"
-          width="24"
-          height="24"
+          width="32"
+          height="32"
           stroke="currentColor"
-          strokeWidth="2.5"
+          strokeWidth="2"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -62,10 +62,10 @@ export const Compass = ({ size, rotation, onRotate }: CompassProps) => {
       <button onClick={handleRotateRight} className="rotate-button" aria-label="Rotate Right">
         <svg
           viewBox="0 0 24 24"
-          width="24"
-          height="24"
+          width="32"
+          height="32"
           stroke="currentColor"
-          strokeWidth="2.5"
+          strokeWidth="2"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
