@@ -51,13 +51,6 @@ const App: React.FC = () => {
   );
 
   useEffect(() => {
-
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user');
-    setIsAuthenticated(false);
-
-    
     const checkAuthStatus = () => {
       setIsAuthenticated(localStorage.getItem("access_token") !== null);
     };
