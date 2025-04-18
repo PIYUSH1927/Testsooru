@@ -153,15 +153,25 @@ const ThemeToggleLabel = styled.span`
   font-weight: bold;
 `;
 
-const ToggleSwitch = styled.label`
+interface ToggleSwitchProps {
+  disabled?: boolean;
+}
+
+const ToggleSwitch = styled.label<ToggleSwitchProps>`
   position: relative;
   display: inline-block;
   width: 36px;
   height: 18px;
   margin: 0 8px;
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 `;
 
-const ToggleInput = styled.input`
+interface ToggleInputProps {
+  disabled?: boolean;
+}
+
+const ToggleInput = styled.input<ToggleInputProps>`
   opacity: 0;
   width: 0;
   height: 0;
@@ -340,7 +350,7 @@ const LogoutModal: React.FC<LogoutModalProps> = ({
 };
 
 const SooruLogo: React.FC = () => {
-  const { isDarkMode } = useDarkMode(); // Use the dark mode context
+  const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -348,7 +358,6 @@ const SooruLogo: React.FC = () => {
     window.matchMedia("(prefers-color-scheme: dark)").matches
   );
 
-  // Add an effect to listen for system preference changes
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
@@ -397,14 +406,39 @@ const Navbar: React.FC = () => {
   const [showProfileDropdown, setShowProfileDropdown] =
     useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const { isDarkMode, setIsDarkMode } = useDarkMode(); // Use the dark mode context
+  const { isDarkMode, setIsDarkMode } = useDarkMode(); 
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage: boolean = location.pathname === "/";
   const backendURL = "https://backend-3sh6.onrender.com/api/auth";
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const [systemPrefersDark, setSystemPrefersDark] = useState<boolean>(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+
   const { setProfileDropdownOpen } = useNavbar();
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e: MediaQueryListEvent) => {
+      setSystemPrefersDark(e.matches);
+      if (e.matches) {
+        setIsDarkMode(true);
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, [setIsDarkMode]);
+
+  useEffect(() => {
+    if (systemPrefersDark && !isDarkMode) {
+      setIsDarkMode(true);
+    }
+  }, [systemPrefersDark, isDarkMode, setIsDarkMode]);
 
   const fetchUserProfile = async (): Promise<void> => {
     const token = localStorage.getItem("access_token");
@@ -432,8 +466,6 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     checkAuthStatus();
-
-    // Apply theme based on context when component mounts or location changes
     if (isDarkMode) {
       applyDarkTheme();
     } else {
@@ -463,7 +495,6 @@ const Navbar: React.FC = () => {
   }, [showProfileDropdown, setProfileDropdownOpen]);
 
   const applyDarkTheme = (): void => {
-    // Set CSS variables for navbar and other components
     document.documentElement.style.setProperty("--background", "black");
     document.documentElement.style.setProperty("--text", "#D1D5DB");
     document.documentElement.style.setProperty("--text-hover", "#FFFFFF");
@@ -480,7 +511,6 @@ const Navbar: React.FC = () => {
       "rgba(17, 24, 39, 0.95)"
     );
 
-    // Set CSS variables for other components
     document.documentElement.style.setProperty("--bg-primary", "#000000");
     document.documentElement.style.setProperty("--bg-secondary", "#1d1d1f");
     document.documentElement.style.setProperty("--text-primary", "#ffffff");
@@ -503,11 +533,9 @@ const Navbar: React.FC = () => {
     );
     document.documentElement.style.setProperty("--color-accent", "#3b82f6");
 
-    // Apply dark theme on element backgrounds
     document.body.style.backgroundColor = "#000000";
     document.body.style.color = "#ffffff";
 
-    // Apply to classes from About page
     const aboutContainers = document.querySelectorAll(".about-container");
     aboutContainers.forEach((container) => {
       (container as HTMLElement).style.backgroundColor = "#000000";
@@ -517,7 +545,7 @@ const Navbar: React.FC = () => {
     aboutCards.forEach((card) => {
       (card as HTMLElement).style.background = "rgba(29, 29, 31, 0.8)";
       (card as HTMLElement).style.backdropFilter = "blur(20px)";
-      // Apply webkit prefix using setAttribute for cross-browser compatibility
+
       (card as HTMLElement).setAttribute(
         "style",
         `${(card as HTMLElement).getAttribute("style") || ""}
@@ -537,7 +565,7 @@ const Navbar: React.FC = () => {
     const items = document.querySelectorAll(".feature-item, .value-item");
     items.forEach((item) => {
       (item as HTMLElement).style.background = "rgba(29, 29, 31, 0.8)";
-      (item as HTMLElement).style.border = "1px solid rgba(255, 255, 255, 0.1)";
+      (item as HTMLElement).style.border = "none";
       (item as HTMLElement).style.color = "#ffffff";
     });
 
@@ -548,7 +576,6 @@ const Navbar: React.FC = () => {
       (text as HTMLElement).style.color = "#ffffff";
     });
 
-    // Apply to classes from Features page
     const ftrsContainers = document.querySelectorAll(".ftrs-container");
     ftrsContainers.forEach((container) => {
       (container as HTMLElement).style.backgroundColor = "#000000";
@@ -573,23 +600,19 @@ const Navbar: React.FC = () => {
       (title as HTMLElement).style.color = "#ffffff";
     });
 
-    // Apply to classes from Contact page
     const contactContainers = document.querySelectorAll(".contact-container");
     contactContainers.forEach((container) => {
       (container as HTMLElement).classList.add("contact-dark");
     });
 
-    // Add dark mode class to body for global styling
     document.body.classList.add("dark-mode");
     document.documentElement.classList.add("dark-theme");
     document.documentElement.classList.remove("light-theme");
 
-    // Set theme preference in local storage
     localStorage.setItem("theme", "dark");
   };
 
   const applyLightTheme = (): void => {
-    // Reset CSS variables for navbar
     document.documentElement.style.setProperty(
       "--background",
       "rgba(255, 255, 255, 0.95)"
@@ -609,7 +632,6 @@ const Navbar: React.FC = () => {
       "rgba(255, 255, 255, 0.95)"
     );
 
-    // Reset CSS variables for other components
     document.documentElement.style.setProperty("--bg-primary", "#ffffff");
     document.documentElement.style.setProperty("--bg-secondary", "#fbfbfd");
     document.documentElement.style.setProperty("--text-primary", "#000000");
@@ -632,11 +654,8 @@ const Navbar: React.FC = () => {
     );
     document.documentElement.style.setProperty("--color-accent", "#0066ff");
 
-    // Reset body background and text color
     document.body.style.backgroundColor = "";
     document.body.style.color = "";
-
-    // Reset classes from About page
     const aboutContainers = document.querySelectorAll(".about-container");
     aboutContainers.forEach((container) => {
       (container as HTMLElement).style.backgroundColor = "";
@@ -644,10 +663,9 @@ const Navbar: React.FC = () => {
 
     const aboutCards = document.querySelectorAll(".about-card, .value-card");
     aboutCards.forEach((card) => {
-      // Reset all styles
+
       (card as HTMLElement).style.background = "";
       (card as HTMLElement).style.backdropFilter = "";
-      // Reset webkit prefix using setAttribute
       const currentStyle = (card as HTMLElement).getAttribute("style") || "";
       const newStyle = currentStyle.replace(
         "-webkit-backdrop-filter: blur(20px);",
@@ -680,7 +698,6 @@ const Navbar: React.FC = () => {
       (text as HTMLElement).style.color = "";
     });
 
-    // Reset classes from Features page
     const ftrsContainers = document.querySelectorAll(".ftrs-container");
     ftrsContainers.forEach((container) => {
       (container as HTMLElement).style.backgroundColor = "";
@@ -705,22 +722,23 @@ const Navbar: React.FC = () => {
       (title as HTMLElement).style.color = "";
     });
 
-    // Reset classes from Contact page
     const contactContainers = document.querySelectorAll(".contact-container");
     contactContainers.forEach((container) => {
       (container as HTMLElement).classList.remove("contact-dark");
     });
 
-    // Remove dark mode class from body
     document.body.classList.remove("dark-mode");
     document.documentElement.classList.add("light-theme");
     document.documentElement.classList.remove("dark-theme");
 
-    // Set theme preference in local storage
     localStorage.setItem("theme", "light");
   };
 
   const toggleTheme = (): void => {
+    if (systemPrefersDark && isDarkMode) {
+      return; 
+    }
+
     const newIsDarkMode = !isDarkMode;
     setIsDarkMode(newIsDarkMode);
 
@@ -729,8 +747,6 @@ const Navbar: React.FC = () => {
     } else {
       applyLightTheme();
     }
-
-    // Store preference in localStorage
     localStorage.setItem("theme", newIsDarkMode ? "dark" : "light");
   };
 
@@ -891,14 +907,14 @@ const Navbar: React.FC = () => {
     );
   };
 
-  const navItems = getNavItems();
-
   const getProfileInitial = (): React.ReactNode => {
     if (userProfile && userProfile.first_name) {
       return userProfile.first_name.charAt(0).toUpperCase();
     }
     return <Person fontSize="small" />;
   };
+
+  const navItems = getNavItems();
 
   return (
     <>
@@ -982,11 +998,12 @@ const Navbar: React.FC = () => {
                           <ThemeIcon>
                             <LightMode style={{ fontSize: "14px" }} />
                           </ThemeIcon>
-                          <ToggleSwitch>
+                          <ToggleSwitch disabled={systemPrefersDark && isDarkMode}>
                             <ToggleInput
                               type="checkbox"
                               checked={isDarkMode}
                               onChange={toggleTheme}
+                              disabled={systemPrefersDark && isDarkMode}
                             />
                             <ToggleSlider />
                           </ToggleSwitch>
@@ -1163,11 +1180,12 @@ const Navbar: React.FC = () => {
                   <ThemeIcon>
                     <LightMode style={{ fontSize: "14px" }} />
                   </ThemeIcon>
-                  <ToggleSwitch>
+                  <ToggleSwitch disabled={systemPrefersDark && isDarkMode}>
                     <ToggleInput
                       type="checkbox"
                       checked={isDarkMode}
                       onChange={toggleTheme}
+                      disabled={systemPrefersDark && isDarkMode}
                     />
                     <ToggleSlider />
                   </ToggleSwitch>

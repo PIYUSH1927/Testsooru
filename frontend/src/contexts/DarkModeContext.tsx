@@ -136,7 +136,7 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     
     const ftrsListItems = document.querySelectorAll('.ftrs-list-item');
     ftrsListItems.forEach(item => {
-      (item as HTMLElement).style.border = '1px solid rgba(255, 255, 255, 0.1)';
+      (item as HTMLElement).style.border = 'none';
       (item as HTMLElement).style.color = '#ffffff';
     });
     
