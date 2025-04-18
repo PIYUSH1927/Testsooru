@@ -45,7 +45,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, items, ic
       <div className="ftrs-icon">{displayIcon}</div>
       <h3 className="ftrs-card-title">{title}</h3>
       <p className="ftrs-card-description">{description}</p>
-      <ul className="ftrs-item-list">
+      <ul className="ftrs-item-list" >
         {items.map((item, index) => (
           <motion.li
             key={index}

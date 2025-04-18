@@ -1193,6 +1193,8 @@ const Navbar: React.FC = () => {
                       display: "flex",
                       alignItems: "center",
                       gap: "8px",
+                      position:"relative",
+                      right:"14px"
                     }}
                   >
                     <Logout fontSize="small" />

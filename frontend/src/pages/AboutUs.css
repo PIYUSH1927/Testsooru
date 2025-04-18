@@ -260,7 +260,6 @@ html.dark-theme {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin: 2rem 0;
-
 }
 
 .value-section{
@@ -269,7 +268,6 @@ html.dark-theme {
   padding: 50px 0px;
   padding-bottom: 100px;
 }
-
 
 .fs{
   margin: auto;
@@ -347,52 +345,7 @@ html.dark-theme {
   flex-shrink: 0;
 }
 
-@media screen and (max-width: 768px) {
-  .about-section {
-      padding: 0.6rem 1rem;
-      margin-left: 0px;
-  }
-
-
-  .about-card,
-  .value-card,
-  .feature-card {
-      width: 100%;
-  }
-  
-
-  .about-grid,
-  .values-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-  }
-
-  .fs{
-
-    width: 100%;
-    padding: 20px 10px;
-  }
-
-  .about-card,
-  .value-card,
-  .feature-card {
-      padding: 1.5rem;
-  }
-
-  .about-card{
-    padding: 1rem;
-  }
-
-  .feature-item,
-  .value-item {
-      padding: 1rem;
-  }
-
-  .about-card{
-    margin: 0 40px;
-    padding-top: 0px;
-  }
-}
+/* Values New Section - Fixed for Responsiveness */
 
 .values-new-container {
   background: rgba(207, 226, 243, 0.75);
@@ -435,8 +388,7 @@ html.dark-theme {
   box-shadow: var(--shadow-sm);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
-  width: 90%;
- 
+  width: 100%; /* Changed from 90% to 100% */
 }
 
 .values-new-card:hover {
@@ -449,7 +401,6 @@ html.dark-theme {
   font-weight: 600;
   color: #05479E;
   margin-bottom: 0.75rem;
-  
 }
 
 .values-new-text {
@@ -471,9 +422,10 @@ html.dark-theme {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 89%;
+  width: 100%; /* Changed from 89% */
   position: relative;
-  left: 60px;
+  left: 0; /* Changed from 60px */
+  padding-left: 60px; /* Added instead of position left */
 }
 
 .values-heading {
@@ -489,7 +441,6 @@ html.dark-theme {
   line-height: 1.5;
   margin-bottom: 2rem;
   max-width: 97%;
-
 }
 
 .values-explore-button {
@@ -519,6 +470,28 @@ html.dark-theme {
   margin-top: 50px;
 }
 
+.collaboration-card {
+  grid-column: 1 / 5;
+  grid-row: 2 / 3;
+}
+
+.accountability-card {
+  grid-column: 5 / 9;
+  grid-row: 2 / 3; 
+  margin-top: 50px;
+}
+
+/* Responsive Media Queries - Fixed and consolidated */
+@media screen and (max-width: 1200px) {
+  .values-heading-container {
+    padding-left: 40px;
+  }
+  
+  .values-heading {
+    font-size: 2.5rem;
+  }
+}
+
 @media screen and (max-width: 1024px) {
   .values-new-grid {
     grid-template-columns: repeat(8, 1fr);
@@ -531,7 +504,6 @@ html.dark-theme {
     text-align: center;
     padding-left: 0;
     margin-bottom: 2rem;
-    left: 0px;
   }
   
   .values-subtitle {
@@ -550,7 +522,7 @@ html.dark-theme {
   .curiosity-card {
     grid-column: 5 / 9;
     grid-row: 2 / 3;
-    margin-top: 0px;
+    margin-top: 0;
   }
   
   .collaboration-card {
@@ -561,14 +533,56 @@ html.dark-theme {
   .accountability-card {
     grid-column: 5 / 9;
     grid-row: 3 / 4;
-    margin-top: 0px;
+    margin-top: 0;
   }
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 768px) {
+  .about-section {
+    padding: 0.6rem 1rem;
+    margin-left: 0px;
+  }
+
+  .about-card,
+  .value-card,
+  .feature-card {
+    width: 100%;
+  }
+
+  .about-grid,
+  .values-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .fs {
+    width: 100%;
+    padding: 20px 10px;
+  }
+
+  .about-card,
+  .value-card,
+  .feature-card {
+    padding: 1.5rem;
+  }
+
+  .about-card {
+    padding: 1rem;
+    margin: 0 40px;
+    padding-top: 0px;
+  }
+
+  .feature-item,
+  .value-item {
+    padding: 1rem;
+  }
+
+  /* Values section mobile styles */
   .values-new-grid {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
+    row-gap: 1.5rem;
+    padding: 0 15px;
   }
   
   .values-heading-container,
@@ -591,6 +605,7 @@ html.dark-theme {
   
   .curiosity-card {
     grid-row: 3;
+    margin-top: 0;
   }
   
   .collaboration-card {
@@ -599,29 +614,57 @@ html.dark-theme {
   
   .accountability-card {
     grid-row: 5;
+    margin-top: 0;
+  }
+  
+  .values-heading {
+    font-size: 2rem;
+  }
+  
+  .values-subtitle {
+    font-size: 1rem;
+  }
+  
+  .values-new-card {
+    padding: 1.25rem;
   }
 }
 
-
-.collaboration-card {
-  grid-column: 1 / 5;
-  grid-row: 2 / 3;
-}
-
-.accountability-card {
-  grid-column: 5 / 9;
-  grid-row: 2 / 3; 
-  margin-top: 50px;
+@media screen and (max-width: 480px) {
+  .values-heading {
+    font-size: 1.75rem;
+  }
+  
+  .values-explore-button {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .values-new-container {
+    padding: 30px 0 40px;
+  }
+  
+  .about-container {
+    padding: 15px;
+  }
+  
+  .about-card {
+    margin: 0 !important;
+  }
+  
+  .about-section {
+    padding: 0.6rem 0.5rem;
+  }
 }
 
 @keyframes fadeUp {
   from {
-      opacity: 0;
-      transform: translateY(20px);
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
-      opacity: 1;
-      transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -665,27 +708,11 @@ html.dark-theme {
 }
 
 @media screen and (max-width: 768px) {
-  .about-card {
-    margin: 0 !important; 
-  }
-  
-  .about-section {
-    padding: 0.6rem 0.5rem; 
-  }
-
-  .about-container{
-    padding: 15px;
-  }
-
   .card-header img {
     display: block;
     margin: 0 auto 0rem auto;
     max-width: 48px;
     height: auto;
     margin-top: 20px;
-  }
-  .about-card{
-    margin: 0 40px;
-    padding-top: 0px;
   }
 }

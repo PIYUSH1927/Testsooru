@@ -197,7 +197,6 @@ const AboutContent: React.FC = () => {
 />
           </div>
         </section>
-
 <div 
   className={`dark-value-bg ${isDarkMode ? 'dark-mode-value-bg' : ''}`} 
   style={{background: isDarkMode ? "rgba(0, 10, 33, 0.95)" : "rgba(207, 226, 243, 0.75)"}}
@@ -239,12 +238,13 @@ const AboutContent: React.FC = () => {
           Driven by curiosity, we explore, learn, and innovate, challenging traditions to create exceptional user experiences.
         </p>
       </motion.div>
+      
       <motion.div
         className="values-new-card collaboration-card"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
         style={{
           background: isDarkMode ? "rgba(29, 29, 31, 0.8)" : "rgba(255, 255, 255, 0.9)",
           border: isDarkMode ? "1px solid rgba(41, 98, 255, 0.2)" : ""
@@ -256,6 +256,7 @@ const AboutContent: React.FC = () => {
           Collaboration fuels great ideas. We unite architects, designers, and homeowners to co-create extraordinary spaces.
         </p>
       </motion.div>
+      
       <motion.div
         className="values-new-card accountability-card"
         initial={{ opacity: 0, y: 20 }}
@@ -273,6 +274,7 @@ const AboutContent: React.FC = () => {
           We prioritize integrity and reliability, delivering quality solutions that build trust and lasting relationships.
         </p>
       </motion.div>
+      
       <motion.div
         className="values-heading-container"
         initial={{ opacity: 0, x: 20 }}
