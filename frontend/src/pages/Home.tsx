@@ -19,6 +19,7 @@ const HomeContent: React.FC = () => {
   
   return (
     <div className="home-container">
+      <div className="home-background-gradient"></div>
       <div className="blueprint-left"></div>
       <div className="content-wrapper">
         <div className="hero-section">

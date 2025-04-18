@@ -331,3 +331,31 @@
     transform: rotate(360deg);
   }
 }
+
+.dark-theme .form-wrapper,
+.dark-theme.auth-container,
+.dark-theme .form-label,
+.dark-theme .form-header h2,
+.dark-theme .brand-title,
+.dark-theme .tagline,
+.dark-theme .slogan,
+.dark-theme .form-input {
+  color: var(--dark-text-primary);
+}
+
+.dark-theme .form-wrapper {
+  background: var(--dark-form-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--dark-input-border);
+}
+
+.dark-theme .form-input {
+  background: var(--dark-input-bg);
+  border-color: var(--dark-input-border);
+  color: var(--dark-text-primary);
+}
+
+.dark-theme .logo-image {
+  filter: invert(1) brightness(100%);
+}

@@ -17,18 +17,48 @@ export const GlobalStyle = createGlobalStyle`
     --backdrop: rgba(255, 255, 255, 0.95);
   }
 
+  /* 
+   * Force dark mode values via media query
+   * This ensures system dark mode preference is respected
+   */
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: black;
-      --text: #D1D5DB;
-      --text-hover: #FFFFFF;
-      --border: #374151;
-      --button-bg: #3366EE;
-      --button-text: #FFFFFF;
-      --button-hover: black;
-      --shadow: rgba(0, 0, 0, 0.3);
-      --backdrop: rgba(17, 24, 39, 0.95);
+      --background: black !important;
+      --text: #D1D5DB !important;
+      --text-hover: #FFFFFF !important;
+      --border: #374151 !important;
+      --button-bg: #3366EE !important;
+      --button-text: #FFFFFF !important;
+      --button-hover: black !important;
+      --shadow: rgba(0, 0, 0, 0.3) !important;
+      --backdrop: rgba(17, 24, 39, 0.95) !important;
     }
+    
+    /* Force dark mode styling on navbar elements */
+    body {
+      background-color: #000000 !important;
+      color: #ffffff !important;
+    }
+    
+    body.dark-mode,
+    html.dark-theme {
+      background-color: #000000 !important;
+      color: #ffffff !important;
+    }
+  }
+  
+  /* Additional classes for forced dark mode */
+  body.dark-mode,
+  html.dark-theme {
+    --background: black;
+    --text: #D1D5DB;
+    --text-hover: #FFFFFF;
+    --border: #374151;
+    --button-bg: #3366EE;
+    --button-text: #FFFFFF;
+    --button-hover: black;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --backdrop: rgba(17, 24, 39, 0.95);
   }
 `;
 
@@ -102,9 +132,9 @@ export const MobileNav = styled.div<MobileNavProps>`
   @media screen and (max-width: 768px) {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally */
+    align-items: left; /* Center items horizontally */
     text-align: center; /* Center text within items */
-    gap: 1rem;
+    gap: 0.55rem;
     z-index:100;
   }
 `;
@@ -227,4 +257,3 @@ export const LogoContainer = styled.div<LogoContainerProps>`
     color: var(--text-hover);
   }
 `;
-

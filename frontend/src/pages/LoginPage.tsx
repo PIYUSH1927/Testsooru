@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDarkMode } from '../contexts/DarkModeContext';
 import "./LoginPage.css";
 import SooruAILogo from "../SooruAI.png";
 
@@ -321,6 +322,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => {
 const LoginPage: React.FC = () => {
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>("");
+  const { isDarkMode } = useDarkMode(); 
 
   const handleSuccessMessage = (message: string) => {
     setSuccessMessage(message);
@@ -331,7 +333,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="auth-container">
+    <div className={`auth-container ${isDarkMode ? 'dark-theme' : ''}`}>
       {/* Left Section */}
       <div className="left-section">
         <motion.div className="logo-wrapper">

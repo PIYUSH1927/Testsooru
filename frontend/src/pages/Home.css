@@ -163,7 +163,7 @@ iframe {
   }
 }
 
-.home-container::before {
+.home-background-gradient {
   content: '';
   position: fixed;
   top: 0;
@@ -176,5 +176,7 @@ iframe {
       radial-gradient(circle at 10% 40%, rgba(15, 119, 255, 0.09) 0%, rgba(15, 119, 255, 0) 20%),
       radial-gradient(circle at 90% 40%, rgba(15, 119, 255, 0.09) 0%, rgba(15, 119, 255, 0) 20%);
   pointer-events: none;
-  z-index: -2;
+  z-index: 0; 
 }
+
+

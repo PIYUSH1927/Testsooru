@@ -17,6 +17,7 @@ import Playground from "./pages/Playground";
 import Profile from "./pages/Profile";
 import View3D from "./pages/Playground/3D/View3D";
 import { NavbarProvider } from "./components/NavbarContext";
+import { DarkModeProvider } from "./contexts/DarkModeContext";
 import "./App.css";
 
 interface ProtectedRouteProps {
@@ -82,11 +83,10 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="*"
             element={
-              <>
+              <DarkModeProvider>
                 <Navbar />
                 <div style={{ paddingTop: "80px" }}>
                   <Routes>
@@ -96,11 +96,7 @@ const App: React.FC = () => {
 
                     <Route
                       path="/features"
-                      element={
-                      
-                          <Features />
-                     
-                      }
+                      element={<Features />}
                     />
                     <Route
                       path="/projects"
@@ -132,7 +128,7 @@ const App: React.FC = () => {
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </div>
-              </>
+              </DarkModeProvider>
             }
           />
         </Routes>

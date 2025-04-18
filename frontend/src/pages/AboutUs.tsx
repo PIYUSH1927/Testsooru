@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { DarkModeProvider, useDarkMode } from '../contexts/DarkModeContext';
+import { useDarkMode } from '../contexts/DarkModeContext';
 import ValueCard from '../components/ValueCard';
 import FeatureCard from '../components/FeatureCard';
 import { ReactNode } from 'react';
@@ -53,6 +53,99 @@ const AboutContent: React.FC = () => {
   const { isDarkMode } = useDarkMode();
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+  useEffect(() => {
+    const applyDarkModeStyles = () => {
+      if (isDarkMode) {
+        document.querySelectorAll('.about-container').forEach(container => {
+          (container as HTMLElement).style.backgroundColor = '#000000';
+        });
+
+        document.querySelectorAll('.about-card, .value-card').forEach(card => {
+          (card as HTMLElement).style.background = 'rgba(29, 29, 31, 0.8)';
+          (card as HTMLElement).style.backdropFilter = 'blur(20px)';
+          (card as HTMLElement).setAttribute('style', 
+            `${(card as HTMLElement).getAttribute('style') || ''}
+            -webkit-backdrop-filter: blur(20px);`
+          );
+          (card as HTMLElement).style.border = '1px solid rgba(255, 255, 255, 0.1)';
+          (card as HTMLElement).style.color = '#ffffff';
+        });
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+          (card as HTMLElement).style.backgroundColor = '#084798';
+          (card as HTMLElement).style.color = 'white';
+          (card as HTMLElement).style.border = '1px solid rgba(255, 255, 255, 0.1)';
+        });
+
+        document.querySelectorAll('.feature-item, .value-item').forEach(item => {
+          (item as HTMLElement).style.background = 'rgba(29, 29, 31, 0.8)';
+          (item as HTMLElement).style.border = '1px solid rgba(255, 255, 255, 0.1)';
+          (item as HTMLElement).style.color = '#ffffff';
+        });
+
+        document.querySelectorAll('.card-description, .feature-description, .value-description, p').forEach(text => {
+          (text as HTMLElement).style.color = '#ffffff';
+        });
+
+        document.querySelectorAll('.dark-value-bg, .values-new-container').forEach(bg => {
+          (bg as HTMLElement).style.background = 'rgba(0, 10, 33, 0.95)';
+        });
+
+        document.querySelectorAll('.values-new-card').forEach(card => {
+          (card as HTMLElement).style.background = 'rgba(29, 29, 31, 0.8)';
+          (card as HTMLElement).style.border = '1px solid rgba(41, 98, 255, 0.2)';
+        });
+        
+        document.querySelectorAll('.values-new-text').forEach(text => {
+          (text as HTMLElement).style.color = '#ffffff';
+        });
+      } else {
+        document.querySelectorAll('.about-container').forEach(container => {
+          (container as HTMLElement).style.backgroundColor = '';
+        });
+        
+        document.querySelectorAll('.about-card, .value-card').forEach(card => {
+          (card as HTMLElement).style.background = '';
+          (card as HTMLElement).style.backdropFilter = '';
+          (card as HTMLElement).style['WebkitBackdropFilter' as any] = '';
+          (card as HTMLElement).style.border = '';
+          (card as HTMLElement).style.color = '';
+        });
+        
+        document.querySelectorAll('.feature-card').forEach(card => {
+          (card as HTMLElement).style.backgroundColor = '';
+          (card as HTMLElement).style.color = '';
+          (card as HTMLElement).style.border = '';
+        });
+        
+        document.querySelectorAll('.feature-item, .value-item').forEach(item => {
+          (item as HTMLElement).style.background = '';
+          (item as HTMLElement).style.border = '';
+          (item as HTMLElement).style.color = '';
+        });
+        
+        document.querySelectorAll('.card-description, .feature-description, .value-description, p').forEach(text => {
+          (text as HTMLElement).style.color = '';
+        });
+        
+        document.querySelectorAll('.dark-value-bg, .values-new-container').forEach(bg => {
+          (bg as HTMLElement).style.background = 'rgba(207, 226, 243, 0.75)';
+        });
+        
+        document.querySelectorAll('.values-new-card').forEach(card => {
+          (card as HTMLElement).style.background = 'rgba(255, 255, 255, 0.9)';
+          (card as HTMLElement).style.border = '';
+        });
+        
+        document.querySelectorAll('.values-new-text').forEach(text => {
+          (text as HTMLElement).style.color = '#333';
+        });
+      }
+    };
+
+    applyDarkModeStyles();
+    
+  }, [isDarkMode]); 
 
   return (
     <div className={`${isDarkMode ? 'dark' : ''} about-container`}>
@@ -105,77 +198,96 @@ const AboutContent: React.FC = () => {
           </div>
         </section>
 
-<div className="dark-value-bg" style={{background:"rgba(207, 226, 243, 0.75)"}}>
-<div className="values-new-container">
-  <div className="values-new-grid">
-    <motion.div
-      className="values-new-card innovation-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.1 }}
-    >
-      <img src="/i6.png" alt="Innovation Icon" className="values-new-icon" />
-      <h3 className="values-new-title">Innovation</h3>
-      <p className="values-new-text">
-        Sooru.AI innovates home design with AI, AR/VR, and advanced tech, redefining architectural creativity.
-      </p>
-    </motion.div>
+<div 
+  className={`dark-value-bg ${isDarkMode ? 'dark-mode-value-bg' : ''}`} 
+  style={{background: isDarkMode ? "rgba(0, 10, 33, 0.95)" : "rgba(207, 226, 243, 0.75)"}}
+>
+  <div className={`values-new-container ${isDarkMode ? 'dark-theme' : ''}`} style={{background: isDarkMode ? "rgba(0, 10, 33, 0.95)" : "rgba(207, 226, 243, 0.75)"}}>
+    <div className="values-new-grid">
+      <motion.div
+        className="values-new-card innovation-card"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        style={{
+          background: isDarkMode ? "rgba(29, 29, 31, 0.8)" : "rgba(255, 255, 255, 0.9)",
+          border: isDarkMode ? "1px solid rgba(41, 98, 255, 0.2)" : ""
+        }}
+      >
+        <img src="/i6.png" alt="Innovation Icon" className="values-new-icon" />
+        <h3 className="values-new-title">Innovation</h3>
+        <p className="values-new-text" style={{ color: isDarkMode ? "#ffffff" : "#333" }}>
+          Sooru.AI innovates home design with AI, AR/VR, and advanced tech, redefining architectural creativity.
+        </p>
+      </motion.div>
 
-    <motion.div
-      className="values-new-card curiosity-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
-      <img src="/i7.png" alt="Curiosity Icon" className="values-new-icon" />
-      <h3 className="values-new-title">Curiosity</h3>
-      <p className="values-new-text">
-        Driven by curiosity, we explore, learn, and innovate, challenging traditions to create exceptional user experiences.
-      </p>
-    </motion.div>
-    <motion.div
-      className="values-new-card collaboration-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
-      <img src="/i8.png" alt="Collaboration Icon" className="values-new-icon" />
-      <h3 className="values-new-title">Collaboration</h3>
-      <p className="values-new-text">
-        Collaboration fuels great ideas. We unite architects, designers, and homeowners to co-create extraordinary spaces.
-      </p>
-    </motion.div>
-    <motion.div
-      className="values-new-card accountability-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: 0.4 }}
-    >
-      <img src="/i9.png" alt="Accountability Icon" className="values-new-icon" />
-      <h3 className="values-new-title">Accountability</h3>
-      <p className="values-new-text">
-        We prioritize integrity and reliability, delivering quality solutions that build trust and lasting relationships.
-      </p>
-    </motion.div>
-    <motion.div
-      className="values-heading-container"
-      initial={{ opacity: 0, x: 20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: 0.5 }}
-    >
-      <h2 className="values-heading">Our Values</h2>
-      <p className="values-subtitle">
-        Innovating, collaborating, and building a better future through intelligent design.
-      </p>
-      <button className="values-explore-button" onClick={() => window.location.href = '/'}>Explore</button>
-    </motion.div>
+      <motion.div
+        className="values-new-card curiosity-card"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        style={{
+          background: isDarkMode ? "rgba(29, 29, 31, 0.8)" : "rgba(255, 255, 255, 0.9)",
+          border: isDarkMode ? "1px solid rgba(41, 98, 255, 0.2)" : ""
+        }}
+      >
+        <img src="/i7.png" alt="Curiosity Icon" className="values-new-icon" />
+        <h3 className="values-new-title">Curiosity</h3>
+        <p className="values-new-text" style={{ color: isDarkMode ? "#ffffff" : "#333" }}>
+          Driven by curiosity, we explore, learn, and innovate, challenging traditions to create exceptional user experiences.
+        </p>
+      </motion.div>
+      <motion.div
+        className="values-new-card collaboration-card"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        style={{
+          background: isDarkMode ? "rgba(29, 29, 31, 0.8)" : "rgba(255, 255, 255, 0.9)",
+          border: isDarkMode ? "1px solid rgba(41, 98, 255, 0.2)" : ""
+        }}
+      >
+        <img src="/i8.png" alt="Collaboration Icon" className="values-new-icon" />
+        <h3 className="values-new-title">Collaboration</h3>
+        <p className="values-new-text" style={{ color: isDarkMode ? "#ffffff" : "#333" }}>
+          Collaboration fuels great ideas. We unite architects, designers, and homeowners to co-create extraordinary spaces.
+        </p>
+      </motion.div>
+      <motion.div
+        className="values-new-card accountability-card"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        style={{
+          background: isDarkMode ? "rgba(29, 29, 31, 0.8)" : "rgba(255, 255, 255, 0.9)",
+          border: isDarkMode ? "1px solid rgba(41, 98, 255, 0.2)" : ""
+        }}
+      >
+        <img src="/i9.png" alt="Accountability Icon" className="values-new-icon" />
+        <h3 className="values-new-title">Accountability</h3>
+        <p className="values-new-text" style={{ color: isDarkMode ? "#ffffff" : "#333" }}>
+          We prioritize integrity and reliability, delivering quality solutions that build trust and lasting relationships.
+        </p>
+      </motion.div>
+      <motion.div
+        className="values-heading-container"
+        initial={{ opacity: 0, x: 20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+      >
+        <h2 className="values-heading">Our Values</h2>
+        <p className="values-subtitle">
+          Innovating, collaborating, and building a better future through intelligent design.
+        </p>
+        <button className="values-explore-button" onClick={() => window.location.href = '/'}>Explore</button>
+      </motion.div>
+    </div>
   </div>
-</div>
 </div>
 
 <section className="about-section" >
@@ -239,10 +351,6 @@ const AboutContent: React.FC = () => {
   );
 };
 
-const About: React.FC = () => (
-  <DarkModeProvider>
-    <AboutContent />
-  </DarkModeProvider>
-);
+const About: React.FC = () => <AboutContent />;
 
 export default About;

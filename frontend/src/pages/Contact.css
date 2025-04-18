@@ -11,6 +11,56 @@
   --error-color: #ff3b30;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+      --bg-primary: #000000;
+      --bg-card: rgba(29, 29, 31, 0.8);
+      --text-primary: #ffffff;
+      --text-secondary: #ffffff;
+      --color-accent: #3b82f6;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+  h3{
+    color: white;
+  }
+  .contact-info-icon{
+    color: white;
+  }
+
+  .contact-container {
+      background-color: #000000 !important;
+  }
+  
+  .contact-container .contact-hero-section {
+    background-color: #0A499C;
+  }
+  
+  .contact-container .contact-info-card {
+    background-color: #1f1f1f;
+    border: 0.1px solid #429aff;
+  }
+  
+  .contact-container .contact-form-container {
+    background-color: #253242;
+  }
+  
+  .contact-container.contact-form-container h2 {
+    color: #0A499C;
+  }
+  
+  
+  .contact-container.contact-form-group input,
+  .contact-container.contact-form-group textarea {
+    background-color:white;
+    border-color: black;
+    color: black;
+  
+  }
+
+}
+
+
 .contact-container {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: var(--text-color);
