@@ -41,7 +41,7 @@ import {
 import { useNavbar } from "./NavbarContext";
 import { useDarkMode } from "../contexts/DarkModeContext";
 
-import SooruAILogo from "../SooruAI.png";
+import SooruAILogo from "../SooruAI.svg";
 
 interface MobileNavProps {
   isOpen: boolean;

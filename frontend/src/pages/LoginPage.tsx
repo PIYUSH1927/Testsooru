@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDarkMode } from '../contexts/DarkModeContext';
 import "./LoginPage.css";
-import SooruAILogo from "../SooruAI.png";
+import SooruAILogo from "../SooruAI.svg";
 
 const backendURL = "https://backend-3sh6.onrender.com/api/auth";
 
