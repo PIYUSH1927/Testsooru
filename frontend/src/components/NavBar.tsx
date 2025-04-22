@@ -989,29 +989,30 @@ const Navbar: React.FC = () => {
                         <Feedback fontSize="small" />
                         <b>Support & Feedback</b>
                       </DropdownItem>
-                      <ThemeToggleContainer>
-                        <ThemeToggleLabel>
-                          <Brightness4 fontSize="small" />
-                          <b>Theme</b>
-                        </ThemeToggleLabel>
-                        <ToggleWrapper>
-                          <ThemeIcon>
-                            <LightMode style={{ fontSize: "14px" }} />
-                          </ThemeIcon>
-                          <ToggleSwitch disabled={systemPrefersDark && isDarkMode}>
-                            <ToggleInput
-                              type="checkbox"
-                              checked={isDarkMode}
-                              onChange={toggleTheme}
-                              disabled={systemPrefersDark && isDarkMode}
-                            />
-                            <ToggleSlider />
-                          </ToggleSwitch>
-                          <ThemeIcon>
-                            <DarkMode style={{ fontSize: "14px" }} />
-                          </ThemeIcon>
-                        </ToggleWrapper>
-                      </ThemeToggleContainer>
+                      {!systemPrefersDark && (
+  <ThemeToggleContainer>
+    <ThemeToggleLabel>
+      <Brightness4 fontSize="small" />
+      <b>Theme</b>
+    </ThemeToggleLabel>
+    <ToggleWrapper>
+      <ThemeIcon>
+        <LightMode style={{ fontSize: "14px" }} />
+      </ThemeIcon>
+      <ToggleSwitch>
+        <ToggleInput
+          type="checkbox"
+          checked={isDarkMode}
+          onChange={toggleTheme}
+        />
+        <ToggleSlider />
+      </ToggleSwitch>
+      <ThemeIcon>
+        <DarkMode style={{ fontSize: "14px" }} />
+      </ThemeIcon>
+    </ToggleWrapper>
+  </ThemeToggleContainer>
+)}
                       <LogoutItem onClick={() => setShowLogoutModal(true)}>
                         <Logout fontSize="small" style={{ color: "#ff0000" }} />
                         <b>Sign Out</b>
@@ -1171,6 +1172,8 @@ const Navbar: React.FC = () => {
                   Support & Feedback
                 </div>
               </ScrollLink>
+
+              {!systemPrefersDark && (
               <ThemeToggleContainer>
                 <ThemeToggleLabel>
                   <Brightness4 style={{ color: "grey" }} fontSize="small" />
@@ -1195,6 +1198,7 @@ const Navbar: React.FC = () => {
                 </ToggleWrapper>
                 <hr />
               </ThemeToggleContainer>
+)}
 
               <ThemeToggleContainer>
                 <MobileLogoutLink
