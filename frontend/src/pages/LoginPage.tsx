@@ -65,6 +65,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     >
       <div className="form-header">
         <h2>Sign In</h2>
+        <p className="form-subtitle">Welcome back! Please enter your details</p>
       </div>
 
       {successMessage && <p className="success-message">{successMessage}</p>}
@@ -76,14 +77,16 @@ const LoginForm: React.FC<LoginFormProps> = ({
             Email / Phone Number
             <span style={RequiredIndicator}>*</span>
           </label>
-          <input
-            type="text"
-            className="form-input"
-            placeholder=""
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <div className="input-wrapper">
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Enter your email or phone"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
         <div className="form-group">
@@ -91,13 +94,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
             Password
             <span style={RequiredIndicator}>*</span>
           </label>
-          <input
-            type="password"
-            className="form-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="input-wrapper">
+            <input
+              type="password"
+              className="form-input"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="forgot-password-container">
+            <a href="#" className="forgot-password">Forgot password?</a>
+          </div>
         </div>
 
         <button type="submit" className="submit-button" disabled={loading}>
@@ -106,9 +115,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
       </form>
 
       <div className="register-section">
-        Don't have an account?{" "}
+        <span>Don't have an account?</span>
         <button onClick={onRegisterClick} className="register-link">
-          Register here
+          Create account
         </button>
       </div>
     </motion.div>
@@ -215,7 +224,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => {
 
   return (
     <motion.div
-      className="form-wrapper"
+      className="form-wrapper register-form"
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -230,64 +239,83 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => {
       <form onSubmit={handleRegister}>
         <div className="form-group">
           <label className="form-label">Company Name</label>
-          <input
-            type="text"
-            className="form-input"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-          />
+          <div className="input-wrapper">
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Your company name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+            />
+          </div>
         </div>
 
-        <div className="form-group">
-          <label className="form-label">
-            First Name
-            <span style={RequiredIndicator}>*</span>
-          </label>
-          <input
-            type="text"
-            className="form-input"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
+        <div className="form-row">
+          <div className="form-group half-width">
+            <label className="form-label">
+              First Name
+              <span style={RequiredIndicator}>*</span>
+            </label>
+            <div className="input-wrapper">
+              <input
+                type="text"
+                className="form-input"
+                placeholder="First name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group half-width">
+            <label className="form-label">Last Name</label>
+            <div className="input-wrapper">
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="form-group">
-          <label className="form-label">Last Name</label>
-          <input
-            type="text"
-            className="form-input"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
+        <div className="form-row">
+          <div className="form-group half-width">
+            <label className="form-label">
+              Email
+              <span style={RequiredIndicator}>*</span>
+            </label>
+            <div className="input-wrapper">
+              <input
+                type="email"
+                className="form-input"
+                placeholder="Your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+          </div>
 
-        <div className="form-group">
-          <label className="form-label">
-            Email
-            <span style={RequiredIndicator}>*</span>
-          </label>
-          <input
-            type="email"
-            className="form-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Phone Number
-            <span style={RequiredIndicator}>*</span>
-          </label>
-          <input
-            type="tel"
-            className="form-input"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
+          <div className="form-group half-width">
+            <label className="form-label">
+              Phone Number
+              <span style={RequiredIndicator}>*</span>
+            </label>
+            <div className="input-wrapper">
+              <input
+                type="tel"
+                className="form-input"
+                placeholder="Your phone number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+            </div>
+          </div>
         </div>
 
         <div className="form-group">
@@ -295,13 +323,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => {
             Password
             <span style={RequiredIndicator}>*</span>
           </label>
-          <input
-            type="password"
-            className="form-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="input-wrapper">
+            <input
+              type="password"
+              className="form-input"
+              placeholder="Create a strong password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
         <button type="submit" className="submit-button" disabled={loading}>
@@ -310,7 +341,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => {
       </form>
 
       <div className="register-section">
-        Already have an account?{" "}
+        <span>Already have an account?</span>
         <button onClick={() => onBackToLogin("")} className="register-link">
           Sign in here
         </button>
@@ -376,7 +407,7 @@ const LoginPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              Effortless. Precise.. Limitless...
+              Effortless. Precise. Limitless.
             </motion.p>
           </motion.div>
         </motion.div>

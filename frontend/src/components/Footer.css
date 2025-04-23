@@ -1,0 +1,29 @@
+/* Ensure the footer stays at the bottom */
+html, body {
+    height: 100%;
+    margin: 0;
+  }
+  
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .site-footer {
+    margin-top: auto;
+    width: 100%;
+    
+  }
+  
+  .footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 15px;
+    background-color: #094189;
+    padding-bottom: 15px;
+    border-top: 1px solid var(--border);
+    color: white;
+    font-size: 0.8rem;
+  }
+

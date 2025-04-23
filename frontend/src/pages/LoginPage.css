@@ -1,326 +1,334 @@
 /* LoginPage.css */
 :root {
-    /* Color Variables */
-    --primary-blue: rgba(68, 119, 255, 0.2);
-    --primary-solid: #4477FF;
-    --primary-hover: #3366EE;
-    --primary-focus: rgba(68, 119, 255, 0.1);
-    --secondary-gray: #6b7280;
-    --text-primary: #1f2937;
-    --text-secondary: #6b7280;
-    --input-bg: #f8fafc;
-    --input-border: #e2e8f0;
-    --error-red: #ef4444;
-    --success-green: #22c55e;
-    --white: #ffffff;
-    --bg-primary: #ffffff;
-    
-    /* Dark Mode Colors */
-    --dark-bg-primary: #000000;
-    --dark-text-primary: #ffffff;
-    --dark-text-secondary: #ffffff;
-    --dark-input-bg: rgba(29, 29, 31, 0.8);
-    --dark-input-border: rgba(255, 255, 255, 0.1);
-    --dark-form-bg: rgba(29, 29, 31, 0.8);
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05);
-    
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-normal: 250ms ease;
-    --transition-slow: 350ms ease;
-  }
+  /* Color Variables */
+  --primary-blue: rgba(68, 119, 255, 0.2);
+  --primary-solid: #4477FF;
+  --primary-dark: #3366EE;
+  --input-focus: rgba(68, 119, 255, 0.15);
   
-  /* Base Styles */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-light: #94a3b8;
   
-  body {
-    min-height: 100vh;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    line-height: 1.5;
-  }
+  --input-bg: #f8fafc;
+  --input-border: #e2e8f0;
   
-  /* Container Layout */
-  .auth-container {
-    min-height: 100vh;
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    background-color: var(--bg-primary);
-  }
+  --error-red: #ef4444;
+  --success-green: #22c55e;
+  --white: #ffffff;
+  --bg-primary: #ffffff;
+  --bg-form: #ffffff;
   
-  /* Logo and Branding */
-  .logo-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.5rem;
-    max-width: 600px;
-    padding: 2rem;
-  }
+  /* Dark Mode Colors */
+  --dark-bg-primary: #080c14;
+  --dark-text-primary: #f8fafc;
+  --dark-text-secondary: #cbd5e1;
+  --dark-input-bg: rgba(15, 23, 42, 0.6);
+  --dark-input-border: rgba(68, 119, 255, 0.1);
+  --dark-form-bg: rgba(15, 23, 42, 0.8);
   
-  .logo-image {
-    width: 120px;
-    height: auto;
-    margin-bottom: 1rem;
-    transition: transform var(--transition-normal), filter var(--transition-normal);
-  }
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05);
   
-  .logo-image:hover {
-    transform: scale(1.05);
-  }
-  
-  .brand-title {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-  }
-  
-  .tagline {
-    font-size: clamp(1.25rem, 3vw, 2rem);
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 2rem;
-  }
-  
-  .slogan {
-    font-size: clamp(1rem, 2vw, 1.5rem);
-    font-weight: 500;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Sections */
-  .left-section,
-  .right-section {
-    width: 50%;
-    display: flex;
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}
 
-    justify-content: center;
-    padding: 2rem;
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  }
-  
-  /* Form Styles */
-  .form-wrapper {
-    width: 100%;
-    max-width: 32rem;
-    background: var(--white);
-    padding: 2.5rem;
-    border-radius: 1rem;
-    box-shadow: var(--shadow-lg);
-  }
-  
-  .form-header {
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-  
-  .form-header h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-  
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-  }
-  
-  .form-input {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    background: var(--input-bg);
-    border: 2px solid var(--input-border);
-    border-radius: 0.5rem;
-    font-size: 0.9375rem;
-    color: var(--text-primary);
-    transition: all var(--transition-normal);
-  }
-  
-  .form-input:focus {
-    outline: none;
-    border-color: var(--primary-solid);
-    box-shadow: 0 0 0 3px var(--primary-focus);
-  }
-  
-  /* Button Styles */
-  .submit-button {
-    width: 100%;
-    padding: 1rem;
-    background: var(--primary-solid);
-    color: var(--white);
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    margin-top: 1rem;
-  }
-  
-  .submit-button:hover {
-    background: var(--primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(68, 119, 255, 0.25);
-  }
-  
-  /* Links */
-  .forgot-password {
-    display: block;
-    text-align: right;
-    font-size: 0.875rem;
-    color: var(--primary-solid);
-    text-decoration: none;
-    margin: -0.5rem 0 1.5rem;
-  }
-  
-  .register-section {
-    margin-top: 2rem;
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-  }
-  
-  .register-link {
-    background: none;
-    border: none;
-    color: var(--primary-solid);
-    font-weight: 500;
-    cursor: pointer;
-  }
-  
-  /* Dark Mode Styles */
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: var(--dark-bg-primary);
-      color: var(--dark-text-primary);
-    }
-  
-    .auth-container {
-      background-color: var(--dark-bg-primary);
-    }
-  
-    .logo-image {
-      filter: invert(1) brightness(100%);
-    }
-  
-    .brand-title,
-    .tagline {
-      color: var(--dark-text-primary);
-    }
-  
-    .slogan {
-      color: var(--dark-text-secondary);
-    }
-  
-    .form-wrapper {
-      background: var(--dark-form-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--dark-input-border);
-    }
-  
-    .form-header h2,
-    .form-label {
-      color: var(--dark-text-primary);
-    }
-  
-    .form-input {
-      background: var(--dark-input-bg);
-      border-color: var(--dark-input-border);
-      color: var(--dark-text-primary);
-    }
-  
-    .register-section {
-      color: var(--dark-text-secondary);
-    }
-  }
+body {
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
 
-  
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    .auth-container {
-      flex-direction: column;
-    }
-  
-    .left-section,
-    .right-section {
-      width: 100%;
-      padding: 1.5rem;
-    }
-  
-    .logo-image {
-      width: 100px;
-    }
-  
-    .form-wrapper {
-      padding: 2rem;
-      max-width: 28rem;
-    }
-  }
-  
-  @media (max-width: 640px) {
-    .logo-image {
-      width: 80px;
-    }
-  
-    .form-wrapper {
-      padding: 1.5rem;
-      margin: 0rem;
-    }
-  }
+/* Container Layout */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
 
-  .error-message {
-    color: red;
-    font-weight: bold;
-    background-color: #ffe6e6;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  
-.success-message {
-  color: green;
+/* Logo and Branding - Positioned higher up */
+.logo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  font-weight: bold;
+  gap: 1.5rem;
+  max-width: 600px;
+  padding: 2rem;
+  transform: translateY(-4rem); /* Move logo section up */
+  position: relative;
+  bottom: 15px;
+}
+
+.logo-image {
+  width: 120px;
+  height: auto;
+  margin-bottom: 0rem;
+  transition: transform var(--transition-normal), filter var(--transition-normal);
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
+}
+
+.brand-title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 0rem;
+  text-align: center;
+  background: linear-gradient(90deg, #0A4899 0%, #0A4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tagline {
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  text-align: center;
+  background: linear-gradient(90deg, #0A4899 0%, #0A4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.slogan {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  
+}
+
+/* Sections */
+.left-section,
+.right-section {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Left section - Black background in dark mode */
+.left-section {
+  background-color: var(--white);
+}
+
+.dark-theme .left-section {
+  background-color: black;
+}
+
+/* Form Styles */
+.form-wrapper {
+  width: 100%;
+  max-width: 32rem;
+  background: var(--white);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  top: -2.7rem; /* Move form a bit upward */
+  border: 1px solid #0F77FF;
+}
+
+.register-form {
+  max-width: 40rem; /* Wider for registration as requested */
+  top: -1rem; /* Not as high as login form */
+}
+
+.form-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.form-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.half-width {
+  width: calc(50% - 0.5rem);
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--input-bg);
+  border: 2px solid var(--input-border);
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-solid);
+  box-shadow: 0 0 0 3px var(--primary-focus);
+}
+
+.form-input::placeholder {
+  color: var(--secondary-gray);
+  opacity: 0.6;
+}
+
+.password-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+/* Button Styles */
+.submit-button {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary-solid);
+  color: var(--white);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  margin-top: 1rem;
+}
+
+.submit-button:hover {
+
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(68, 119, 255, 0.25);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Links */
+.forgot-password-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.forgot-password {
+  display: block;
+  text-align: right;
+  font-size: 0.875rem;
+  color: var(--primary-solid);
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.register-section {
+  margin-top: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+
+  
+}
+
+.register-link {
+  background: none;
+  border: none;
+  color: var(--primary-solid);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+/* Message Styles */
+.success-message {
+  color: var(--success-green);
+  text-align: center;
+  font-weight: 500;
   margin: 10px 0;
+  padding: 10px;
+  background-color: rgba(34, 197, 94, 0.1);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .error-message {
-  color: red;
+  color: var(--error-red);
   text-align: center;
-  font-weight: bold;
+  font-weight: 500;
   margin: 10px 0;
+  padding: 10px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .spinner {
   width: 20px;
   height: 20px;
-  border: 3px solid rgba(0, 0, 0, 0.2);
-  border-top-color: grey;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   display: inline-block;
@@ -332,6 +340,7 @@
   }
 }
 
+/* Dark Mode Styles - Keep original settings */
 .dark-theme .form-wrapper,
 .dark-theme.auth-container,
 .dark-theme .form-label,
@@ -358,4 +367,61 @@
 
 .dark-theme .logo-image {
   filter: invert(1) brightness(100%);
+}
+
+.dark-theme .form-subtitle,
+.dark-theme .password-hint,
+.dark-theme .register-section {
+  color: var(--dark-text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .left-section,
+  .right-section {
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  .logo-wrapper {
+    transform: translateY(0); /* Reset on mobile */
+  }
+
+  .logo-image {
+    width: 100px;
+  }
+
+  .form-wrapper {
+    padding: 2rem;
+    max-width: 28rem;
+    top: 0; /* Reset top position on mobile */
+  }
+
+  .register-form {
+    max-width: 30rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .logo-image {
+    width: 80px;
+  }
+
+  .form-wrapper {
+    padding: 1.5rem;
+    margin: 0;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .half-width {
+    width: 100%;
+  }
 }

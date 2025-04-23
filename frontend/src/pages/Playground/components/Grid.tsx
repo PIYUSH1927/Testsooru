@@ -26,63 +26,77 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
 
     updateCanvasSize();
 
-    const drawGrid = () => {
+    const drawNestedGrid = () => {
+      // Clear the canvas
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      const gridSize = 20 * scale;
-      const smallGridSize = gridSize / 5; 
+      // We want each grid to have 144 cells (12x12)
+      const subdivisions = 12; // Each grid level will have 12x12=144 cells
       
-      ctx.strokeStyle = "#E2E8F0";
-      ctx.lineWidth = 1;
-
-      const offsetX = (position.x * scale) % gridSize;
-      const offsetY = (position.y * scale) % gridSize;
-
-      for (let x = offsetX; x < canvas.width; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
-
-      for (let y = offsetY; y < canvas.height; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
-
-      if (scale > 2) {
-        ctx.strokeStyle = "#F0F4F8";
-        ctx.lineWidth = 0.5;
-
-        const smallOffsetX = (position.x * scale) % smallGridSize;
-        const smallOffsetY = (position.y * scale) % smallGridSize;
-
-        for (let x = smallOffsetX; x < canvas.width; x += smallGridSize) {
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, canvas.height);
-          ctx.stroke();
+      // Base grid size - adjusting for desired box size
+      const baseGridSize = 300; // Adjusted for better visual size
+      
+      // Calculate the current zoom "cycle"
+      const zoomCycle = Math.log(scale/2) / Math.log(subdivisions) % 1;
+      
+      // How many levels to draw (more at higher zoom)
+      const maxLevels = Math.min(3, Math.max(1, Math.floor(scale)));
+      
+      // Calculate grid sizes for different levels
+      for (let level = 0; level < maxLevels; level++) {
+        // Calculate this level's grid size
+        const gridSize = baseGridSize * Math.pow(1/subdivisions, level) * scale;
+        const cellSize = gridSize / subdivisions;
+        
+        // Calculate visibility for this level based on zoom cycle
+        let visibility;
+        if (level === 0) {
+          // Outermost grid - make it darker
+          visibility = 1.0;
+        } else {
+          // Inner grids
+          const distFromCycle = Math.abs(level - (maxLevels * zoomCycle));
+          visibility = 0.8 - Math.min(0.6, distFromCycle * 0.3);
         }
-
-        for (let y = smallOffsetY; y < canvas.height; y += smallGridSize) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(canvas.width, y);
-          ctx.stroke();
+        
+        // Set drawing properties - much darker lines
+        ctx.strokeStyle = `rgba(200, 210, 220, ${visibility})`; // Darker color
+        ctx.lineWidth = 0.5 + (visibility * 0.5); // Slightly thicker lines
+        
+        // Calculate offsets based on position
+        const offsetX = (position.x * scale) % cellSize;
+        const offsetY = (position.y * scale) % cellSize;
+        
+        // Draw vertical lines
+        for (let i = 0; i <= subdivisions; i++) {
+          for (let x = offsetX + (i * cellSize); x < canvas.width + cellSize; x += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+          }
+        }
+        
+        // Draw horizontal lines
+        for (let i = 0; i <= subdivisions; i++) {
+          for (let y = offsetY + (i * cellSize); y < canvas.height + cellSize; y += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+          }
         }
       }
     };
 
     const handleResize = () => {
       updateCanvasSize();
-      drawGrid();
+      drawNestedGrid();
     };
 
     window.addEventListener('resize', handleResize);
-    drawGrid();
+    drawNestedGrid();
 
     return () => {
       window.removeEventListener('resize', handleResize);
