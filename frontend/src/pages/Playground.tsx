@@ -110,7 +110,7 @@ const Playground = () => {
       const distance = getDistance(e.touches);
       if (touchStartDistance > 0) {
         const delta = distance / touchStartDistance;
-        setScale((prevScale) => Math.min(Math.max(0.1, prevScale * delta), 4000)); //initially 20
+        setScale((prevScale) => Math.min(Math.max(0.1, prevScale * delta), 4000)); 
         setTouchStartDistance(distance);
       }
     } else if (e.touches.length === 1 && isDragging) {
@@ -242,7 +242,7 @@ const Playground = () => {
           transformOrigin: "center",
         }}
       >
-         {/* <Generated rotation={rotation} /> */}
+          <Generated rotation={rotation} /> 
   
       </div>
 
