@@ -22,7 +22,8 @@ export const floorPlanStyles = `
 .room-polygon {
   opacity: 0.8 !important;
   stroke: #000 !important;  
-  stroke-width: 3px !important;  
+  /* Removed !important flag from stroke-width to allow dynamic changes */
+  stroke-width: 4px;  
   cursor: move;
   transition: all 0.2s ease;
   stroke-linejoin: miter !important; 
@@ -43,27 +44,31 @@ svg {
 .room-polygon.selected {
   fill: rgba(224, 224, 255, 0.8) !important;
   stroke: #0000ff !important;
-  stroke-width: 4px !important; 
+  /* Removed !important flag */
+  stroke-width: 4px; 
   filter: drop-shadow(0px 0px 3px rgba(0, 0, 255, 0.3)) !important;
 }
 
 /* Style for first selected room (primary selection) */
 .room-polygon.primary-selection {
   stroke: #1e88e5 !important;
-  stroke-width: 4px !important;
+  /* Removed !important flag */
+  stroke-width: 4px;
   filter: drop-shadow(0px 0px 5px rgba(30, 136, 229, 0.5)) !important;
 }
 
 /* Secondary selection style */
 .room-polygon.secondary-selection {
   stroke: #0000ff !important;
-  stroke-width: 3px !important;
+  /* Removed !important flag */
+  stroke-width: 3px;
   stroke-dasharray: 0 !important;
 }
 
 .room-polygon.overlapping {
   stroke: #ff0000 !important;
-  stroke-width: 4px !important;
+  /* Removed !important flag */
+  stroke-width: 4px;
   stroke-dasharray: 5,5 !important;
 }
 
@@ -91,6 +96,7 @@ svg {
 .resize-edge {
   cursor: move;
   stroke-opacity: 0.1 !important; /* Always slightly visible */
+  /* Removed !important flag */
   transition: stroke-opacity 0.2s;
   touch-action: none !important;
 }
@@ -186,7 +192,7 @@ button {
 }
 
 .save-button {
-  background-color: #4CAF50 !important;
+  background-color: rgb(69, 160, 73) !important;
   color: white !important;
 }
 
@@ -195,7 +201,7 @@ button {
 }
 
 .undo-button {
-  background-color: #f44336 !important;
+  background-color: #EA4B3F !important;
   color: white !important;
 }
 
@@ -298,17 +304,20 @@ button {
   }
   
   .resize-edge {
-    stroke-width: 20 !important; /* Much wider to make it easier to tap */
+    /* Removed !important flag */
+    stroke-width: 20px; 
     stroke-opacity: 0.15 !important; /* More visible on mobile */
   }
   
   .edge-indicator {
-    stroke-width: 3 !important;
+    /* Removed !important flag */
+    stroke-width: 3px;
     stroke-opacity: 0.6 !important; /* More visible on mobile */
   }
   
   .room-polygon {
-    stroke-width: 4px !important; /* More visible on mobile */
+    /* Removed !important flag */
+    stroke-width: 4px; 
     stroke: #000 !important;
   }
   
@@ -331,11 +340,9 @@ button {
   font-size: 10px;
   padding: 6px 7px;
 }
-
-
-
 }
-  .room-polygon.long-press-highlight {
+
+.room-polygon.long-press-highlight {
   filter: brightness(1.1) drop-shadow(0 0 8px rgba(255, 255, 0, 0.8)) !important;
   stroke: #FFD700 !important;
   stroke-width: 3 !important;

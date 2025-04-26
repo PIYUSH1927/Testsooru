@@ -16,7 +16,6 @@ import {
   renderEdgeHandles,
 } from "./features/resizing";
 
-
 import { handleUndoChanges } from "./features/undo1";
 import {
   calculateRoomCentroid,
@@ -40,6 +39,7 @@ import {
   checkAndUpdateOverlaps as checkRoomOverlaps,
 } from "./features/rotation";
 import { useSimpleUndoHistory, useUndoShortcut } from "./features/history";
+
 
 interface Point {
   x: number;
@@ -78,11 +78,36 @@ interface DragState {
   initialPolygons?: Record<string, Point[]>;
 }
 
+interface VisualizationOptions {
+  showMeasurements: boolean;
+  showRoomLabels: boolean;
+  showGrid: boolean;
+  wallThickness: number;
+  colorScheme: 'standard' | 'monochrome' | 'pastel' | 'contrast';
+}
+
 export default function InteractiveFloorPlan({
   rotation = 0,
+  visualizationOptions = {
+    showMeasurements: true,
+    showRoomLabels: true,
+    showGrid: true,
+    wallThickness: 5,
+    colorScheme: 'standard' as const
+  }
 }: {
   rotation?: number;
+  visualizationOptions?: Partial<VisualizationOptions>;
 }) {
+  const options: VisualizationOptions = {
+    showMeasurements: true,
+    showRoomLabels: true,
+    showGrid: true,
+    wallThickness: 5,
+    colorScheme: 'standard',
+    ...visualizationOptions
+  };
+
   const [hasChanges, setHasChanges] = useState(false);
   const [leftPosition, setLeftPosition] = useState("10%");
   const [floorPlanData, setFloorPlanData] =
@@ -96,7 +121,7 @@ export default function InteractiveFloorPlan({
 
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
-  const [scale, setScale] = useState(window.innerWidth < 850 ? 1.8 : 3);
+  const [scale, setScale] = useState(window.innerWidth < 850 ? 1.6 : 2.5);
   const floorPlanRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -135,6 +160,8 @@ export default function InteractiveFloorPlan({
       }
     });
   }, [undo]);
+  
+
 
   useUndoShortcut(handleUndo);
 
@@ -350,7 +377,7 @@ export default function InteractiveFloorPlan({
 
   useEffect(() => {
     const handleResize = () => {
-      setScale(window.innerWidth < 850 ? 2 : 3.5);
+      setScale(window.innerWidth < 850 ? 1.8 : 2.5);
     };
 
     window.addEventListener("resize", handleResize);
@@ -460,31 +487,86 @@ export default function InteractiveFloorPlan({
     setSelectedRoomIds([]);
   };
 
+  const getRoomColor = (roomType: string) => {
+    // const baseColors = roomColors[roomType as keyof typeof roomColors] || "#E8E8E8";
+    const baseColors = "#D0D0D0";
+    
+    switch (options.colorScheme) {
+      case 'monochrome':
+  return "#A3D1FF";  
+
+  case 'pastel':
+    const lightenColor = (color: string) => {
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      
+      const mixAmount = 0.3;
+      const newR = Math.floor(r + (255 - r) * mixAmount);
+      const newG = Math.floor(g + (255 - g) * mixAmount);
+      const newB = Math.floor(b + (255 - b) * mixAmount);
+      
+      return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+    };
+    return lightenColor(baseColors);
+  
+      case 'contrast':
+        const contrastMap: {[key: string]: string} = {
+          "LivingRoom": "#FFAAA5",
+          "Bathroom": "#85C1E9",
+          "MasterRoom": "#FFD3B6",
+          "Kitchen": "#FFCC5C",
+          "SecondRoom": "#F6D55C",
+          "ChildRoom": "#D5AAFF",
+          "DiningRoom": "#A5D6A7",
+          "Balcony": "#B2DFDB"
+        };
+        return contrastMap[roomType] || "#E8E8E8";
+      default:
+        return baseColors;
+    }
+  };
+
   const edgeStyles = `
     .resize-edge {
       cursor: move;
       stroke-opacity: 0;
+      stroke-width: ${options.wallThickness}px;
     }
     
     .resize-edge:hover + .edge-indicator, 
     .resize-edge:active + .edge-indicator {
       stroke: #2196F3;
       stroke-opacity: 0.7;
+      stroke-width: ${options.wallThickness}px;
     }
     
     .edge-indicator {
       stroke-opacity: 0;
       transition: stroke-opacity 0.2s;
+      stroke-width: ${options.wallThickness}px;
     }
     
     .resize-edge:hover + .edge-indicator, 
     .resize-edge:active + .edge-indicator {
       stroke-opacity: 1;
     }
+
+      .room-polygon.primary-selection {
+    stroke-width: ${options.wallThickness}px;
+  }
+  
+  .room-polygon.secondary-selection {
+    stroke-width: ${options.wallThickness * 0.75}px;
+  }
+  
+  .room-polygon.overlapping {
+    stroke-width: ${options.wallThickness}px;
+  }
   `;
 
   return (
-    <div className="generated-container">
+    <div className={`generated-container`}>
       {renderOverlapAlert({
         overlappingRooms,
         getOverlappingRoomNames: getOverlappingRoomNamesHelper,
@@ -496,7 +578,7 @@ export default function InteractiveFloorPlan({
 
         <div
           ref={floorPlanRef}
-          className="floor-plan-container "
+          className="floor-plan-container"
           style={{
             position: "absolute",
             left: "50%",
@@ -508,36 +590,43 @@ export default function InteractiveFloorPlan({
             height: `${contentHeight * scale}px`,
             justifyContent: "center",
             alignItems: "center",
+            backgroundColor: 'transparent',
           }}
         >
-<p
-  style={{
-    textAlign: "center",
-    marginBottom: "-25px",
-    color: "#000000" 
-  }}
-  className="always-black-text"
->
-  <b>Total Area:</b> {floorPlanData.total_area.toFixed(2)} m²
-  &nbsp;|&nbsp; <b>Total Rooms:</b> {floorPlanData.room_count}
-  {hasUndoState && !isMobile && (
-    <span
-      style={{
-        fontSize: "0.8em",
-        marginLeft: "10px",
-        color: "#666" 
-      }}
-    >
-      (Ctrl/Cmd+Z to undo last change)
-    </span>
-  )}
-</p>
+          {options.showMeasurements && (
+            <p
+              style={{
+                textAlign: "center",
+                marginBottom: "-25px",
+                color: "#000", 
+                fontSize:"small"
+              }}
+              className="always-black-text"
+            >
+              <b >Total Area:</b> {floorPlanData.total_area.toFixed(2)} m²
+              &nbsp;|&nbsp; <b>Total Rooms:</b> {floorPlanData.room_count}
+              {hasUndoState && !isMobile && (
+                <span
+                  style={{
+                    fontSize: "0.8em",
+                    marginLeft: "10px",
+                    color: "#666" 
+                  }}
+                >
+                  (Ctrl/Cmd+Z to undo last change)
+                </span>
+              )}
+            </p>
+          )}
 
           <svg
             width="100%"
             height="100%"
             ref={svgRef}
-            style={{ touchAction: "none" }}
+            style={{ 
+              touchAction: "none",
+              backgroundColor:'transparent'
+            }}
           >
             <defs>
               <marker
@@ -549,7 +638,7 @@ export default function InteractiveFloorPlan({
                 orient="auto"
                 markerUnits="strokeWidth"
               >
-                <path d="M 0 0 L 10 5 L 0 10 Z" fill="black" />
+                <path d="M 0 0 L 10 5 L 0 10 Z" fill={"black"} />
               </marker>
 
               <marker
@@ -561,101 +650,104 @@ export default function InteractiveFloorPlan({
                 orient="auto"
                 markerUnits="strokeWidth"
               >
-                <path d="M 10 0 L 0 5 L 10 10 Z" fill="black" />
+                <path d="M 10 0 L 0 5 L 10 10 Z" fill={"black"} />
               </marker>
             </defs>
 
-            <line
-              x1={
-                transformCoordinates({ x: bounds.minX - 10, z: bounds.minZ })
-                  .x + 4
-              }
-              y1={
-                transformCoordinates({ x: bounds.minX, z: bounds.minZ }).y + 10
-              }
-              x2={
-                transformCoordinates({ x: bounds.minX - 10, z: bounds.maxZ })
-                  .x + 4
-              }
-              y2={
-                transformCoordinates({ x: bounds.minX, z: bounds.maxZ }).y + 10
-              }
-              stroke="black"
-              strokeWidth="1"
-              markerStart="url(#arrow1)"
-              markerEnd="url(#arrow)"
-            />
-<text
-  x={
-    transformCoordinates({
-      x: bounds.minX - 10,
-      z: (bounds.minZ + bounds.maxZ) / 2,
-    }).x
-  }
-  y={
-    transformCoordinates({
-      x: bounds.minX,
-      z: (bounds.minZ + bounds.maxZ) / 2,
-    }).y
-  }
-  fontSize="11"
-  fill="black"
-  textAnchor="middle"
-  transform={`
-    rotate(
-      -90,
-      ${transformCoordinates({
-        x: bounds.minX - 12,
-        z: (bounds.minZ + bounds.maxZ) / 2,
-      }).x},
-      ${transformCoordinates({
-        x: bounds.minX - 12,
-        z: (bounds.minZ + bounds.maxZ) / 2,
-      }).y}
-    )
-  `}
->
-  {tlength} m
-</text>
+            {options.showMeasurements && (
+              <>
+                <line
+                  x1={
+                    transformCoordinates({ x: bounds.minX - 10, z: bounds.minZ })
+                      .x + 4
+                  }
+                  y1={
+                    transformCoordinates({ x: bounds.minX, z: bounds.minZ }).y + 10
+                  }
+                  x2={
+                    transformCoordinates({ x: bounds.minX - 10, z: bounds.maxZ })
+                      .x + 4
+                  }
+                  y2={
+                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ }).y + 10
+                  }
+                  stroke={"black"}
+                  strokeWidth="1"
+                  markerStart="url(#arrow1)"
+                  markerEnd="url(#arrow)"
+                />
+                <text
+                  x={
+                    transformCoordinates({
+                      x: bounds.minX - 10,
+                      z: (bounds.minZ + bounds.maxZ) / 2,
+                    }).x
+                  }
+                  y={
+                    transformCoordinates({
+                      x: bounds.minX,
+                      z: (bounds.minZ + bounds.maxZ) / 2,
+                    }).y
+                  }
+                  fontSize="11"
+                  fill={"black"}
+                  textAnchor="middle"
+                  transform={`
+                    rotate(
+                      -90,
+                      ${transformCoordinates({
+                        x: bounds.minX - 12,
+                        z: (bounds.minZ + bounds.maxZ) / 2,
+                      }).x},
+                      ${transformCoordinates({
+                        x: bounds.minX - 12,
+                        z: (bounds.minZ + bounds.maxZ) / 2,
+                      }).y}
+                    )
+                  `}
+                >
+                  {tlength} m
+                </text>
 
-
-            <line
-              x1={
-                transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 8 }).x
-              }
-              y1={
-                transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 8 }).y
-              }
-              x2={
-                transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 8 }).x
-              }
-              y2={
-                transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 8 }).y
-              }
-              stroke="black"
-              strokeWidth="1"
-              markerStart="url(#arrow1)"
-              markerEnd="url(#arrow)"
-            />
-            <text
-              x={
-                transformCoordinates({
-                  x: (bounds.minX + bounds.maxX) / 2,
-                  z: bounds.maxZ + 20,
-                }).x
-              }
-              y={
-                transformCoordinates({
-                  x: (bounds.minX + bounds.maxX) / 2,
-                  z: bounds.maxZ + 14,
-                }).y
-              }
-              fontSize="11"
-              fill="black"
-              textAnchor="middle"
-            >
-              {twidth} m
-            </text>
+                <line
+                  x1={
+                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 8 }).x
+                  }
+                  y1={
+                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 8 }).y
+                  }
+                  x2={
+                    transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 8 }).x
+                  }
+                  y2={
+                    transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 8 }).y
+                  }
+                  stroke={"black"}
+                  strokeWidth="1"
+                  markerStart="url(#arrow1)"
+                  markerEnd="url(#arrow)"
+                />
+                <text
+                  x={
+                    transformCoordinates({
+                      x: (bounds.minX + bounds.maxX) / 2,
+                      z: bounds.maxZ + 20,
+                    }).x
+                  }
+                  y={
+                    transformCoordinates({
+                      x: (bounds.minX + bounds.maxX) / 2,
+                      z: bounds.maxZ + 14,
+                    }).y
+                  }
+                  fontSize="11"
+                  fill={"black"}
+                  textAnchor="middle"
+                >
+                  {twidth} m
+                </text>
+              </>
+            )}
 
             {floorPlanData.rooms.map((room) => {
               const transformedPoints =
@@ -693,10 +785,9 @@ export default function InteractiveFloorPlan({
                         : ""
                     } ${isOverlapping ? "overlapping" : ""}`}
                     points={polygonPoints}
-                    fill={
-                      roomColors[room.room_type as keyof typeof roomColors] ||
-                      "#E8E8E8"
-                    }
+                    fill={getRoomColor(room.room_type)}
+                    strokeWidth={options.wallThickness}
+                    style={{ strokeWidth: `${options.wallThickness}px` }}
                     onClick={(e) =>
                       handleRoomSelection(
                         room.id,
@@ -850,43 +941,51 @@ export default function InteractiveFloorPlan({
                       </button>
                     </foreignObject>
                   )}
-                  <text
-                    className="room-label room-name1"
-                    x={centroid.x }
-                    y={centroid.y -2}
-                    pointerEvents="none"
-                  >
-                    {room.room_type}
-                  </text>
-                  {room.area < 5 ? (
+                  {options.showRoomLabels && (
                     <>
                       <text
-                        className="room-label"
+                        className="room-label room-name1"
                         x={centroid.x}
-                        y={centroid.y + 7}
+                        y={centroid.y - 2}
                         pointerEvents="none"
+                        fill={"black"}
                       >
-                        {room.width.toFixed(1)}' × {room.height.toFixed(1)}'
+                        {room.room_type}
                       </text>
-                      <text
-                        className="room-label"
-                        x={centroid.x}
-                        y={centroid.y + 15}
-                        pointerEvents="none"
-                      >
-                        ({room.area.toFixed(2)} m²)
-                      </text>
+                      {room.area < 5 ? (
+                        <>
+                          <text
+                            className="room-label"
+                            x={centroid.x}
+                            y={centroid.y + 7}
+                            pointerEvents="none"
+                            fill={"black"}
+                          >
+                            {room.width.toFixed(1)}' × {room.height.toFixed(1)}'
+                          </text>
+                          <text
+                            className="room-label"
+                            x={centroid.x}
+                            y={centroid.y + 15}
+                            pointerEvents="none"
+                            fill={"black"}
+                          >
+                            ({room.area.toFixed(2)} m²)
+                          </text>
+                        </>
+                      ) : (
+                        <text
+                          className="room-label"
+                          x={centroid.x}
+                          y={centroid.y + 10}
+                          pointerEvents="none"
+                          fill={"black"}
+                        >
+                          {room.width.toFixed(1)}' × {room.height.toFixed(1)}' (
+                          {room.area.toFixed(2)} m²)
+                        </text>
+                      )}
                     </>
-                  ) : (
-                    <text
-                      className="room-label"
-                      x={centroid.x}
-                      y={centroid.y + 10}
-                      pointerEvents="none"
-                    >
-                      {room.width.toFixed(1)}' × {room.height.toFixed(1)}' (
-                      {room.area.toFixed(2)} m²)
-                    </text>
                   )}
                 </g>
               );

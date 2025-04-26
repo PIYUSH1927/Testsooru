@@ -4,6 +4,11 @@ import Generated from "./Playground/Generated";
 import { Compass } from "./Playground/components/Compass";
 import { useNavigate } from "react-router-dom";
 import "./Playground.css";
+import VerticalToolbar from "./Playground/components/VerticalToolbar";
+import ToolPanel from "./Playground/components/ToolPanel";
+import VisualizationPanel from "./Playground/components/VisualizationPanel";
+import { FloorPlanProvider, useFloorPlan } from "./Playground/FloorPlanContext";
+import { Download, Share, DownloadOutlined, ShareOutlined } from '@mui/icons-material'; 
 
 const roomData = [
   { name: "Master Bedroom", count: 0, width: 12, length: 10, open: false },
@@ -16,7 +21,17 @@ const roomData = [
   { name: "Balcony", count: 0, width: 10, length: 4, open: false },
 ];
 
-const Playground = () => {
+const PlaygroundWithProvider = () => {
+  return (
+    <FloorPlanProvider>
+      <PlaygroundContent />
+    </FloorPlanProvider>
+  );
+};
+
+const PlaygroundContent = () => {
+  const { visualizationOptions, activeTool, setActiveTool } = useFloorPlan();
+  
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -26,6 +41,8 @@ const Playground = () => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isMiniModalOpen, setIsMiniModalOpen] = useState(false);
   const [rooms, setRooms] = useState(roomData);
+  const [showVisualizationPanel, setShowVisualizationPanel] = useState(false);
+  const [showToolPanel, setShowToolPanel] = useState(false);
 
   const [showAll, setShowAll] = useState(false);
   const [allottedWidth, setAllottedWidth] = useState(30);
@@ -48,7 +65,6 @@ const Playground = () => {
     };
   }, []);
 
-
   useEffect(() => {
     const targetElement = containerRef.current;
     if (!targetElement) return;
@@ -58,7 +74,7 @@ const Playground = () => {
       if (e.ctrlKey) {
         e.preventDefault();
         const delta = e.deltaY > 0 ? 0.9 : 1.1;
-        setScale((prevScale) => Math.min(Math.max(0.1, prevScale * delta), 4000)); //initially 20
+        setScale((prevScale) => Math.min(Math.max(0.1, prevScale * delta), 4000));
       } else {
         setPosition((prev) => ({
           x: prev.x - e.deltaX,
@@ -156,9 +172,7 @@ const Playground = () => {
     }
   }, [scale, isDragging, lastMousePosition, touchStartDistance, isModalOpen]);
 
-
   const handleWheel = (e: React.WheelEvent) => {
-
   };
 
   const toggleDropdown = (index: number) => {
@@ -206,6 +220,31 @@ const Playground = () => {
     );
   };
 
+  const handleToolSelected = (toolId: string) => {
+    setActiveTool(toolId);
+    
+    if (toolId === 'colors') {
+      setShowVisualizationPanel(true);
+      setShowToolPanel(false);
+    } else if (toolId !== 'design') {
+      setShowToolPanel(true);
+      setShowVisualizationPanel(false);
+    } else {
+      setShowToolPanel(false);
+      setShowVisualizationPanel(false);
+    }
+  };
+
+  const handleCloseToolPanel = () => {
+    setShowToolPanel(false);
+    setActiveTool('design');
+  };
+
+  const handleCloseVisualizationPanel = () => {
+    setShowVisualizationPanel(false);
+    setActiveTool('design');
+  };
+
   const totalArea = rooms.reduce(
     (sum, room) => sum + room.count * room.width * room.length,
     0
@@ -217,7 +256,7 @@ const Playground = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 overflow-hidden"
+      className={`absolute inset-0 overflow-hidden ${visualizationOptions.darkMode ? 'dark-mode' : ''}`}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -236,16 +275,31 @@ const Playground = () => {
       <div
         style={{
           position: "absolute",
-          top: "46%",
-          left: "43%",
+          top: "49.5%",
+          left: "44.5%",
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale}) rotate(${rotation}deg)`,
           transformOrigin: "center",
         }}
       >
-          <Generated rotation={rotation} /> 
-  
+        <Generated 
+          rotation={rotation} 
+          visualizationOptions={visualizationOptions}
+        />
       </div>
 
+      <VerticalToolbar onToolSelected={handleToolSelected} />
+      {showToolPanel && (
+        <ToolPanel 
+          activeTool={activeTool}
+          onClose={handleCloseToolPanel}
+        />
+      )}
+
+      {showVisualizationPanel && (
+        <VisualizationPanel 
+          onClose={handleCloseVisualizationPanel}
+        />
+      )}
 
       <div className="compass-container">
         <Compass
@@ -256,11 +310,93 @@ const Playground = () => {
       </div>
 
       <div 
-      className="three-d-icon" 
-      onClick={() => navigate("/3D")}
-    >
-      <img src="/3dview.png" alt="3D View" />
-    </div>
+  className="three-d-icon1" 
+  style={{
+    display: 'flex',
+    gap: '20px',
+    alignItems: 'center',
+  }}
+>
+  <div 
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      border: '1px solid black',
+      borderRadius: '8px',
+      padding: '8px 14px',
+      cursor: 'pointer',
+      backgroundColor: 'white',
+      color: 'black',
+      fontWeight: 'bold',
+      fontSize: '14px',
+    }}
+  >
+ <Download style={{ marginRight: '8px' , transform: 'scaleX(0.7)',fontSize: '22px' }} />
+    Download
+  </div>
+
+  <div 
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      border: '1px solid black',
+      borderRadius: '8px',
+      padding: '8px 16px',
+      cursor: 'pointer',
+      backgroundColor: 'black',
+      color: 'white',
+      fontWeight: 'bold',
+      fontSize: '14px',
+    }}
+  >
+ <Share style={{ marginRight: '8px', fontSize:"medium" }} /> 
+    Share
+  </div>
+</div>
+
+
+      <div 
+  className="three-d-icon" 
+  onClick={() => navigate("/3D")}
+  style={{
+    display: 'flex',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    overflow: 'hidden',
+    backgroundColor: '#f5f5f5',
+    width: '100px', 
+  }}
+>
+  <div 
+    style={{
+      flex: 1,
+      padding: '8px 0',
+      backgroundColor: 'black',
+      color: 'white',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      cursor: 'pointer',
+      fontSize: '14px',
+    }}
+  >
+    2D
+  </div>
+  <div 
+    style={{
+      flex: 1,
+      padding: '8px 0',
+      backgroundColor: 'transparent',
+      color: '#555',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      cursor: 'pointer',
+      fontSize: '14px',
+    }}
+  >
+    3D
+  </div>
+</div>
+
     
       {isModalOpen && (
         <div className="modal-overlay" style={{ zIndex: 1000 }}>
@@ -436,4 +572,4 @@ const Playground = () => {
   );
 };
 
-export default Playground;
+export default PlaygroundWithProvider;

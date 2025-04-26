@@ -27,7 +27,7 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
     updateCanvasSize();
 
     const drawNestedGrid = () => {
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = "#f7f7f7";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       const subdivisions = 12; 
@@ -101,7 +101,7 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
           width: "100vw",
           height: "100vh",
           zIndex: -1,
-          backgroundColor: "#ffffff" 
+          backgroundColor: "#f7f7f7" 
         }}
       />
     </div>
