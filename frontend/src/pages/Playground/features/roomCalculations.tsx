@@ -33,7 +33,7 @@ export function calculateRoomArea(polygon: Point[]) {
   }
 
   area = Math.abs(area) / 2;
-  return area / 100;
+  return Math.round((area / 100) * 100) / 100;
 }
 
 export function calculateRoomDimensions(polygon: Point[]) {
@@ -48,7 +48,7 @@ export function calculateRoomDimensions(polygon: Point[]) {
   const maxZ = Math.max(...zCoords);
 
   return {
-    width: (maxX - minX) / 10,
-    height: (maxZ - minZ) / 10,
+    width: Math.round(((maxX - minX) / 10) * 100) / 100,
+    height: Math.round(((maxZ - minZ) / 10) * 100) / 100,
   };
 }

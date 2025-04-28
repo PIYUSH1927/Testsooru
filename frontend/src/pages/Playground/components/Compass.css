@@ -11,7 +11,7 @@
   width: 50px;
   height: 45px;
   border-radius: 100%;
-  background-color: #6366F1;
+  background-color: black;
   color: white;
   display: flex;
   align-items: center;
@@ -27,7 +27,6 @@
   background-color: #4F46E5;
 }
 
-/* Significantly larger SVG icons */
 .rotate-button svg {
   width: 32px !important;
   height: 32px !important;
@@ -106,7 +105,6 @@
   background-color: rgb(68, 67, 67);
 }
 
-/* Mobile responsiveness - only affects smaller screens */
 @media screen and (max-width: 767px) {
   .compass-container {
     transform: scale(0.7);
@@ -121,7 +119,6 @@
     height: 35px;
   }
 
-  /* Keep the icons large even on mobile */
   .rotate-button svg {
     width: 30px !important;
     height: 30px !important;

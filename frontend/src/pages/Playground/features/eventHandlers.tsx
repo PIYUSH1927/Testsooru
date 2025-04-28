@@ -48,7 +48,7 @@ interface FloorPlanData {
 
 export function useEventHandlers(
   dragState: DragState,
-  svgRef: RefObject<SVGSVGElement>,
+  svgRef: RefObject<SVGSVGElement | null>,
   scale: number,
   reverseTransformCoordinates: (
     x: number,

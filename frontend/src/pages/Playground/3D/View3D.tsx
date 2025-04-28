@@ -169,9 +169,48 @@ export default function View3D() {
 
     return (<>
         <div ref={containerRef} style={{ width: "100vw", height: "100vh", zIndex: -1 }} />
-        <div className="three-d-icon" onClick={() => navigate("/playground")} >
-            <img src="/3dview.png" alt="3D View" />
+        <div
+        className="three-d-icon"
+        onClick={() => navigate("/playground")}
+        style={{
+          display: "flex",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          overflow: "hidden",
+          backgroundColor: "#f5f5f5",
+          width: "100px",
+        }}
+      >
+        <div
+          style={{
+            flex: 1,
+            padding: "8px 0",
+            backgroundColor: "transparent",
+            color: "#555",
+            fontWeight: "bold",
+            textAlign: "center",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          2D
         </div>
+        <div
+          style={{
+            flex: 1,
+            padding: "8px 0",
+            backgroundColor: "black",
+            color: "white",
+            fontWeight: "bold",
+            textAlign: "center",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          3D
+        </div>
+        </div>
+        
         <CameraSwitchToggle />
     </>);
 }

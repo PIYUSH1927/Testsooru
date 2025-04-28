@@ -54,7 +54,7 @@ export function showLongPressIndicator(roomId: string, show: boolean) {
   }
 }
 
-export function useNonPassiveTouchHandling(svgRef: SVGRef) {
+export function useNonPassiveTouchHandling(svgRef: RefObject<SVGSVGElement | null>) {
   useEffect(() => {
     const svgElement = svgRef.current;
     if (!svgElement) return;
@@ -92,7 +92,7 @@ export function useNonPassiveTouchHandling(svgRef: SVGRef) {
 export function handleMouseDown(
   event: React.MouseEvent,
   roomId: string,
-  svgRef: SVGRef,
+  svgRef: RefObject<SVGSVGElement | null>,
   setDragState: React.Dispatch<React.SetStateAction<DragState>>,
   setHasChanges: React.Dispatch<React.SetStateAction<boolean>>,
   setSelectedRoomIds: React.Dispatch<React.SetStateAction<string[]>>,
@@ -136,7 +136,7 @@ export function handleVertexMouseDown(
   event: React.MouseEvent,
   roomId: string,
   vertexIndex: number,
-  svgRef: SVGRef,
+  svgRef: RefObject<SVGSVGElement | null>,
   setDragState: React.Dispatch<React.SetStateAction<DragState>>,
   setSelectedRoomIds: React.Dispatch<React.SetStateAction<string[]>>,
   selectedRoomIds: string[],
@@ -190,7 +190,7 @@ export function handleEdgeMouseDown(
   event: React.MouseEvent,
   roomId: string,
   edgeIndices: number[],
-  svgRef: SVGRef,
+  svgRef: RefObject<SVGSVGElement | null>,
   setDragState: React.Dispatch<React.SetStateAction<DragState>>,
   setSelectedRoomIds: React.Dispatch<React.SetStateAction<string[]>>,
   selectedRoomIds: string[],

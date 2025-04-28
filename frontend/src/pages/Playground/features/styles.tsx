@@ -22,7 +22,6 @@ export const floorPlanStyles = `
 .room-polygon {
   opacity: 0.8 !important;
   stroke: #000 !important;  
-  /* Removed !important flag from stroke-width to allow dynamic changes */
   stroke-width: 4px;  
   cursor: move;
   transition: all 0.2s ease;
@@ -40,39 +39,31 @@ svg {
   touch-action: none !important;
 }
 
-/* Updated selection styles */
 .room-polygon.selected {
   fill: rgba(224, 224, 255, 0.8) !important;
   stroke: #0000ff !important;
-  /* Removed !important flag */
   stroke-width: 4px; 
   filter: drop-shadow(0px 0px 3px rgba(0, 0, 255, 0.3)) !important;
 }
 
-/* Style for first selected room (primary selection) */
 .room-polygon.primary-selection {
   stroke: #1e88e5 !important;
-  /* Removed !important flag */
   stroke-width: 4px;
   filter: drop-shadow(0px 0px 5px rgba(30, 136, 229, 0.5)) !important;
 }
 
-/* Secondary selection style */
 .room-polygon.secondary-selection {
   stroke: #0000ff !important;
-  /* Removed !important flag */
   stroke-width: 3px;
   stroke-dasharray: 0 !important;
 }
 
 .room-polygon.overlapping {
   stroke: #ff0000 !important;
-  /* Removed !important flag */
   stroke-width: 4px;
   stroke-dasharray: 5,5 !important;
 }
 
-/* Multi-selection indicator */
 .multi-select-indicator {
   fill: rgba(66, 133, 244, 0.1) !important;
   stroke: #4285F4 !important;
@@ -81,7 +72,6 @@ svg {
   pointer-events: none;
 }
 
-/* Group selection count badge */
 .selection-badge {
   fill: #4285F4 !important;
   stroke: white !important;
@@ -92,11 +82,9 @@ svg {
   pointer-events: none;
 }
 
-/* Edge handle styles */
 .resize-edge {
   cursor: move;
-  stroke-opacity: 0.1 !important; /* Always slightly visible */
-  /* Removed !important flag */
+  stroke-opacity: 0.1 !important; 
   transition: stroke-opacity 0.2s;
   touch-action: none !important;
 }
@@ -106,7 +94,6 @@ svg {
   stroke: #0000ff !important;
 }
 
-/* Edge indicators */
 .edge-indicator {
   stroke-opacity: 0 !important;
   transition: stroke-opacity 0.2s ease-in-out;
@@ -119,7 +106,6 @@ svg {
   stroke: #0000ff !important;
 }
 
-/* Vertex handle styles */
 .resize-handle {
   fill: white !important;
   stroke: black !important;
@@ -230,7 +216,6 @@ button {
   pointer-events: none;
 }
 
-/* Multi-selection toolbar */
 .selection-toolbar {
   position: fixed;
   bottom: 20px;
@@ -295,28 +280,24 @@ button {
     fill: #000000 !important;
 
   }
-  
-  /* Improve touch targets for mobile */
+
   .resize-handle {
-    r: 8 !important; /* Bigger radius for touch */
+    r: 8 !important; 
     fill: white !important;
     stroke: black !important;
   }
   
   .resize-edge {
-    /* Removed !important flag */
     stroke-width: 20px; 
-    stroke-opacity: 0.15 !important; /* More visible on mobile */
+    stroke-opacity: 0.15 !important;
   }
   
   .edge-indicator {
-    /* Removed !important flag */
     stroke-width: 3px;
-    stroke-opacity: 0.6 !important; /* More visible on mobile */
+    stroke-opacity: 0.6 !important; 
   }
   
   .room-polygon {
-    /* Removed !important flag */
     stroke-width: 4px; 
     stroke: #000 !important;
   }
@@ -353,4 +334,11 @@ button {
   from { filter: brightness(1.1) drop-shadow(0 0 8px rgba(255, 255, 0, 0.8)) !important; }
   to { filter: brightness(1.2) drop-shadow(0 0 12px rgba(255, 255, 0, 0.9)) !important; }
 }
+`;
+
+export const wallStyles = `
+  .wall-polygon {
+    fill-opacity: 0.9;
+    stroke-linecap: square;
+  }
 `;

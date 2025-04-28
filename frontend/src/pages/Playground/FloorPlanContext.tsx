@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { initialFloorPlanData } from './features/initialData';
+import { FloorPlanData, BuildTool } from './features/types';
 
 export interface VisualizationOptions {
   showMeasurements: boolean;
@@ -18,6 +20,12 @@ interface FloorPlanContextType {
   resetVisualizationOptions: () => void;
   activeTool: string;
   setActiveTool: (tool: string) => void;
+  floorPlanData: FloorPlanData;
+  setFloorPlanData: React.Dispatch<React.SetStateAction<FloorPlanData>>;
+  activeBuildTool: BuildTool;
+  setActiveBuildTool: React.Dispatch<React.SetStateAction<BuildTool>>;
+  isDrawingActive: boolean;
+  setIsDrawingActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const defaultVisualizationOptions: VisualizationOptions = {
@@ -36,6 +44,9 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
     defaultVisualizationOptions
   );
   const [activeTool, setActiveTool] = useState<string>('design');
+  const [floorPlanData, setFloorPlanData] = useState<FloorPlanData>(initialFloorPlanData);
+  const [activeBuildTool, setActiveBuildTool] = useState<BuildTool>(null);
+  const [isDrawingActive, setIsDrawingActive] = useState(false);
 
   const updateVisualizationOption = <K extends keyof VisualizationOptions>(
     option: K,
@@ -59,6 +70,12 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
         resetVisualizationOptions,
         activeTool,
         setActiveTool,
+        floorPlanData,
+        setFloorPlanData,
+        activeBuildTool,
+        setActiveBuildTool,
+        isDrawingActive,
+        setIsDrawingActive
       }}
     >
       {children}

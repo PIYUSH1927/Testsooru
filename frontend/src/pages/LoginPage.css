@@ -1,6 +1,5 @@
-/* LoginPage.css */
+
 :root {
-  /* Color Variables */
   --primary-blue: rgba(68, 119, 255, 0.2);
   --primary-solid: #4477FF;
   --primary-dark: #3366EE;
@@ -19,25 +18,23 @@
   --bg-primary: #ffffff;
   --bg-form: #ffffff;
   
-  /* Dark Mode Colors */
   --dark-bg-primary: #080c14;
   --dark-text-primary: #f8fafc;
   --dark-text-secondary: #cbd5e1;
   --dark-input-bg: rgba(15, 23, 42, 0.6);
   --dark-input-border: rgba(68, 119, 255, 0.1);
   --dark-form-bg: rgba(15, 23, 42, 0.8);
-  
-  /* Shadows */
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05);
   
-  /* Transitions */
+
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
 }
 
-/* Base Styles */
+
 * {
   margin: 0;
   padding: 0;
@@ -53,7 +50,6 @@ body {
   line-height: 1.5;
 }
 
-/* Container Layout */
 .auth-container {
   min-height: 100vh;
   display: flex;
@@ -62,7 +58,6 @@ body {
   background-color: var(--bg-primary);
 }
 
-/* Logo and Branding - Positioned higher up */
 .logo-wrapper {
   display: flex;
   flex-direction: column;
@@ -71,7 +66,7 @@ body {
   gap: 1.5rem;
   max-width: 600px;
   padding: 2rem;
-  transform: translateY(-4rem); /* Move logo section up */
+  transform: translateY(-4rem); 
   position: relative;
   bottom: 15px;
 }
@@ -99,7 +94,6 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* Add this to your existing LoginPage.css file */
 
 .auth-container::before {
   content: '';
@@ -141,7 +135,6 @@ body {
   
 }
 
-/* Sections */
 .left-section,
 .right-section {
   width: 50%;
@@ -151,7 +144,6 @@ body {
   padding: 2rem;
 }
 
-/* Left section - Black background in dark mode */
 .left-section {
   background-color: var(--white);
 }
@@ -160,7 +152,6 @@ body {
   background-color: black;
 }
 
-/* Form Styles */
 .form-wrapper {
   width: 100%;
   max-width: 32rem;
@@ -169,13 +160,13 @@ body {
   border-radius: 1rem;
   box-shadow: var(--shadow-lg);
   position: relative;
-  top: -2.7rem; /* Move form a bit upward */
+  top: -2.7rem; 
   border: 1px solid #0F77FF;
 }
 
 .register-form {
-  max-width: 40rem; /* Wider for registration as requested */
-  top: -1rem; /* Not as high as login form */
+  max-width: 40rem;
+  top: -1rem; 
 }
 
 .form-header {
@@ -248,7 +239,6 @@ body {
   margin-top: 0.5rem;
 }
 
-/* Button Styles */
 .submit-button {
   width: 100%;
   padding: 1rem;
@@ -278,7 +268,6 @@ body {
   cursor: not-allowed;
 }
 
-/* Links */
 .forgot-password-container {
   display: flex;
   justify-content: flex-end;
@@ -322,7 +311,6 @@ body {
   text-decoration: underline;
 }
 
-/* Message Styles */
 .success-message {
   color: var(--success-green);
   text-align: center;
@@ -361,7 +349,6 @@ body {
   }
 }
 
-/* Dark Mode Styles - Keep original settings */
 .dark-theme .form-wrapper,
 .dark-theme.auth-container,
 .dark-theme .form-label,
@@ -396,7 +383,6 @@ body {
   color: var(--dark-text-secondary);
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
   .auth-container {
     flex-direction: column;
@@ -409,7 +395,7 @@ body {
   }
 
   .logo-wrapper {
-    transform: translateY(0); /* Reset on mobile */
+    transform: translateY(0); 
   }
 
   .logo-image {
@@ -419,7 +405,7 @@ body {
   .form-wrapper {
     padding: 2rem;
     max-width: 28rem;
-    top: 0; /* Reset top position on mobile */
+    top: 0; 
   }
 
   .register-form {

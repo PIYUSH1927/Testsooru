@@ -374,7 +374,6 @@ hr {
   z-index: 999;
 }
 
-/* Responsive styles */
 @media (max-width: 700px) { 
   .modal-overlay1.mini {
     display: flex;

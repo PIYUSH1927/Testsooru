@@ -12,14 +12,13 @@ interface FeatureCardProps {
   items: string[];
   icon: React.ReactNode;
   delay?: number;
-  imagePath?: string; // Add this prop for image path
+  imagePath?: string; 
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, items, icon, delay = 0, imagePath }) => {
   const { isDarkMode } = useDarkMode();
   const [isHovered, setIsHovered] = useState(false);
 
-  // If imagePath is provided, create a dynamic icon that changes on hover
   let displayIcon = icon;
   if (imagePath) {
     const altImagePath = imagePath.replace('.png', 'i.png');
@@ -117,7 +116,7 @@ interface Feature {
   description: string;
   icon: React.ReactNode;
   items: string[];
-  imagePath?: string; // Add this for image path
+  imagePath?: string; 
 }
 
 interface SectionTitleProps {
@@ -142,8 +141,8 @@ const FeaturesContent: React.FC = () => {
     {
       title: 'Prompt-Based Design Input',
       description: 'A user-friendly prompt box for architects and customers to input house preferences.',
-      imagePath: "/i10.png", // Add imagePath property
-      icon: null, // We'll generate this from imagePath
+      imagePath: "/i10.png",
+      icon: null, 
       items: [
         'Natural language input for design specifications',
         'Real-time suggestions and guidance',
@@ -154,8 +153,8 @@ const FeaturesContent: React.FC = () => {
     {
       title: 'Customizable Components',
       description: 'Mix and match different design elements to create your perfect space.',
-      imagePath: "/i11.png", // Add imagePath property
-      icon: null, // We'll generate this from imagePath
+      imagePath: "/i11.png", 
+      icon: null,
       items: [
         'Select individual components from different sets',
         'Real-time modifications to components',
@@ -166,29 +165,29 @@ const FeaturesContent: React.FC = () => {
     {
       title: '2D and 3D Diagram Generation',
       description: 'Seamlessly generate and switch between 2D and 3D visualizations.',
-      imagePath: "/i12.png", // Add imagePath property
-      icon: null, // We'll generate this from imagePath
+      imagePath: "/i12.png", 
+      icon: null, 
       items: ['Automatic 2D and 3D diagram generation', 'Synchronized updates across views', 'Interactive viewing perspectives', 'Real-time visualization updates'],
     },
     {
       title: 'AI Integration',
       description: 'Intelligent design suggestions powered by advanced AI technology.',
-      imagePath: "/i13.png", // Add imagePath property
-      icon: null, // We'll generate this from imagePath
+      imagePath: "/i13.png", 
+      icon: null,
       items: ['AI-powered design optimization', 'Smart space utilization suggestions', 'Adaptive customization', 'Aesthetic enhancement recommendations'],
     },
     {
       title: 'Export and Sharing Options',
       description: 'Multiple export formats and seamless sharing capabilities.',
-      imagePath: "/i14.png", // Add imagePath property
-      icon: null, // We'll generate this from imagePath
+      imagePath: "/i14.png",
+      icon: null, 
       items: ['Export to PDF, CAD, and STL formats', 'Shareable project links', 'Collaborative review system', 'Multi-format support'],
     },
     {
       title: 'Cloud Storage',
       description: 'Secure cloud storage with comprehensive version control.',
-      imagePath: "/i15.png", // Add imagePath property
-      icon: null, // We'll generate this from imagePath
+      imagePath: "/i15.png",
+      icon: null,
       items: ['Secure project cloud storage', 'Automatic version control', 'Cross-device accessibility', 'Backup and recovery options'],
     },
   ];

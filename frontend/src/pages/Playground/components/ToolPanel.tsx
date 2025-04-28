@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './ToolPanel.css';
+import BuildToolsPanel from './BuildToolsPanel';
 
 interface ToolPanelProps {
   activeTool: string;
@@ -8,6 +9,8 @@ interface ToolPanelProps {
 
 const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
   const panelRef = useRef<HTMLDivElement>(null);
+  const [selectedBuildTool, setSelectedBuildTool] = useState<string | null>(null);
+  
   const positionPanel = () => {
     if (panelRef.current) {
       const activeItem = document.querySelector(`.toolbar-item`);
@@ -29,25 +32,38 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     };
   }, []);
 
+  const handleBuildToolSelect = (toolId: string) => {
+    setSelectedBuildTool(toolId);
+  };
+
   if (!activeTool || activeTool === 'design') return null;
 
   const renderPanelContent = () => {
     switch (activeTool) {
-      case 'measure':
+      case 'build':
+        return <BuildToolsPanel onSelectTool={handleBuildToolSelect} />;
+      
+      case 'project':
         return (
           <>
-            <h3>Measurement Tools</h3>
             <div className="panel-options">
-              <button>Distance</button>
-              <button>Area</button>
-              <button>Angle</button>
+              <p>Select a tool to begin</p>
             </div>
           </>
         );
-      case 'furniture':
+      
+      case 'info':
         return (
           <>
-            <h3>Furniture</h3>
+            <div className="panel-options">
+              <p>Project information and details</p>
+            </div>
+          </>
+        );
+      
+      case 'objects':
+        return (
+          <>
             <div className="panel-options furniture-options">
               <div className="furniture-item">
                 <div className="furniture-icon">🛋️</div>
@@ -76,84 +92,19 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
             </div>
           </>
         );
-      case 'walls':
+      
+      case 'styleboards':
         return (
           <>
-            <h3>Wall Tools</h3>
             <div className="panel-options">
-              <button>Add Wall</button>
-              <button>Remove Wall</button>
-              <button>Move Wall</button>
-              <div className="slider-control">
-                <label>Wall Thickness</label>
-                <input type="range" min="1" max="10" defaultValue="5" />
-              </div>
+              <p>Style options for your project</p>
             </div>
           </>
         );
-      case 'windows':
+      
+      case 'exports':
         return (
           <>
-            <h3>Window Tools</h3>
-            <div className="panel-options">
-              <button>Add Window</button>
-              <button>Remove Window</button>
-              <div className="slider-control">
-                <label>Window Width</label>
-                <input type="range" min="1" max="10" defaultValue="5" />
-              </div>
-            </div>
-          </>
-        );
-      case 'doors':
-        return (
-          <>
-            <h3>Door Tools</h3>
-            <div className="panel-options">
-              <button>Add Door</button>
-              <button>Remove Door</button>
-              <div className="select-control">
-                <label>Door Type</label>
-                <select>
-                  <option>Standard</option>
-                  <option>Sliding</option>
-                  <option>Folding</option>
-                  <option>Double</option>
-                </select>
-              </div>
-            </div>
-          </>
-        );
-      case 'colors':
-        return (
-          <>
-            <h3>Color Tools</h3>
-            <div className="panel-options">
-              <div className="color-selector">
-                <label>Wall Color</label>
-                <div className="color-choices">
-                  <div className="color-choice" style={{ backgroundColor: '#f8f9fa' }}></div>
-                  <div className="color-choice" style={{ backgroundColor: '#e9ecef' }}></div>
-                  <div className="color-choice" style={{ backgroundColor: '#dee2e6' }}></div>
-                  <div className="color-choice" style={{ backgroundColor: '#ced4da' }}></div>
-                </div>
-              </div>
-              <div className="color-selector">
-                <label>Floor Color</label>
-                <div className="color-choices">
-                  <div className="color-choice" style={{ backgroundColor: '#d4a373' }}></div>
-                  <div className="color-choice" style={{ backgroundColor: '#e9c46a' }}></div>
-                  <div className="color-choice" style={{ backgroundColor: '#ccd5ae' }}></div>
-                  <div className="color-choice" style={{ backgroundColor: '#faedcd' }}></div>
-                </div>
-              </div>
-            </div>
-          </>
-        );
-      case 'export':
-        return (
-          <>
-            <h3>Export Options</h3>
             <div className="panel-options">
               <button className="export-button">PNG Image</button>
               <button className="export-button">PDF Document</button>
@@ -169,56 +120,22 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
             </div>
           </>
         );
-      case 'project':
+      
+      case 'help':
         return (
           <>
-            <h3>Project Tools</h3>
             <div className="panel-options">
-              <p>Select a tool to begin</p>
+              <p>Need help with something?</p>
+              <ul className="help-links">
+                <li><a href="#">Getting Started Guide</a></li>
+                <li><a href="#">Video Tutorials</a></li>
+                <li><a href="#">Keyboard Shortcuts</a></li>
+                <li><a href="#">Contact Support</a></li>
+              </ul>
             </div>
           </>
         );
-      case 'build':
-        return (
-          <>
-            <h3>Build Tools</h3>
-            <div className="panel-options">
-              <p>Select a tool to begin</p>
-            </div>
-          </>
-        );
-      case 'objects':
-        return (
-          <>
-            <h3>Objects Library</h3>
-            <div className="panel-options furniture-options">
-              <div className="furniture-item">
-                <div className="furniture-icon">🛋️</div>
-                <span>Sofa</span>
-              </div>
-              <div className="furniture-item">
-                <div className="furniture-icon">🛏️</div>
-                <span>Bed</span>
-              </div>
-              <div className="furniture-item">
-                <div className="furniture-icon">🪑</div>
-                <span>Chair</span>
-              </div>
-              <div className="furniture-item">
-                <div className="furniture-icon">🪟</div>
-                <span>Window</span>
-              </div>
-              <div className="furniture-item">
-                <div className="furniture-icon">🚪</div>
-                <span>Door</span>
-              </div>
-              <div className="furniture-item">
-                <div className="furniture-icon">🍽️</div>
-                <span>Table</span>
-              </div>
-            </div>
-          </>
-        );
+      
       default:
         return <p>Select a tool to begin</p>;
     }
@@ -226,8 +143,8 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
   
   const getPanelTitle = () => {
     switch (activeTool) {
-      case 'project': return 'Project Tools';
-      case 'build': return 'Build Tools';
+      case 'project': return 'Project';
+      case 'build': return 'Build';
       case 'info': return 'Information';
       case 'objects': return 'Objects';
       case 'styleboards': return 'Styleboards';

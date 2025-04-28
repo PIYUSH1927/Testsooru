@@ -365,7 +365,6 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className={`auth-container ${isDarkMode ? 'dark-theme' : ''}`}>
-      {/* Left Section */}
       <div className="left-section">
         <motion.div className="logo-wrapper">
           <motion.img

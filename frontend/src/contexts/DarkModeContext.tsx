@@ -8,18 +8,14 @@ interface DarkModeContextType {
 const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined);
 
 export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Initialize with a function to avoid running the check during every render
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    // First check localStorage
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") return true;
     if (savedTheme === "light") return false;
-    
-    // If no saved preference, check system preference
+
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  // Apply theme immediately on mount
   useEffect(() => {
     if (isDarkMode) {
       applyDarkTheme();
@@ -28,7 +24,6 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, []);
 
-  // Apply theme when isDarkMode changes
   useEffect(() => {
     if (isDarkMode) {
       applyDarkTheme();
@@ -39,12 +34,10 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [isDarkMode]);
 
-  // Listen for system theme changes if no user preference is set
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     const handler = (e: MediaQueryListEvent) => {
-      // Only update if user hasn't explicitly chosen a theme
       const savedTheme = localStorage.getItem("theme");
       if (!savedTheme) {
         setIsDarkMode(e.matches);
@@ -55,9 +48,7 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
-  // Define theme application functions
   const applyDarkTheme = (): void => {
-    // Set CSS variables for navbar
     document.documentElement.style.setProperty('--background', 'black');
     document.documentElement.style.setProperty('--text', '#D1D5DB');
     document.documentElement.style.setProperty('--text-hover', '#FFFFFF');
@@ -69,7 +60,6 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.style.setProperty('--backdrop', 'rgba(17, 24, 39, 0.95)');
     document.documentElement.setAttribute('data-theme', 'dark');
     
-    // Set CSS variables for other components
     document.documentElement.style.setProperty('--bg-primary', '#000000');
     document.documentElement.style.setProperty('--bg-secondary', '#1d1d1f');
     document.documentElement.style.setProperty('--text-primary', '#ffffff');
@@ -80,11 +70,9 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.style.setProperty('--shadow-lg', '0 8px 24px rgba(0, 0, 0, 0.2)');
     document.documentElement.style.setProperty('--color-accent', '#3b82f6');
     
-    // Apply dark theme on element backgrounds
     document.body.style.backgroundColor = '#000000';
     document.body.style.color = '#ffffff';
     
-    // Apply to classes from About page
     const aboutContainers = document.querySelectorAll('.about-container');
     aboutContainers.forEach(container => {
       (container as HTMLElement).style.backgroundColor = '#000000';
@@ -94,7 +82,6 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     aboutCards.forEach(card => {
       (card as HTMLElement).style.background = 'rgba(29, 29, 31, 0.8)';
       (card as HTMLElement).style.backdropFilter = 'blur(20px)';
-      // Apply webkit prefix using setAttribute for cross-browser compatibility
       (card as HTMLElement).setAttribute('style', 
         `${(card as HTMLElement).getAttribute('style') || ''}
         -webkit-backdrop-filter: blur(20px);`
@@ -122,7 +109,6 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       (text as HTMLElement).style.color = '#ffffff';
     });
     
-    // Apply to classes from Features page
     const ftrsContainers = document.querySelectorAll('.ftrs-container');
     ftrsContainers.forEach(container => {
       (container as HTMLElement).style.backgroundColor = '#000000';
@@ -144,8 +130,7 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     ftrsTitles.forEach(title => {
       (title as HTMLElement).style.color = '#ffffff';
     });
-    
-    // Apply to Our Values section in About page
+
     const valuesContainers = document.querySelectorAll('.values-new-container');
     valuesContainers.forEach(container => {
       (container as HTMLElement).style.background = 'rgba(0, 10, 33, 0.95)';
@@ -172,13 +157,11 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       (text as HTMLElement).style.color = '#ffffff';
     });
     
-    // Apply to classes from Contact page
     const contactContainers = document.querySelectorAll('.contact-container');
     contactContainers.forEach(container => {
       (container as HTMLElement).classList.add('contact-dark');
     });
     
-    // Apply directly to navbar-related elements
     const navbars = document.querySelectorAll('nav');
     navbars.forEach(nav => {
       (nav as HTMLElement).style.backgroundColor = 'black';
@@ -200,14 +183,13 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       (dropdown as HTMLElement).style.borderColor = '#374151';
     });
     
-    // Add dark mode class to body for global styling
     document.body.classList.add('dark-mode');
     document.documentElement.classList.add('dark-theme');
     document.documentElement.classList.remove('light-theme');
   };
   
   const applyLightTheme = (): void => {
-    // Reset CSS variables for navbar
+
     document.documentElement.style.setProperty('--background', 'rgba(255, 255, 255, 0.95)');
     document.documentElement.style.setProperty('--text', '#4A5568');
     document.documentElement.style.setProperty('--text-hover', '#000000');
@@ -218,8 +200,7 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.style.setProperty('--shadow', 'rgba(0, 0, 0, 0.1)');
     document.documentElement.style.setProperty('--backdrop', 'rgba(255, 255, 255, 0.95)');
     document.documentElement.setAttribute('data-theme', 'light');
-    
-    // Reset CSS variables for other components
+
     document.documentElement.style.setProperty('--bg-primary', '#ffffff');
     document.documentElement.style.setProperty('--bg-secondary', '#fbfbfd');
     document.documentElement.style.setProperty('--text-primary', '#000000');
@@ -230,11 +211,9 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.style.setProperty('--shadow-lg', '0 8px 24px rgba(0, 0, 0, 0.1)');
     document.documentElement.style.setProperty('--color-accent', '#0066ff');
     
-    // Reset body background and text color
     document.body.style.backgroundColor = '';
     document.body.style.color = '';
     
-    // Reset classes from About page
     const aboutContainers = document.querySelectorAll('.about-container');
     aboutContainers.forEach(container => {
       (container as HTMLElement).style.backgroundColor = '';
@@ -242,10 +221,10 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     
     const aboutCards = document.querySelectorAll('.about-card, .value-card');
     aboutCards.forEach(card => {
-      // Reset all styles
+
       (card as HTMLElement).style.background = '';
       (card as HTMLElement).style.backdropFilter = '';
-      // Reset webkit prefix using setAttribute
+
       const currentStyle = (card as HTMLElement).getAttribute('style') || '';
       const newStyle = currentStyle.replace('-webkit-backdrop-filter: blur(20px);', '');
       (card as HTMLElement).setAttribute('style', newStyle);
@@ -273,7 +252,6 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       (text as HTMLElement).style.color = '';
     });
     
-    // Reset Our Values section in About page
     const valuesContainers = document.querySelectorAll('.values-new-container');
     valuesContainers.forEach(container => {
       (container as HTMLElement).style.background = 'rgba(207, 226, 243, 0.75)';
@@ -299,8 +277,7 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     valueTexts.forEach(text => {
       (text as HTMLElement).style.color = '#333';
     });
-    
-    // Reset classes from Features page
+
     const ftrsContainers = document.querySelectorAll('.ftrs-container');
     ftrsContainers.forEach(container => {
       (container as HTMLElement).style.backgroundColor = '';
@@ -323,13 +300,11 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       (title as HTMLElement).style.color = '';
     });
     
-    // Reset classes from Contact page
     const contactContainers = document.querySelectorAll('.contact-container');
     contactContainers.forEach(container => {
       (container as HTMLElement).classList.remove('contact-dark');
     });
     
-    // Reset navbar-related elements
     const navbars = document.querySelectorAll('nav');
     navbars.forEach(nav => {
       (nav as HTMLElement).style.backgroundColor = '';
@@ -351,7 +326,6 @@ export const DarkModeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       (dropdown as HTMLElement).style.borderColor = '';
     });
     
-    // Remove dark mode class from body
     document.body.classList.remove('dark-mode');
     document.documentElement.classList.add('light-theme');
     document.documentElement.classList.remove('dark-theme');

@@ -1,10 +1,10 @@
 .tool-panel {
     position: fixed; 
-    left: 66px; 
+    left: 75px; 
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.18);
-    width: 300px;
+    width: 260px;
     max-height: 80vh;
     overflow-y: auto;
     z-index: 999;
@@ -175,9 +175,27 @@
     background-color: #e9ecef !important;
   }
   
-  /* Hide on mobile */
   @media (max-width: 768px) {
     .tool-panel {
       display: none;
     }
   }
+  
+.help-links {
+  list-style-type: none;
+  padding: 0;
+  margin: 16px 0 0 0;
+}
+
+.help-links li {
+  margin-bottom: 10px;
+}
+
+.help-links a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.help-links a:hover {
+  text-decoration: underline;
+}

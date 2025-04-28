@@ -1,0 +1,216 @@
+.build-tools-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.build-tool-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 4px;
+}
+
+.build-tool-item:hover {
+  background-color: #f5f5f5;
+}
+
+.build-tool-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  color: #555;
+}
+
+.build-tool-label {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.submenu-indicator {
+  font-size: 18px;
+  color: #aaa;
+}
+
+.door-types-submenu, 
+.window-types-submenu,
+.door-placement-panel,
+.window-placement-panel {
+  width: 100%;
+}
+
+.submenu-header {
+  display: flex;
+  align-items: center;
+  padding: 0 0 12px 0;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+.back-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    color: #555;
+    cursor: pointer;
+    padding: 3px 8px;
+    font-size: 13px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+  
+  .back-button:hover {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+
+.submenu-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.door-types-list, .window-types-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.door-type-item, .window-type-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.door-type-item:hover, .window-type-item:hover {
+  background-color: #f8f9fa;
+}
+
+.door-icon, .window-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 12px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.standard-door {
+  background-color: #8B4513;
+}
+
+.sliding-door {
+  background-color: #0066cc;
+}
+
+.double-door {
+  background-color: #8B4513;
+  position: relative;
+}
+
+.double-door:after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  width: 12px;
+  height: 24px;
+  background-color: #8B4513;
+  border-left: 1px solid #666;
+}
+
+.pocket-door {
+  background-color: #0066cc;
+}
+
+.door-type-label, .window-type-label {
+  font-size: 14px;
+  color: #333;
+}
+
+.selected-item-preview {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.selected-item-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  margin-left: 12px;
+}
+
+.placement-options {
+  border-top: 1px solid #eee;
+  padding-top: 16px;
+}
+
+.placement-options h3 {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+  font-weight: 500;
+}
+
+.option-group {
+  margin-bottom: 16px;
+}
+
+.option-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #444;
+}
+
+.size-select, .style-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  background-color: white;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+.cancel-button {
+  padding: 8px 16px;
+  background-color: transparent;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  color: #333;
+}
+
+.place-button {
+  padding: 8px 16px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.place-button:hover {
+  background-color: #0055b3;
+}

@@ -20,7 +20,6 @@ interface FloorPlanData {
   rooms: Room[];
 }
 
-// Scale factor - calculated from ratio of old to new coordinate ranges
 const SCALE_FACTOR = 20; 
 
 export const initialFloorPlanData: FloorPlanData = {

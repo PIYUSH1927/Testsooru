@@ -8,7 +8,12 @@ import VerticalToolbar from "./Playground/components/VerticalToolbar";
 import ToolPanel from "./Playground/components/ToolPanel";
 import VisualizationPanel from "./Playground/components/VisualizationPanel";
 import { FloorPlanProvider, useFloorPlan } from "./Playground/FloorPlanContext";
-import { Download, Share, DownloadOutlined, ShareOutlined } from '@mui/icons-material'; 
+import {
+  Download,
+  Share,
+  DownloadOutlined,
+  ShareOutlined,
+} from "@mui/icons-material";
 
 const roomData = [
   { name: "Master Bedroom", count: 0, width: 12, length: 10, open: false },
@@ -28,10 +33,16 @@ const PlaygroundWithProvider = () => {
     </FloorPlanProvider>
   );
 };
-
 const PlaygroundContent = () => {
-  const { visualizationOptions, activeTool, setActiveTool } = useFloorPlan();
-  
+  const {
+    visualizationOptions,
+    activeTool,
+    setActiveTool,
+    activeBuildTool,
+    setActiveBuildTool,
+    isDrawingActive,
+  } = useFloorPlan();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -57,24 +68,45 @@ const PlaygroundContent = () => {
           e.preventDefault();
         }
       }
+
+      if (
+        e.key === "Escape" &&
+        (activeBuildTool === "drawWall" || activeBuildTool === "drawRoom")
+      ) {
+        exitDrawingMode();
+      }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [activeBuildTool]);
+
+  const exitDrawingMode = () => {
+    setActiveBuildTool(null);
+    setActiveTool("build");
+  };
 
   useEffect(() => {
     const targetElement = containerRef.current;
     if (!targetElement) return;
 
     const handleWheel = (e: WheelEvent) => {
-      if (isModalOpen) return;
+      if (
+        isModalOpen ||
+        isDrawingActive ||
+        activeBuildTool === "drawWall" ||
+        activeBuildTool === "drawRoom"
+      )
+        return;
+
       if (e.ctrlKey) {
         e.preventDefault();
         const delta = e.deltaY > 0 ? 0.9 : 1.1;
-        setScale((prevScale) => Math.min(Math.max(0.1, prevScale * delta), 4000));
+        setScale((prevScale) =>
+          Math.min(Math.max(0.1, prevScale * delta), 4000)
+        );
       } else {
         setPosition((prev) => ({
           x: prev.x - e.deltaX,
@@ -83,12 +115,12 @@ const PlaygroundContent = () => {
       }
     };
 
-    targetElement.addEventListener('wheel', handleWheel, { passive: false });
-    
+    targetElement.addEventListener("wheel", handleWheel, { passive: false });
+
     return () => {
-      targetElement.removeEventListener('wheel', handleWheel);
+      targetElement.removeEventListener("wheel", handleWheel);
     };
-  }, [isModalOpen, scale]);
+  }, [isModalOpen, scale, isDrawingActive, activeBuildTool]);
 
   const getDistance = (touches: React.TouchList): number => {
     if (touches.length < 2) return 0;
@@ -98,81 +130,123 @@ const PlaygroundContent = () => {
   };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>): void => {
-    if (isModalOpen) return;
+    if (
+      isModalOpen ||
+      isDrawingActive ||
+      activeBuildTool === "drawWall" ||
+      activeBuildTool === "drawRoom"
+    )
+      return;
 
-    if (document.body.getAttribute('data-room-touch-interaction') === 'true') {
-      return; 
+    if (document.body.getAttribute("data-room-touch-interaction") === "true") {
+      return;
     }
-    
+
     if (e.touches.length === 2) {
       const distance = getDistance(e.touches);
       setTouchStartDistance(distance);
     } else if (e.touches.length === 1) {
       setIsDragging(true);
-      setLastMousePosition({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      setLastMousePosition({
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      });
     }
   };
-  
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>): void => {
-    if (isModalOpen) return;
 
-    if (document.body.getAttribute('data-room-touch-interaction') === 'true') {
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>): void => {
+    if (
+      isModalOpen ||
+      isDrawingActive ||
+      activeBuildTool === "drawWall" ||
+      activeBuildTool === "drawRoom"
+    )
+      return;
+
+    if (document.body.getAttribute("data-room-touch-interaction") === "true") {
       return;
     }
 
     e.preventDefault();
-    
+
     if (e.touches.length === 2) {
       const distance = getDistance(e.touches);
       if (touchStartDistance > 0) {
         const delta = distance / touchStartDistance;
-        setScale((prevScale) => Math.min(Math.max(0.1, prevScale * delta), 4000)); 
+        setScale((prevScale) =>
+          Math.min(Math.max(0.1, prevScale * delta), 4000)
+        );
         setTouchStartDistance(distance);
       }
     } else if (e.touches.length === 1 && isDragging) {
       const touch = e.touches[0];
       const dx = touch.clientX - lastMousePosition.x;
       const dy = touch.clientY - lastMousePosition.y;
-      setPosition((prev) => ({ x: prev.x + dx / scale, y: prev.y + dy / scale }));
+      setPosition((prev) => ({
+        x: prev.x + dx / scale,
+        y: prev.y + dy / scale,
+      }));
       setLastMousePosition({ x: touch.clientX, y: touch.clientY });
     }
   };
-  
+
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>): void => {
     setIsDragging(false);
     setTouchStartDistance(0);
   };
 
   useEffect(() => {
-    const element = document.querySelector('.absolute.inset-0') as HTMLElement;
+    const element = document.querySelector(".absolute.inset-0") as HTMLElement;
     if (element) {
       const touchStartWrapper = (e: TouchEvent) => {
-        if (document.body.getAttribute('data-room-touch-interaction') === 'true') {
+        if (
+          document.body.getAttribute("data-room-touch-interaction") === "true"
+        ) {
           return;
         }
         (handleTouchStart as unknown as EventListener)(e);
       };
-      
+
       const touchMoveWrapper = (e: TouchEvent) => {
-        if (document.body.getAttribute('data-room-touch-interaction') === 'true') {
+        if (
+          document.body.getAttribute("data-room-touch-interaction") === "true"
+        ) {
           return;
         }
         (handleTouchMove as unknown as EventListener)(e);
       };
-      
-      element.addEventListener('touchstart', touchStartWrapper, { passive: false });
-      element.addEventListener('touchmove', touchMoveWrapper, { passive: false });
-      element.addEventListener('touchend', handleTouchEnd as unknown as EventListener);
-      
+
+      element.addEventListener("touchstart", touchStartWrapper, {
+        passive: false,
+      });
+      element.addEventListener("touchmove", touchMoveWrapper, {
+        passive: false,
+      });
+      element.addEventListener(
+        "touchend",
+        handleTouchEnd as unknown as EventListener
+      );
+
       return () => {
-        element.removeEventListener('touchstart', touchStartWrapper);
-        element.removeEventListener('touchmove', touchMoveWrapper);
-        element.removeEventListener('touchend', handleTouchEnd as unknown as EventListener);
+        element.removeEventListener("touchstart", touchStartWrapper);
+        element.removeEventListener("touchmove", touchMoveWrapper);
+        element.removeEventListener(
+          "touchend",
+          handleTouchEnd as unknown as EventListener
+        );
       };
     }
   }, [scale, isDragging, lastMousePosition, touchStartDistance, isModalOpen]);
 
   const handleWheel = (e: React.WheelEvent) => {
+    if (
+      isDrawingActive ||
+      activeBuildTool === "drawWall" ||
+      activeBuildTool === "drawRoom"
+    ) {
+      e.preventDefault();
+      return;
+    }
   };
 
   const toggleDropdown = (index: number) => {
@@ -184,12 +258,27 @@ const PlaygroundContent = () => {
   };
 
   const handleMouseDown = (event: React.MouseEvent) => {
+    if (
+      isDrawingActive ||
+      activeBuildTool === "drawWall" ||
+      activeBuildTool === "drawRoom"
+    ) {
+      return;
+    }
+
     setIsDragging(true);
     setLastMousePosition({ x: event.clientX, y: event.clientY });
   };
 
   const handleMouseMove = (event: React.MouseEvent) => {
-    if (!isDragging) return;
+    if (
+      !isDragging ||
+      isDrawingActive ||
+      activeBuildTool === "drawWall" ||
+      activeBuildTool === "drawRoom"
+    )
+      return;
+
     const dx = event.clientX - lastMousePosition.x;
     const dy = event.clientY - lastMousePosition.y;
     setPosition((prev) => ({ x: prev.x + dx / scale, y: prev.y + dy / scale }));
@@ -222,11 +311,11 @@ const PlaygroundContent = () => {
 
   const handleToolSelected = (toolId: string) => {
     setActiveTool(toolId);
-    
-    if (toolId === 'colors') {
+
+    if (toolId === "colors") {
       setShowVisualizationPanel(true);
       setShowToolPanel(false);
-    } else if (toolId !== 'design') {
+    } else if (toolId !== "design") {
       setShowToolPanel(true);
       setShowVisualizationPanel(false);
     } else {
@@ -237,12 +326,13 @@ const PlaygroundContent = () => {
 
   const handleCloseToolPanel = () => {
     setShowToolPanel(false);
-    setActiveTool('design');
+    setActiveTool("design");
+    setActiveBuildTool(null);
   };
 
   const handleCloseVisualizationPanel = () => {
     setShowVisualizationPanel(false);
-    setActiveTool('design');
+    setActiveTool("design");
   };
 
   const totalArea = rooms.reduce(
@@ -251,12 +341,14 @@ const PlaygroundContent = () => {
   );
 
   const totalRooms = rooms.reduce((sum, room) => sum + room.count, 0);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   return (
     <div
       ref={containerRef}
-      className={`absolute inset-0 overflow-hidden ${visualizationOptions.darkMode ? 'dark-mode' : ''}`}
+      className={`absolute inset-0 overflow-hidden ${
+        visualizationOptions.darkMode ? "dark-mode" : ""
+      }`}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -281,24 +373,19 @@ const PlaygroundContent = () => {
           transformOrigin: "center",
         }}
       >
-        <Generated 
-          rotation={rotation} 
+        <Generated
+          rotation={rotation}
           visualizationOptions={visualizationOptions}
         />
       </div>
 
       <VerticalToolbar onToolSelected={handleToolSelected} />
       {showToolPanel && (
-        <ToolPanel 
-          activeTool={activeTool}
-          onClose={handleCloseToolPanel}
-        />
+        <ToolPanel activeTool={activeTool} onClose={handleCloseToolPanel} />
       )}
 
       {showVisualizationPanel && (
-        <VisualizationPanel 
-          onClose={handleCloseVisualizationPanel}
-        />
+        <VisualizationPanel onClose={handleCloseVisualizationPanel} />
       )}
 
       <div className="compass-container">
@@ -309,95 +396,150 @@ const PlaygroundContent = () => {
         />
       </div>
 
-      <div 
-  className="three-d-icon1" 
-  style={{
-    display: 'flex',
-    gap: '20px',
-    alignItems: 'center',
-  }}
->
-  <div 
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      border: '1px solid black',
-      borderRadius: '8px',
-      padding: '8px 14px',
-      cursor: 'pointer',
-      backgroundColor: 'white',
-      color: 'black',
-      fontWeight: 'bold',
-      fontSize: '14px',
-    }}
-  >
- <Download style={{ marginRight: '8px' , transform: 'scaleX(0.7)',fontSize: '22px' }} />
-    Download
-  </div>
+      {(activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") && (
+        <div
+          style={{
+            position: "fixed",
+            top: "15px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "10px 20px",
+            width: "auto",
+            minWidth: "450px",
+            backgroundColor: "rgba(33, 150, 243, 0.8)",
+            color: "white",
+            borderRadius: "4px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            zIndex: 2000,
+            textAlign: "center",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+          }}
+        >
+          {activeBuildTool === "drawWall"
+            ? "Wall Drawing Mode: Click to start, click again to finish"
+            : "Room Drawing Mode: Click to start, click again to finish"}
+        </div>
+      )}
 
-  <div 
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      border: '1px solid black',
-      borderRadius: '8px',
-      padding: '8px 16px',
-      cursor: 'pointer',
-      backgroundColor: 'black',
-      color: 'white',
-      fontWeight: 'bold',
-      fontSize: '14px',
-    }}
-  >
- <Share style={{ marginRight: '8px', fontSize:"medium" }} /> 
-    Share
-  </div>
-</div>
+      {(activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "30px",
+            left: "51%",
+            transform: "translateX(-50%)",
+            zIndex: 1000,
+            padding: "10px 20px",
+            backgroundColor: "rgba(255, 0, 0, 0.7)",
+            color: "white",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+          onClick={exitDrawingMode}
+        >
+          <span style={{ fontSize: "18px" }}>✕</span>
+          Exit Drawing Mode
+        </div>
+      )}
 
+      <div
+        className="three-d-icon1"
+        style={{
+          display: "flex",
+          gap: "20px",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid black",
+            borderRadius: "8px",
+            padding: "8px 14px",
+            cursor: "pointer",
+            backgroundColor: "white",
+            color: "black",
+            fontWeight: "bold",
+            fontSize: "14px",
+          }}
+        >
+          <Download
+            style={{
+              marginRight: "8px",
+              transform: "scaleX(0.7)",
+              fontSize: "22px",
+            }}
+          />
+          Download
+        </div>
 
-      <div 
-  className="three-d-icon" 
-  onClick={() => navigate("/3D")}
-  style={{
-    display: 'flex',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    backgroundColor: '#f5f5f5',
-    width: '100px', 
-  }}
->
-  <div 
-    style={{
-      flex: 1,
-      padding: '8px 0',
-      backgroundColor: 'black',
-      color: 'white',
-      fontWeight: 'bold',
-      textAlign: 'center',
-      cursor: 'pointer',
-      fontSize: '14px',
-    }}
-  >
-    2D
-  </div>
-  <div 
-    style={{
-      flex: 1,
-      padding: '8px 0',
-      backgroundColor: 'transparent',
-      color: '#555',
-      fontWeight: 'bold',
-      textAlign: 'center',
-      cursor: 'pointer',
-      fontSize: '14px',
-    }}
-  >
-    3D
-  </div>
-</div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid black",
+            borderRadius: "8px",
+            padding: "8px 16px",
+            cursor: "pointer",
+            backgroundColor: "black",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "14px",
+          }}
+        >
+          <Share style={{ marginRight: "8px", fontSize: "medium" }} />
+          Share
+        </div>
+      </div>
 
-    
+      <div
+        className="three-d-icon"
+        onClick={() => navigate("/3D")}
+        style={{
+          display: "flex",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          overflow: "hidden",
+          backgroundColor: "#f5f5f5",
+          width: "100px",
+        }}
+      >
+        <div
+          style={{
+            flex: 1,
+            padding: "8px 0",
+            backgroundColor: "black",
+            color: "white",
+            fontWeight: "bold",
+            textAlign: "center",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          2D
+        </div>
+        <div
+          style={{
+            flex: 1,
+            padding: "8px 0",
+            backgroundColor: "transparent",
+            color: "#555",
+            fontWeight: "bold",
+            textAlign: "center",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          3D
+        </div>
+      </div>
+
       {isModalOpen && (
         <div className="modal-overlay" style={{ zIndex: 1000 }}>
           <div className="modal">
@@ -544,7 +686,15 @@ const PlaygroundContent = () => {
             </div>
 
             <div className="modal-actions">
-              <button onClick={() => {setIsModalOpen(false); setIsMiniModalOpen(true);}} className="generate-btn">✨Generate Plan</button>
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setIsMiniModalOpen(true);
+                }}
+                className="generate-btn"
+              >
+                ✨Generate Plan
+              </button>
             </div>
           </div>
         </div>
@@ -554,7 +704,9 @@ const PlaygroundContent = () => {
         <div className="modal-overlay1 mini">
           <div className="modal mini-modal">
             <div className="modal-header">
-              <h2 style={{ fontWeight: "bolder", color:"black" }}>House Parameters</h2>
+              <h2 style={{ fontWeight: "bolder", color: "black" }}>
+                House Parameters
+              </h2>
               <button
                 className="close-btn"
                 onClick={() => {

@@ -253,8 +253,8 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background-color: var(--background); // uses global theme value
-  color: var(--text); // uses global text color
+  background-color: var(--background);
+  color: var(--text); 
   padding: 25px;
   border-radius: 10px;
   width: 400px;

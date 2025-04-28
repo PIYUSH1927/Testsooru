@@ -4,8 +4,6 @@ import styled, { createGlobalStyle } from "styled-components";
 export const GlobalStyle = createGlobalStyle`
   :root {
     color-scheme: light dark;
-
-    /* Light Theme Colors */
     --background: rgba(255, 255, 255, 0.95);
     --text: #4A5568;
     --text-hover: #000000;
@@ -17,10 +15,6 @@ export const GlobalStyle = createGlobalStyle`
     --backdrop: rgba(255, 255, 255, 0.95);
   }
 
-  /* 
-   * Force dark mode values via media query
-   * This ensures system dark mode preference is respected
-   */
   @media (prefers-color-scheme: dark) {
     :root {
       --background: black !important;
@@ -33,8 +27,7 @@ export const GlobalStyle = createGlobalStyle`
       --shadow: rgba(0, 0, 0, 0.3) !important;
       --backdrop: rgba(17, 24, 39, 0.95) !important;
     }
-    
-    /* Force dark mode styling on navbar elements */
+
     body {
       background-color: #000000 !important;
       color: #ffffff !important;
@@ -47,7 +40,7 @@ export const GlobalStyle = createGlobalStyle`
     }
   }
   
-  /* Additional classes for forced dark mode */
+
   body.dark-mode,
   html.dark-theme {
     --background: black;
@@ -132,8 +125,8 @@ export const MobileNav = styled.div<MobileNavProps>`
   @media screen and (max-width: 768px) {
     display: flex;
     flex-direction: column;
-    align-items: left; /* Center items horizontally */
-    text-align: center; /* Center text within items */
+    align-items: left; 
+    text-align: center;
     gap: 0.55rem;
     z-index:100;
   }

@@ -345,8 +345,6 @@ html.dark-theme {
   flex-shrink: 0;
 }
 
-/* Values New Section - Fixed for Responsiveness */
-
 .values-new-container {
   background: rgba(207, 226, 243, 0.75);
   padding: 50px 0 60px;
@@ -388,7 +386,7 @@ html.dark-theme {
   box-shadow: var(--shadow-sm);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
-  width: 100%; /* Changed from 90% to 100% */
+  width: 100%;
 }
 
 .values-new-card:hover {
@@ -422,10 +420,10 @@ html.dark-theme {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 100%; /* Changed from 89% */
+  width: 100%; 
   position: relative;
-  left: 0; /* Changed from 60px */
-  padding-left: 60px; /* Added instead of position left */
+  left: 0; 
+  padding-left: 60px;
 }
 
 .values-heading {
@@ -480,8 +478,6 @@ html.dark-theme {
   grid-row: 2 / 3; 
   margin-top: 50px;
 }
-
-/* Responsive Media Queries - Fixed and consolidated */
 @media screen and (max-width: 1200px) {
   .values-heading-container {
     padding-left: 40px;
@@ -576,8 +572,7 @@ html.dark-theme {
   .value-item {
     padding: 1rem;
   }
-
-  /* Values section mobile styles */
+  
   .values-new-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
