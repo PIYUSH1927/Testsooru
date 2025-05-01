@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { initialFloorPlanData } from './features/initialData';
 import { FloorPlanData, BuildTool } from './features/types';
 
@@ -26,6 +26,12 @@ interface FloorPlanContextType {
   setActiveBuildTool: React.Dispatch<React.SetStateAction<BuildTool>>;
   isDrawingActive: boolean;
   setIsDrawingActive: React.Dispatch<React.SetStateAction<boolean>>;
+  scale: number;
+  setScale: React.Dispatch<React.SetStateAction<number>>;
+  position: { x: number; y: number };
+  setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
+  defaultScale: number;
+  isZoomingDisabled: boolean;
 }
 
 export const defaultVisualizationOptions: VisualizationOptions = {
@@ -47,6 +53,13 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [floorPlanData, setFloorPlanData] = useState<FloorPlanData>(initialFloorPlanData);
   const [activeBuildTool, setActiveBuildTool] = useState<BuildTool>(null);
   const [isDrawingActive, setIsDrawingActive] = useState(false);
+  
+  const defaultScale = window.innerWidth < 850 ? 1.6 : 2.5;
+  
+  const [scale, setScale] = useState(defaultScale);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  
+  const isZoomingDisabled = activeBuildTool !== null;
 
   const updateVisualizationOption = <K extends keyof VisualizationOptions>(
     option: K,
@@ -62,6 +75,27 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
     setVisualizationOptions(defaultVisualizationOptions);
   };
 
+  useEffect(() => {
+    if (activeBuildTool) {
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    }
+  }, [activeBuildTool, defaultScale]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newDefaultScale = window.innerWidth < 850 ? 1.6 : 2.5;
+      if (activeBuildTool) {
+        setScale(newDefaultScale);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [activeBuildTool]);
+
   return (
     <FloorPlanContext.Provider
       value={{
@@ -75,7 +109,13 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
         activeBuildTool,
         setActiveBuildTool,
         isDrawingActive,
-        setIsDrawingActive
+        setIsDrawingActive,
+        scale,
+        setScale,
+        position,
+        setPosition,
+        defaultScale,
+        isZoomingDisabled
       }}
     >
       {children}

@@ -62,6 +62,13 @@ const PlaygroundContent = () => {
   const [touchStartDistance, setTouchStartDistance] = useState(0);
 
   useEffect(() => {
+    if (activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") {
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    }
+  }, [activeBuildTool]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         if (e.key === "+" || e.key === "-" || e.key === "=") {
@@ -83,6 +90,26 @@ const PlaygroundContent = () => {
     };
   }, [activeBuildTool]);
 
+
+  useEffect(() => {
+    const preventNavigation = (e: TouchEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener('touchmove', preventNavigation, { passive: false });
+    
+    return () => {
+      document.removeEventListener('touchmove', preventNavigation);
+    };
+  }, [isDragging]);
+
+  const scaledPosition = {
+    x: position.x * scale,
+    y: position.y * scale
+  };
+
+
   const exitDrawingMode = () => {
     setActiveBuildTool(null);
     setActiveTool("build");
@@ -93,13 +120,12 @@ const PlaygroundContent = () => {
     if (!targetElement) return;
 
     const handleWheel = (e: WheelEvent) => {
-      if (
-        isModalOpen ||
-        isDrawingActive ||
-        activeBuildTool === "drawWall" ||
-        activeBuildTool === "drawRoom"
-      )
+      if (activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") {
+        e.preventDefault();
         return;
+      }
+
+      if (isModalOpen || isDrawingActive) return;
 
       if (e.ctrlKey) {
         e.preventDefault();
@@ -130,13 +156,12 @@ const PlaygroundContent = () => {
   };
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>): void => {
-    if (
-      isModalOpen ||
-      isDrawingActive ||
-      activeBuildTool === "drawWall" ||
-      activeBuildTool === "drawRoom"
-    )
+    if (activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") {
+      e.preventDefault();
       return;
+    }
+
+    if (isModalOpen || isDrawingActive) return;
 
     if (document.body.getAttribute("data-room-touch-interaction") === "true") {
       return;
@@ -155,13 +180,12 @@ const PlaygroundContent = () => {
   };
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>): void => {
-    if (
-      isModalOpen ||
-      isDrawingActive ||
-      activeBuildTool === "drawWall" ||
-      activeBuildTool === "drawRoom"
-    )
+    if (activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") {
+      e.preventDefault();
       return;
+    }
+
+    if (isModalOpen || isDrawingActive) return;
 
     if (document.body.getAttribute("data-room-touch-interaction") === "true") {
       return;
@@ -236,7 +260,7 @@ const PlaygroundContent = () => {
         );
       };
     }
-  }, [scale, isDragging, lastMousePosition, touchStartDistance, isModalOpen]);
+  }, [scale, isDragging, lastMousePosition, touchStartDistance, isModalOpen, activeBuildTool]);
 
   const handleWheel = (e: React.WheelEvent) => {
     if (
@@ -258,13 +282,11 @@ const PlaygroundContent = () => {
   };
 
   const handleMouseDown = (event: React.MouseEvent) => {
-    if (
-      isDrawingActive ||
-      activeBuildTool === "drawWall" ||
-      activeBuildTool === "drawRoom"
-    ) {
+    if (activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") {
       return;
     }
+
+    if (isDrawingActive) return;
 
     setIsDragging(true);
     setLastMousePosition({ x: event.clientX, y: event.clientY });
@@ -354,7 +376,14 @@ const PlaygroundContent = () => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      style={{ overflow: "hidden" }}
+      style={{ 
+        overflow: "hidden", 
+        width: "100%", 
+        height: "100%",
+        position: "fixed",
+        overscrollBehavior: "none",
+        touchAction: "pan-y" 
+      }}
     >
       <InfiniteGrid
         width={window.innerWidth}
@@ -362,15 +391,18 @@ const PlaygroundContent = () => {
         scale={scale}
         position={position}
         rotation={rotation}
+        visualizationOptions={visualizationOptions}
       />
 
+      {/* 
       <div
         style={{
           position: "absolute",
-          top: "49.5%",
-          left: "44.5%",
-          transform: `translate(${position.x}px, ${position.y}px) scale(${scale}) rotate(${rotation}deg)`,
-          transformOrigin: "center",
+          top: "49%",
+          left: "51%",
+          transform: `translate(-50%, -50%) translate(${scaledPosition.x}px, ${scaledPosition.y}px) scale(${scale}) rotate(${rotation}deg)`,
+          transformOrigin: "center center",
+          zIndex: 10
         }}
       >
         <Generated
@@ -378,6 +410,7 @@ const PlaygroundContent = () => {
           visualizationOptions={visualizationOptions}
         />
       </div>
+      */}
 
       <VerticalToolbar onToolSelected={handleToolSelected} />
       {showToolPanel && (
@@ -426,11 +459,11 @@ const PlaygroundContent = () => {
         <div
           style={{
             position: "fixed",
-            bottom: "30px",
-            left: "51%",
+            bottom: "13px",
+            left: "7%",
             transform: "translateX(-50%)",
             zIndex: 1000,
-            padding: "10px 20px",
+            padding: "5px 15px",
             backgroundColor: "rgba(255, 0, 0, 0.7)",
             color: "white",
             borderRadius: "5px",

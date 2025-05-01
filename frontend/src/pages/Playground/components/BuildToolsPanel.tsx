@@ -50,6 +50,7 @@ const BuildToolsPanel: React.FC<BuildToolsProps> = ({ onSelectTool }) => {
     } else {
       onSelectTool(toolId);
       setActiveBuildTool(toolId as BuildTool);
+    
     }
   };
 

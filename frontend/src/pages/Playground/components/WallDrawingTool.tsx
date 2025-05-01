@@ -1,5 +1,5 @@
 // components/WallDrawingTool.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Point } from '../features/types';
 import { createWallPolygon } from '../features/drawingTools';
 import { useFloorPlan } from '../FloorPlanContext';
@@ -27,6 +27,9 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
   const [currentPoint, setCurrentPoint] = useState<Point | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   
+  // Store the SVG element's current transformation matrix
+  const transformMatrixRef = useRef<DOMMatrix | null>(null);
+  
   const { setActiveBuildTool } = useFloorPlan();
 
   useEffect(() => {
@@ -42,6 +45,17 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
     setActiveBuildTool(null);
   };
 
+  // Function to get accurate mouse position in SVG coordinate space
+  const getMousePosition = (e: MouseEvent, svg: SVGSVGElement) => {
+    const CTM = svg.getScreenCTM();
+    if (!CTM) return { x: 0, y: 0 };
+    
+    return {
+      x: (e.clientX - CTM.e) / CTM.a,
+      y: (e.clientY - CTM.f) / CTM.d
+    };
+  };
+
   useEffect(() => {
     if (!isActive || !svgRef.current) return;
 
@@ -50,9 +64,12 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
     const handleSvgMouseDown = (e: MouseEvent) => {
       if (!isActive) return;
       
+      // Get direct SVG coordinates using the current transformation matrix
       const rect = svg.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
+      
+      // Get world coordinates that properly account for both scale and position
       const point = reverseTransformCoordinates(x, y);
       
       if (!isDrawing) {
@@ -78,9 +95,12 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
     const handleSvgMouseMove = (e: MouseEvent) => {
       if (!isActive || !isDrawing) return;
       
+      // Get direct SVG coordinates using the current transformation matrix
       const rect = svg.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
+      
+      // Get world coordinates that properly account for both scale and position
       const point = reverseTransformCoordinates(x, y);
       setCurrentPoint(point);
     };
@@ -108,16 +128,18 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
 
   if (!isActive || !startPoint || !currentPoint || !isDrawing) return null;
 
-  const transformedStart = transformCoordinates(startPoint);
-  const transformedCurrent = transformCoordinates(currentPoint);
+  // Create wall polygon and transform it to screen coordinates
+  const wallPoints = createWallPolygon(startPoint, currentPoint);
+  const transformedStart = transformCoordinates(wallPoints[0]);
+  const transformedEnd = transformCoordinates(wallPoints[1]);
 
   return (
     <>
       <line
         x1={transformedStart.x}
         y1={transformedStart.y}
-        x2={transformedCurrent.x}
-        y2={transformedCurrent.y}
+        x2={transformedEnd.x}
+        y2={transformedEnd.y}
         stroke="#333333"  
         strokeWidth={2}  
         strokeDasharray="5,5"
@@ -129,8 +151,8 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
         fill="#0066cc"
       />
       <circle
-        cx={transformedCurrent.x}
-        cy={transformedCurrent.y}
+        cx={transformedEnd.x}
+        cy={transformedEnd.y}
         r={5}
         fill="#0066cc"
       />

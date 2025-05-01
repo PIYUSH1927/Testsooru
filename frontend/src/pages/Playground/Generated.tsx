@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo} from "react";
 import "./Generated.css";
 import ReactDOM from "react-dom";
 import {
@@ -60,7 +60,6 @@ export default function InteractiveFloorPlan({
   visualizationOptions = {
     showMeasurements: true,
     showRoomLabels: true,
-    showGrid: true,
     wallThickness: 5,
     colorScheme: "standard" as const,
   },
@@ -120,17 +119,14 @@ export default function InteractiveFloorPlan({
     isGroupOperation: false,
   });
 
+  // Initial load from context (only once)
+  const isInitialMount = useRef(true);
   useEffect(() => {
-    if (contextFloorPlanData) {
+    if (isInitialMount.current && contextFloorPlanData) {
       setFloorPlanData(contextFloorPlanData);
+      isInitialMount.current = false;
     }
   }, [contextFloorPlanData]);
-
-  useEffect(() => {
-    if (setContextFloorPlanData) {
-      setContextFloorPlanData(floorPlanData);
-    }
-  }, [floorPlanData, setContextFloorPlanData]);
 
   useEffect(() => {
     if (selectedRoomIds.length === 1) {
@@ -390,18 +386,25 @@ export default function InteractiveFloorPlan({
     }, 10);
   };
 
-  const checkAndUpdateOverlaps = () => {
+  const checkAndUpdateOverlaps = useCallback(() => {
     return checkRoomOverlaps(floorPlanData, roomRotations, setOverlappingRooms);
-  };
+  }, [floorPlanData, roomRotations]);
+
+  useInterval(() => {
+    if (!dragState.active) {
+      checkAndUpdateOverlaps();
+    }
+  }, 300);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      checkAndUpdateOverlaps();
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, [floorPlanData.rooms, roomRotations]);
+    checkAndUpdateOverlaps();
+  }, []);
 
+  useInterval(() => {
+    if (!dragState.active) {
+      checkAndUpdateOverlaps();
+    }
+  }, 500);
   
   const getRoomType = (roomId: string) => {
     const room = floorPlanData.rooms.find((r) => r.id === roomId);
@@ -480,7 +483,7 @@ export default function InteractiveFloorPlan({
       setSelectedRoomIds([]);
       setHasChanges(true);
     }
-  }, [selectedRoomIds, setFloorPlanData, setSelectedRoomIds, setHasChanges, captureStateBeforeChange]);
+  }, [selectedRoomIds, captureStateBeforeChange]);
   
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -489,7 +492,7 @@ export default function InteractiveFloorPlan({
     };
   }, [handleKeyDown]);
 
-  const bounds = calculateBounds(floorPlanData.rooms);
+  const bounds = useMemo(() => calculateBounds(floorPlanData.rooms), [floorPlanData.rooms]);
   const padding = 20;
   const contentWidth = bounds.maxX - bounds.minX + 2 * padding;
   const contentHeight = bounds.maxZ - bounds.minZ + 2 * padding;
@@ -500,7 +503,7 @@ export default function InteractiveFloorPlan({
 
   const eventHandlers = useEventHandlers(
     dragState,
-    svgRef,
+    svgRef as React.RefObject<SVGSVGElement>,
     scale,
     reverseTransformCoordinates,
     calculateRoomDimensions,
@@ -607,7 +610,12 @@ export default function InteractiveFloorPlan({
 
     setFloorPlanData((prevData) => {
       const updatedRooms = [...prevData.rooms, newRoom];
-      const totalArea = updatedRooms.reduce((sum, room) => sum + room.area, 0);
+      const totalArea = updatedRooms.reduce((sum, room) => {
+        if (room.room_type !== 'Wall') {
+          return sum + room.area;
+        }
+        return sum;
+      }, 0);
 
       let updatedRoomTypes = [...prevData.room_types];
       if (!updatedRoomTypes.includes("SecondRoom")) {
@@ -711,6 +719,93 @@ export default function InteractiveFloorPlan({
     }
   `;
 
+  const coordinateSystem = useMemo(() => (
+    <g className="coordinate-system">
+      <circle 
+        cx={padding * scale}
+        cy={contentHeight * scale - padding * scale}
+        r="6"
+        fill="red"
+        stroke="black"
+        strokeWidth="1"
+      />
+      <text 
+        x={padding * scale + 10}
+        y={contentHeight * scale - padding * scale + 5}
+        fontSize="12"
+        fill="black"
+        fontWeight="bold"
+      >
+        Origin (0,0)
+      </text>
+      
+      <line 
+        x1={padding * scale}
+        y1={contentHeight * scale - padding * scale}
+        x2={contentWidth * scale / 2 + 50}
+        y2={contentHeight * scale - padding * scale}
+        stroke="red"
+        strokeWidth="1"
+        markerEnd="url(#arrow)"
+      />
+      <text 
+        x={contentWidth * scale / 3}
+        y={contentHeight * scale - padding * scale + 14}
+        fontSize="10"
+        fill="red"
+        fontWeight="bold"
+      >
+        X-Axis
+      </text>
+
+      <line 
+        x1={padding * scale}
+        y1={contentHeight * scale - padding * scale}
+        x2={padding * scale}
+        y2={contentHeight * scale / 2 - 50}
+        stroke="blue"
+        strokeWidth="1"
+        markerEnd="url(#arrow)"
+      />
+      <text 
+        x={padding * scale - 40}
+        y={contentHeight * scale / 2 + 22}
+        fontSize="10"
+        fill="blue"
+        fontWeight="bold"
+        transform={`
+          rotate(
+            -90,
+            ${
+              transformCoordinates({
+                x: bounds.minX - 12,
+                z: (bounds.minZ + bounds.maxZ) / 2,
+              }).x
+            },
+            ${
+              transformCoordinates({
+                x: bounds.minX - 12,
+                z: (bounds.minZ + bounds.maxZ) / 2,
+              }).y
+            }
+          )
+        `}
+      >
+        Z-Axis
+      </text>
+    </g>
+  ), [bounds, contentHeight, contentWidth, padding, scale, transformCoordinates]);
+
+  // Update context only when explicitly saving
+  const handleSaveFloorPlan = useCallback(() => {
+    saveFloorPlan(floorPlanData, roomRotations, setHasChanges);
+    
+    // Update context after saving
+    if (setContextFloorPlanData) {
+      setContextFloorPlanData(floorPlanData);
+    }
+  }, [floorPlanData, roomRotations, setContextFloorPlanData]);
+
   return (
     <div className={`generated-container`}>
       {renderOverlapAlert({
@@ -722,6 +817,7 @@ export default function InteractiveFloorPlan({
         <style>{floorPlanStyles}</style>
         <style>{edgeStyles}</style>
         <style>{wallStyles}</style>
+        
 
         <div
           ref={floorPlanRef}
@@ -731,22 +827,27 @@ export default function InteractiveFloorPlan({
             left: "50%",
             top: "50%",
             transform: isMobile
-              ? "translate(-40%, -46%)"
-              : "translate(-30%, -49%)",
+              ? "translate(-50%, -50%)"  
+              : "translate(-50%, -50%)",
             width: `${contentWidth * scale}px`,
             height: `${contentHeight * scale}px`,
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "transparent",
           }}
         >
           {options.showMeasurements && (
             <p
               style={{
+                position: "absolute",
+                top: "0px",
+                left: "50%",
+                transform: "translateX(-50%)",
                 textAlign: "center",
                 marginBottom: "-25px",
                 color: "#000",
                 fontSize: "small",
+                width:"100%"
               }}
               className="always-black-text"
             >
@@ -800,6 +901,8 @@ export default function InteractiveFloorPlan({
                 <path d="M 10 0 L 0 5 L 10 10 Z" fill={"black"} />
               </marker>
             </defs>
+
+            {coordinateSystem}
 
             {options.showMeasurements && (
               <>
@@ -868,22 +971,18 @@ export default function InteractiveFloorPlan({
 
                 <line
                   x1={
-                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 8 })
-                      .x
+                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 10 }).x
                   }
                   y1={
-                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 8 })
-                      .y
+                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 10 }).y
                   }
                   x2={
-                    transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 8 })
-                      .x
+                    transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 10 }).x
                   }
                   y2={
-                    transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 8 })
-                      .y
+                    transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 10 }).y
                   }
-                  stroke={"black"}
+                  stroke="black"
                   strokeWidth="1"
                   markerStart="url(#arrow1)"
                   markerEnd="url(#arrow)"
@@ -898,11 +997,11 @@ export default function InteractiveFloorPlan({
                   y={
                     transformCoordinates({
                       x: (bounds.minX + bounds.maxX) / 2,
-                      z: bounds.maxZ + 14,
+                      z: bounds.maxZ + 16,
                     }).y
                   }
                   fontSize="11"
-                  fill={"black"}
+                  fill="black"
                   textAnchor="middle"
                 >
                   {twidth} m
@@ -1320,20 +1419,18 @@ export default function InteractiveFloorPlan({
           {hasChanges && (
             <div
               style={{
-                position: "fixed",
+                position: "absolute",
                 display: "flex",
                 gap: "15px",
-                width: "80%",
-                bottom: "80",
+                bottom: "-50px",
                 left: leftPosition,
                 pointerEvents: "auto",
+                margin:"auto"
               }}
             >
               <button
                 className="save-button"
-                onClick={() =>
-                  saveFloorPlan(floorPlanData, roomRotations, setHasChanges)
-                }
+                onClick={handleSaveFloorPlan}
               >
                 Save Changes
               </button>

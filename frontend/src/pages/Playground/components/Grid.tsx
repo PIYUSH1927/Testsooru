@@ -1,4 +1,6 @@
 import { useRef, useEffect } from "react";
+import Generated from "../Generated"; 
+import { useFloorPlan } from "../FloorPlanContext";
 
 interface InfiniteGridProps {
   width: number;
@@ -6,10 +8,26 @@ interface InfiniteGridProps {
   scale: number;
   position: { x: number; y: number };
   rotation: number;
+  visualizationOptions?: any;
 }
 
-export const InfiniteGrid = ({ width, height, scale, position, rotation }: InfiniteGridProps) => {
+export const InfiniteGrid = ({ 
+  width, 
+  height, 
+  scale, 
+  position, 
+  rotation,
+  visualizationOptions 
+}: InfiniteGridProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { activeBuildTool } = useFloorPlan();
+
+  const isDrawingActive = activeBuildTool === "drawWall" || activeBuildTool === "drawRoom";
+  
+  const scaledPosition = {
+    x: position.x * scale,
+    y: position.y * scale
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -19,8 +37,8 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
     if (!ctx) return;
 
     const updateCanvasSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
     };
 
@@ -31,11 +49,8 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       const subdivisions = 12; 
-
       const baseGridSize = 300; 
-      
       const zoomCycle = Math.log(scale/2) / Math.log(subdivisions) % 1;
-      
       const maxLevels = Math.min(3, Math.max(1, Math.floor(scale)));
 
       for (let level = 0; level < maxLevels; level++) {
@@ -87,23 +102,45 @@ export const InfiniteGrid = ({ width, height, scale, position, rotation }: Infin
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [scale, position, rotation]);
+  }, [scale, position, rotation, width, height]);
 
   return (
     <div
       style={{
-        position: "relative",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        touchAction: isDrawingActive ? "none" : "auto" 
       }}
     >
       <canvas
         ref={canvasRef}
         style={{
-          width: "100vw",
-          height: "100vh",
+          width: "100%",
+          height: "100%",
           zIndex: -1,
           backgroundColor: "#f7f7f7" 
         }}
       />
+      
+      <div
+        style={{
+          position: "absolute",
+          top: "49%",
+          left: "50%",
+          transform: `translate(-50%, -50%) translate(${scaledPosition.x}px, ${scaledPosition.y}px) scale(${scale}) rotate(${rotation}deg)`,
+          transformOrigin: "center center",
+          zIndex: 10
+        }}
+      >
+        <Generated
+          rotation={rotation}
+          visualizationOptions={visualizationOptions}
+        />
+      </div>
     </div>
   );
 };
