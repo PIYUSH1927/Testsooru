@@ -745,7 +745,7 @@ export default function InteractiveFloorPlan({
         x2={contentWidth * scale / 2 + 50}
         y2={contentHeight * scale - padding * scale}
         stroke="red"
-        strokeWidth="1"
+        strokeWidth="2"
         markerEnd="url(#arrow)"
       />
       <text 
@@ -764,7 +764,7 @@ export default function InteractiveFloorPlan({
         x2={padding * scale}
         y2={contentHeight * scale / 2 - 50}
         stroke="blue"
-        strokeWidth="1"
+        strokeWidth="2"
         markerEnd="url(#arrow)"
       />
       <text 
