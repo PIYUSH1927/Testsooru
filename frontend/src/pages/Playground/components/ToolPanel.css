@@ -1,186 +1,274 @@
+/* Base ToolPanel Styles (keeping existing ones) */
 .tool-panel {
-    position: fixed; 
-    left: 75px; 
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.18);
-    width: 260px;
-    max-height: 80vh;
-    overflow-y: auto;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #e0e0e0;
+  position: fixed; 
+  left: 75px; 
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.18);
+  width: 260px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  pointer-events: auto;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2), 
+              0px -4px 6px rgba(0, 0, 0, 0.1),  
+              0px 4px 6px rgba(0, 0, 0, 0.1);  
+  border-radius: 5px;
+}
 
-    pointer-events: auto;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2), 
-                0px -4px 6px rgba(0, 0, 0, 0.1),  
-                0px 4px 6px rgba(0, 0, 0, 0.1);  
-    border-radius: 5px;
-  }
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+}
+
+.close-panel {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.close-panel:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+.panel-content {
+  padding: 16px;
+}
+
+/* New Mini Floor Plan Styles */
+.mini-floor-plan-container {
+  width: 228px;
+  height: 120px;
+  margin-bottom: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
   
-  .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid #e0e0e0;
-    background-color: #f8f9fa;
-    border-radius: 8px 8px 0 0;
-  }
-  
-  .panel-header h2 {
-    margin: 0;
-    font-size: 18px;
-    color: #333;
-    font-weight: 600;
-  }
-  
-  .close-panel {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #666;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-  }
-  
-  .close-panel:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #333;
-  }
-  
-  .panel-content {
-    padding: 16px;
-  }
-  
-  .panel-content h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-size: 16px;
-    color: #444;
-  }
-  
-  .panel-options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .panel-options button {
-    padding: 8px 12px;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #333;
-    transition: all 0.2s ease;
-  }
-  
-  .panel-options button:hover {
-    background-color: #e5e5e5;
-  }
-  
-  .slider-control,
-  .select-control,
-  .checkbox-control {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .slider-control label,
-  .select-control label,
-  .checkbox-control label {
-    font-size: 14px;
-    color: #555;
-  }
-  
-  .checkbox-control {
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .select-control select {
-    padding: 6px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-  }
-  
-  .furniture-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-  
-  .furniture-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-  }
-  
-  .furniture-item:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .furniture-icon {
-    font-size: 24px;
-    margin-bottom: 4px;
-  }
-  
-  .color-selector {
-    margin-bottom: 12px;
-  }
-  
-  .color-choices {
-    display: flex;
-    gap: 8px;
-    margin-top: 6px;
-  }
-  
-  .color-choice {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-  
-  .color-choice:hover {
-    transform: scale(1.1);
-    border-color: #aaa;
-  }
-  
-  .export-button {
-    background-color: #f8f9fa !important;
-    border: 1px solid #dee2e6 !important;
-    padding: 10px !important;
-    text-align: center;
-  }
-  
-  .export-button:hover {
-    background-color: #e9ecef !important;
-  }
-  
-  @media (max-width: 768px) {
-    .tool-panel {
-      display: none;
-    }
-  }
-  
+}
+
+.mini-floor-plan {
+  background-color: #f8f9fa;
+}
+
+.mini-room {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mini-room:hover {
+  opacity: 0.8;
+  stroke: #2196F3;
+  stroke-width: 2px;
+}
+
+.area-display {
+  background-color: #f8f9fa;
+  padding: 9px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.total-area-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-area-label {
+  font-size: 14px;
+  color: #555;
+}
+
+.total-area-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.selected-room-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-type {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.room-area {
+  font-size: 14px;
+  color: #333;
+}
+
+.room-dimensions {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Project Options Menu */
+.project-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-option {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.menu-option:hover {
+  background-color: #f0f0f0;
+}
+
+.option-icon {
+  margin-right: 12px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.option-text {
+  flex-grow: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.option-arrow {
+  font-size: 18px;
+  color: #aaa;
+}
+
+/* Existing Panel Option Styles */
+.panel-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-options button {
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.panel-options button:hover {
+  background-color: #e5e5e5;
+}
+
+.slider-control,
+.select-control,
+.checkbox-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slider-control label,
+.select-control label,
+.checkbox-control label {
+  font-size: 14px;
+  color: #555;
+}
+
+.checkbox-control {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.select-control select {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.furniture-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.furniture-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.furniture-item:hover {
+  background-color: #f0f0f0;
+}
+
+.furniture-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.export-button {
+  background-color: #f8f9fa !important;
+  border: 1px solid #dee2e6 !important;
+  padding: 10px !important;
+  text-align: center;
+}
+
+.export-button:hover {
+  background-color: #e9ecef !important;
+}
+
 .help-links {
   list-style-type: none;
   padding: 0;
@@ -198,4 +286,172 @@
 
 .help-links a:hover {
   text-decoration: underline;
+}
+
+/* Info Panel Styles */
+.info-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-options .menu-option {
+  background-color: #f2f2f2;
+  border: none;
+  padding: 12px 16px;
+}
+
+.info-options .menu-option:hover {
+  background-color: #d9d8d8;
+}
+
+
+@media (max-width: 768px) {
+  .tool-panel {
+    width: 90%;
+    left: 5%;
+    max-height: 70vh;
+  }
+  
+  .mini-floor-plan-container {
+    width: 100%;
+  }
+}
+
+/* Option Header with Back Button - FIXED */
+.option-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.back-button {
+  background-color: #f2f2f2;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 50%;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-button:hover {
+  background-color: #e5e5e5;
+}
+
+.section-title1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333 !important; 
+ 
+}
+
+/* Instruction text */
+.instruction-text {
+  margin: 0 0 0px 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Room Type Grid Layout - FIXED */
+.room-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  margin-top: 2px;
+  position: relative;
+  right: 5px;
+}
+
+.room-type-item {
+  padding: 8px 10px;
+  background-color: #f2f2f2;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  font-size: 13px;
+}
+
+.room-type-item:hover {
+  background-color: #e9ecef;
+}
+
+.room-type-item.selected {
+  background-color: #2196F3;
+  border-color: black;
+  color: black;
+}
+
+/* Label input styles */
+.label-input-container {
+  margin-top: 6px;
+}
+
+.label-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.label-input:focus {
+  outline: none;
+  border-color: #aaa;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+.click-instruction {
+  font-size: 12px;
+  color: #666;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Action Buttons for Save/Cancel */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.save-button {
+  padding: 8px 12px;
+  background-color: #4CAF50 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 1;
+  font-weight: 500;
+}
+
+.save-button:hover {
+  background-color: #45a049 !important;
+}
+
+.cancel-button {
+  padding: 8px 12px;
+  background-color: #f44336 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 1;
+  font-weight: 500;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f !important;
+}
+
+/* Room Type Manager */
+.room-type-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

@@ -10,9 +10,9 @@ import VisualizationPanel from "./Playground/components/VisualizationPanel";
 import { FloorPlanProvider, useFloorPlan } from "./Playground/FloorPlanContext";
 import {
   Download,
+  ArrowBack,
   Share,
-  DownloadOutlined,
-  ShareOutlined,
+  
 } from "@mui/icons-material";
 
 const roomData = [
@@ -488,6 +488,30 @@ const PlaygroundContent = () => {
           alignItems: "center",
         }}
       >
+    <div
+  onClick={() => navigate("/projects")}
+  style={{
+    display: "flex",
+    alignItems: "center",
+    border: "1px solid black",
+    borderRadius: "8px",
+    padding: "8px 14px",
+    cursor: "pointer",
+    backgroundColor: "white",
+    color: "black",
+    fontWeight: "bold",
+    fontSize: "14px",
+  }}
+>
+  <ArrowBack
+    style={{
+      marginRight: "8px",
+      fontSize: "22px",
+    }}
+  />
+  Back
+</div>
+
         <div
           style={{
             display: "flex",

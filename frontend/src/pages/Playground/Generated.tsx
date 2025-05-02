@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo} from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import "./Generated.css";
 import ReactDOM from "react-dom";
 import {
@@ -31,6 +37,9 @@ import { useInterval } from "./features/intervalHooks";
 import {
   useEventHandlers,
   handleRoomSelection,
+  getLabelPlacementState,
+  setLabelPlacementState,
+  getInfoToolPanelState,
 } from "./features/eventHandlers";
 import { saveFloorPlan } from "./features/save";
 import { initialFloorPlanData } from "./features/initialData";
@@ -73,6 +82,8 @@ export default function InteractiveFloorPlan({
     activeBuildTool,
     isDrawingActive,
     setIsDrawingActive,
+    handleRoomTypeUpdate,
+    addLabel,
   } = useFloorPlan();
 
   const options: VisualizationOptions = {
@@ -119,7 +130,6 @@ export default function InteractiveFloorPlan({
     isGroupOperation: false,
   });
 
-  // Initial load from context (only once)
   const isInitialMount = useRef(true);
   useEffect(() => {
     if (isInitialMount.current && contextFloorPlanData) {
@@ -261,6 +271,11 @@ export default function InteractiveFloorPlan({
       setHasChanges,
       floorPlanData
     );
+  };
+
+  const shouldShowRotationIcon = () => {
+    const infoPanelState = getInfoToolPanelState();
+    return !infoPanelState.isActive;
   };
 
   const handleTouchStartWithHistory = (
@@ -405,7 +420,7 @@ export default function InteractiveFloorPlan({
       checkAndUpdateOverlaps();
     }
   }, 500);
-  
+
   const getRoomType = (roomId: string) => {
     const room = floorPlanData.rooms.find((r) => r.id === roomId);
     return room?.room_type;
@@ -459,40 +474,57 @@ export default function InteractiveFloorPlan({
     };
   }, [selectedRoomIds, dragState.active, isDrawingActive, activeBuildTool]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedRoomIds.length > 0) {
-      captureStateBeforeChange();
-      
-      setFloorPlanData(prevData => {
-        const updatedRooms = prevData.rooms.filter(room => !selectedRoomIds.includes(room.id));
-        const totalArea = updatedRooms.reduce((sum, room) => {
-          if (room.room_type !== 'Wall') {
-            return sum + room.area;
-          }
-          return sum;
-        }, 0);
-        
-        return {
-          ...prevData,
-          rooms: updatedRooms,
-          room_count: updatedRooms.length,
-          total_area: parseFloat(totalArea.toFixed(2))
-        };
-      });
-      
-      setSelectedRoomIds([]);
-      setHasChanges(true);
-    }
-  }, [selectedRoomIds, captureStateBeforeChange]);
-  
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
+    if (contextFloorPlanData) {
+      setFloorPlanData(contextFloorPlanData);
+    }
+  }, [contextFloorPlanData]);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (
+        (e.key === "Delete" || e.key === "Backspace") &&
+        selectedRoomIds.length > 0
+      ) {
+        captureStateBeforeChange();
+
+        setFloorPlanData((prevData) => {
+          const updatedRooms = prevData.rooms.filter(
+            (room) => !selectedRoomIds.includes(room.id)
+          );
+          const totalArea = updatedRooms.reduce((sum, room) => {
+            if (room.room_type !== "Wall") {
+              return sum + room.area;
+            }
+            return sum;
+          }, 0);
+
+          return {
+            ...prevData,
+            rooms: updatedRooms,
+            room_count: updatedRooms.length,
+            total_area: parseFloat(totalArea.toFixed(2)),
+          };
+        });
+
+        setSelectedRoomIds([]);
+        setHasChanges(true);
+      }
+    },
+    [selectedRoomIds, captureStateBeforeChange]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyDown]);
 
-  const bounds = useMemo(() => calculateBounds(floorPlanData.rooms), [floorPlanData.rooms]);
+  const bounds = useMemo(
+    () => calculateBounds(floorPlanData.rooms),
+    [floorPlanData.rooms]
+  );
   const padding = 20;
   const contentWidth = bounds.maxX - bounds.minX + 2 * padding;
   const contentHeight = bounds.maxZ - bounds.minZ + 2 * padding;
@@ -500,6 +532,50 @@ export default function InteractiveFloorPlan({
 
   const { transformCoordinates, reverseTransformCoordinates } =
     useCoordinateTransforms(bounds, padding, scale);
+
+  useEffect(() => {
+    const handleFloorPlanClick = (e: MouseEvent) => {
+      const labelState = getLabelPlacementState();
+      const infoPanelState = getInfoToolPanelState();
+
+      if (
+        infoPanelState.isActive &&
+        infoPanelState.activeOption === "placeLabel" &&
+        labelState.isPlacing &&
+        labelState.text
+      ) {
+        const target = e.target as Element;
+        const isFloorPlanClick =
+          target.closest("svg") &&
+          !target.closest(
+            ".room-polygon, .resize-handle, .edge-indicator, .rotate-button, .tool-panel"
+          );
+
+        if (isFloorPlanClick && svgRef.current) {
+          const rect = svgRef.current.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          const floorPlanCoords = reverseTransformCoordinates(x, y);
+
+          addLabel(labelState.text, floorPlanCoords);
+
+          setLabelPlacementState(false, null);
+
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }
+    };
+
+    document.addEventListener("click", handleFloorPlanClick, { capture: true });
+
+    return () => {
+      document.removeEventListener("click", handleFloorPlanClick, {
+        capture: true,
+      });
+    };
+  }, [reverseTransformCoordinates, addLabel]);
 
   const eventHandlers = useEventHandlers(
     dragState,
@@ -600,7 +676,7 @@ export default function InteractiveFloorPlan({
 
     const newRoom: Room = {
       id: generateUniqueId("room"),
-      room_type: "SecondRoom",
+      room_type: "",
       area: area,
       height: dimensions.height,
       width: dimensions.width,
@@ -611,7 +687,7 @@ export default function InteractiveFloorPlan({
     setFloorPlanData((prevData) => {
       const updatedRooms = [...prevData.rooms, newRoom];
       const totalArea = updatedRooms.reduce((sum, room) => {
-        if (room.room_type !== 'Wall') {
+        if (room.room_type !== "Wall") {
           return sum + room.area;
         }
         return sum;
@@ -719,61 +795,62 @@ export default function InteractiveFloorPlan({
     }
   `;
 
-  const coordinateSystem = useMemo(() => (
-    <g className="coordinate-system">
-      <circle 
-        cx={padding * scale}
-        cy={contentHeight * scale - padding * scale}
-        r="6"
-        fill="red"
-        stroke="black"
-        strokeWidth="1"
-      />
-      <text 
-        x={padding * scale + 10}
-        y={contentHeight * scale - padding * scale + 5}
-        fontSize="12"
-        fill="black"
-        fontWeight="bold"
-      >
-        Origin (0,0)
-      </text>
-      
-      <line 
-        x1={padding * scale}
-        y1={contentHeight * scale - padding * scale}
-        x2={contentWidth * scale / 2 + 50}
-        y2={contentHeight * scale - padding * scale}
-        stroke="red"
-        strokeWidth="2"
-        markerEnd="url(#arrow)"
-      />
-      <text 
-        x={contentWidth * scale / 3}
-        y={contentHeight * scale - padding * scale + 14}
-        fontSize="10"
-        fill="red"
-        fontWeight="bold"
-      >
-        X-Axis
-      </text>
+  const coordinateSystem = useMemo(
+    () => (
+      <g className="coordinate-system">
+        <circle
+          cx={padding * scale}
+          cy={contentHeight * scale - padding * scale}
+          r="6"
+          fill="red"
+          stroke="black"
+          strokeWidth="1"
+        />
+        <text
+          x={padding * scale + 10}
+          y={contentHeight * scale - padding * scale + 5}
+          fontSize="12"
+          fill="black"
+          fontWeight="bold"
+        >
+          Origin (0,0)
+        </text>
 
-      <line 
-        x1={padding * scale}
-        y1={contentHeight * scale - padding * scale}
-        x2={padding * scale}
-        y2={contentHeight * scale / 2 - 50}
-        stroke="blue"
-        strokeWidth="2"
-        markerEnd="url(#arrow)"
-      />
-      <text 
-        x={padding * scale - 40}
-        y={contentHeight * scale / 2 + 22}
-        fontSize="10"
-        fill="blue"
-        fontWeight="bold"
-        transform={`
+        <line
+          x1={padding * scale}
+          y1={contentHeight * scale - padding * scale}
+          x2={(contentWidth * scale) / 2 + 50}
+          y2={contentHeight * scale - padding * scale}
+          stroke="red"
+          strokeWidth="2"
+          markerEnd="url(#arrow)"
+        />
+        <text
+          x={(contentWidth * scale) / 3}
+          y={contentHeight * scale - padding * scale + 14}
+          fontSize="10"
+          fill="red"
+          fontWeight="bold"
+        >
+          X-Axis
+        </text>
+
+        <line
+          x1={padding * scale}
+          y1={contentHeight * scale - padding * scale}
+          x2={padding * scale}
+          y2={(contentHeight * scale) / 2 - 50}
+          stroke="blue"
+          strokeWidth="2"
+          markerEnd="url(#arrow)"
+        />
+        <text
+          x={padding * scale - 40}
+          y={(contentHeight * scale) / 2 + 22}
+          fontSize="10"
+          fill="blue"
+          fontWeight="bold"
+          transform={`
           rotate(
             -90,
             ${
@@ -790,16 +867,18 @@ export default function InteractiveFloorPlan({
             }
           )
         `}
-      >
-        Z-Axis
-      </text>
-    </g>
-  ), [bounds, contentHeight, contentWidth, padding, scale, transformCoordinates]);
+        >
+          Z-Axis
+        </text>
+      </g>
+    ),
+    [bounds, contentHeight, contentWidth, padding, scale, transformCoordinates]
+  );
 
   // Update context only when explicitly saving
   const handleSaveFloorPlan = useCallback(() => {
     saveFloorPlan(floorPlanData, roomRotations, setHasChanges);
-    
+
     // Update context after saving
     if (setContextFloorPlanData) {
       setContextFloorPlanData(floorPlanData);
@@ -817,7 +896,6 @@ export default function InteractiveFloorPlan({
         <style>{floorPlanStyles}</style>
         <style>{edgeStyles}</style>
         <style>{wallStyles}</style>
-        
 
         <div
           ref={floorPlanRef}
@@ -827,7 +905,7 @@ export default function InteractiveFloorPlan({
             left: "50%",
             top: "50%",
             transform: isMobile
-              ? "translate(-50%, -50%)"  
+              ? "translate(-50%, -50%)"
               : "translate(-50%, -50%)",
             width: `${contentWidth * scale}px`,
             height: `${contentHeight * scale}px`,
@@ -847,7 +925,7 @@ export default function InteractiveFloorPlan({
                 marginBottom: "-25px",
                 color: "#000",
                 fontSize: "small",
-                width:"100%"
+                width: "100%",
               }}
               className="always-black-text"
             >
@@ -876,6 +954,39 @@ export default function InteractiveFloorPlan({
               backgroundColor: "transparent",
             }}
           >
+            {floorPlanData.labels &&
+              floorPlanData.labels.map((label) => {
+                const position = transformCoordinates(label.position);
+
+                return (
+                  <g key={label.id} className="floor-plan-label">
+                    {/* Background for better visibility */}
+                    <rect
+                      x={position.x - 4 * label.text.length}
+                      y={position.y - 12}
+                      width={8 * label.text.length}
+                      height={18}
+                      fill="rgba(255, 255, 255, 0.7)"
+                      rx="3"
+                      ry="3"
+                      stroke="#000000"
+                      strokeWidth="0.5"
+                      opacity="0.8"
+                    />
+                    <text
+                      x={position.x}
+                      y={position.y}
+                      fill={label.color || "#000000"}
+                      fontSize={label.fontSize || 12}
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      pointerEvents="none"
+                    >
+                      {label.text}
+                    </text>
+                  </g>
+                );
+              })}
             <defs>
               <marker
                 id="arrow"
@@ -971,16 +1082,28 @@ export default function InteractiveFloorPlan({
 
                 <line
                   x1={
-                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 10 }).x
+                    transformCoordinates({
+                      x: bounds.minX,
+                      z: bounds.maxZ + 10,
+                    }).x
                   }
                   y1={
-                    transformCoordinates({ x: bounds.minX, z: bounds.maxZ + 10 }).y
+                    transformCoordinates({
+                      x: bounds.minX,
+                      z: bounds.maxZ + 10,
+                    }).y
                   }
                   x2={
-                    transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 10 }).x
+                    transformCoordinates({
+                      x: bounds.maxX,
+                      z: bounds.maxZ + 10,
+                    }).x
                   }
                   y2={
-                    transformCoordinates({ x: bounds.maxX, z: bounds.maxZ + 10 }).y
+                    transformCoordinates({
+                      x: bounds.maxX,
+                      z: bounds.maxZ + 10,
+                    }).y
                   }
                   stroke="black"
                   strokeWidth="1"
@@ -1012,128 +1135,145 @@ export default function InteractiveFloorPlan({
             {floorPlanData.rooms.map((room) => {
               const transformedPoints =
                 room.floor_polygon.map(transformCoordinates);
-                if (room.room_type === "Wall" && room.floor_polygon.length === 2) {
-                  const startPoint = transformedPoints[0];
-                  const endPoint = transformedPoints[1];
-                  const isSelected = selectedRoomIds.includes(room.id);
-                  const midpoint = {
-                    x: (startPoint.x + endPoint.x) / 2,
-                    y: (startPoint.y + endPoint.y) / 2
-                  };
-                
-                  return (
-                    <g 
-                      key={room.id} 
-                      transform={`rotate(${roomRotations[room.id] || 0}, ${midpoint.x}, ${midpoint.y})`}
-                    >
-                      <line
-                        id={room.id}
-                        className={`wall-line ${isSelected ? "selected-wall" : ""}`}
-                        x1={startPoint.x}
-                        y1={startPoint.y}
-                        x2={endPoint.x}
-                        y2={endPoint.y}
-                        stroke={isSelected ? "#2196F3" : "#333333"}
-                        strokeWidth={options.wallThickness}
-                        strokeLinecap="square"
-                        onClick={(e) => {
-                          if (isDrawingActive || activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") {
-                            return;
+              if (
+                room.room_type === "Wall" &&
+                room.floor_polygon.length === 2
+              ) {
+                const startPoint = transformedPoints[0];
+                const endPoint = transformedPoints[1];
+                const isSelected = selectedRoomIds.includes(room.id);
+                const midpoint = {
+                  x: (startPoint.x + endPoint.x) / 2,
+                  y: (startPoint.y + endPoint.y) / 2,
+                };
+
+                return (
+                  <g
+                    key={room.id}
+                    transform={`rotate(${roomRotations[room.id] || 0}, ${
+                      midpoint.x
+                    }, ${midpoint.y})`}
+                  >
+                    <line
+                      id={room.id}
+                      className={`wall-line ${
+                        isSelected ? "selected-wall" : ""
+                      }`}
+                      x1={startPoint.x}
+                      y1={startPoint.y}
+                      x2={endPoint.x}
+                      y2={endPoint.y}
+                      stroke={isSelected ? "#2196F3" : "#333333"}
+                      strokeWidth={options.wallThickness}
+                      strokeLinecap="square"
+                      onClick={(e) => {
+                        if (
+                          isDrawingActive ||
+                          activeBuildTool === "drawWall" ||
+                          activeBuildTool === "drawRoom"
+                        ) {
+                          return;
+                        }
+                        handleRoomSelection(
+                          room.id,
+                          e,
+                          selectedRoomIds,
+                          setSelectedRoomIds,
+                          handleRoomTypeUpdate
+                        );
+                      }}
+                      onMouseDown={(e) =>
+                        handleMouseDownWithHistory(
+                          e,
+                          room.id,
+                          svgRef,
+                          setDragState,
+                          setHasChanges,
+                          setSelectedRoomIds,
+                          selectedRoomIds
+                        )
+                      }
+                      onTouchStart={(e) =>
+                        handleTouchStartWithHistory(
+                          e,
+                          room.id,
+                          svgRef,
+                          setDragState,
+                          setHasChanges,
+                          setSelectedRoomIds,
+                          selectedRoomIds
+                        )
+                      }
+                    />
+
+                    {isSelected && (
+                      <>
+                        <circle
+                          cx={startPoint.x}
+                          cy={startPoint.y}
+                          r={isMobile ? 8 : 6}
+                          className="resize-handle"
+                          onMouseDown={(e) =>
+                            handleVertexMouseDownWithHistory(
+                              e,
+                              room.id,
+                              0,
+                              svgRef,
+                              setDragState,
+                              setSelectedRoomIds,
+                              selectedRoomIds,
+                              setHasChanges
+                            )
                           }
-                          handleRoomSelection(room.id, e, selectedRoomIds, setSelectedRoomIds);
-                        }}
-                        onMouseDown={(e) =>
-                          handleMouseDownWithHistory(
-                            e,
-                            room.id,
-                            svgRef,
-                            setDragState,
-                            setHasChanges,
-                            setSelectedRoomIds,
-                            selectedRoomIds
-                          )
-                        }
-                        onTouchStart={(e) =>
-                          handleTouchStartWithHistory(
-                            e,
-                            room.id,
-                            svgRef,
-                            setDragState,
-                            setHasChanges,
-                            setSelectedRoomIds,
-                            selectedRoomIds
-                          )
-                        }
-                      />
-                      
-                      {isSelected && (
-                        <>
-                          <circle
-                            cx={startPoint.x}
-                            cy={startPoint.y}
-                            r={isMobile ? 8 : 6}
-                            className="resize-handle"
-                            onMouseDown={(e) =>
-                              handleVertexMouseDownWithHistory(
-                                e,
-                                room.id,
-                                0, 
-                                svgRef,
-                                setDragState,
-                                setSelectedRoomIds,
-                                selectedRoomIds,
-                                setHasChanges
-                              )
-                            }
-                            onTouchStart={(e) =>
-                              handleVertexTouchStartWithHistory(
-                                e,
-                                room.id,
-                                0, 
-                                svgRef,
-                                setDragState,
-                                setSelectedRoomIds,
-                                selectedRoomIds,
-                                setHasChanges
-                              )
-                            }
-                          />
-                          
-                          <circle
-                            cx={endPoint.x}
-                            cy={endPoint.y}
-                            r={isMobile ? 8 : 6}
-                            className="resize-handle"
-                            onMouseDown={(e) =>
-                              handleVertexMouseDownWithHistory(
-                                e,
-                                room.id,
-                                1, 
-                                svgRef,
-                                setDragState,
-                                setSelectedRoomIds,
-                                selectedRoomIds,
-                                setHasChanges
-                              )
-                            }
-                            onTouchStart={(e) =>
-                              handleVertexTouchStartWithHistory(
-                                e,
-                                room.id,
-                                1, 
-                                svgRef,
-                                setDragState,
-                                setSelectedRoomIds,
-                                selectedRoomIds,
-                                setHasChanges
-                              )
-                            }
-                          />
-                        </>
-                      )}
-                    </g>
-                  );
-                }
+                          onTouchStart={(e) =>
+                            handleVertexTouchStartWithHistory(
+                              e,
+                              room.id,
+                              0,
+                              svgRef,
+                              setDragState,
+                              setSelectedRoomIds,
+                              selectedRoomIds,
+                              setHasChanges
+                            )
+                          }
+                        />
+
+                        <circle
+                          cx={endPoint.x}
+                          cy={endPoint.y}
+                          r={isMobile ? 8 : 6}
+                          className="resize-handle"
+                          onMouseDown={(e) =>
+                            handleVertexMouseDownWithHistory(
+                              e,
+                              room.id,
+                              1,
+                              svgRef,
+                              setDragState,
+                              setSelectedRoomIds,
+                              selectedRoomIds,
+                              setHasChanges
+                            )
+                          }
+                          onTouchStart={(e) =>
+                            handleVertexTouchStartWithHistory(
+                              e,
+                              room.id,
+                              1,
+                              svgRef,
+                              setDragState,
+                              setSelectedRoomIds,
+                              selectedRoomIds,
+                              setHasChanges
+                            )
+                          }
+                        />
+                      </>
+                    )}
+                  </g>
+                );
+              }
 
               const polygonPoints = transformedPoints
                 .map((p) => `${p.x},${p.y}`)
@@ -1161,6 +1301,7 @@ export default function InteractiveFloorPlan({
                 >
                   <polygon
                     id={room.id}
+                    key={`${room.id}-${room.room_type}`}
                     className={`room-polygon ${
                       isSelected
                         ? isPrimarySelection
@@ -1192,7 +1333,8 @@ export default function InteractiveFloorPlan({
                         room.id,
                         e,
                         selectedRoomIds,
-                        setSelectedRoomIds
+                        setSelectedRoomIds,
+                        handleRoomTypeUpdate
                       );
                     }}
                     onMouseDown={(e) =>
@@ -1268,12 +1410,12 @@ export default function InteractiveFloorPlan({
                         }
                       />
                     ))}
-                  {isSelected && !isWall && (
+                  {isSelected && !isWall && shouldShowRotationIcon() && (
                     <foreignObject
-                      x={centroid.x - (isMobile ? 8 : 15)}
-                      y={centroid.y - (isMobile ? 8 : 15)}
-                      width={isMobile ? "20" : "30"}
-                      height={isMobile ? "20" : "30"}
+                      x={centroid.x - (isMobile ? 8 : 10)}
+                      y={centroid.y - (isMobile ? 8 : 10)}
+                      width={isMobile ? "20" : "20"}
+                      height={isMobile ? "20" : "20"}
                     >
                       <button
                         className="rotate-button"
@@ -1320,17 +1462,17 @@ export default function InteractiveFloorPlan({
                           }
                         }}
                         style={{
-                          width: isMobile ? "25px" : "40px",
-                          height: isMobile ? "25px" : "40px",
+                          width: isMobile ? "20px" : "30px",
+                          height: isMobile ? "20px" : "30px",
                           position: "relative",
                           right: isMobile ? "8px" : "12px",
                           bottom: "5px",
                           borderRadius: "50%",
                           zIndex: "100",
                           background: "transparent",
-                          color: "green",
+                          color: "#333333",
                           fontWeight: "bolder",
-                          fontSize: isMobile ? "20px" : "35px",
+                          fontSize: isMobile ? "15px" : "20px",
                           border: "none",
                           cursor: "pointer",
                         }}
@@ -1349,7 +1491,7 @@ export default function InteractiveFloorPlan({
                       <text
                         className="room-label room-name1"
                         x={centroid.x}
-                        y={centroid.y - 2}
+                        y={centroid.y}
                         pointerEvents="none"
                         fill={"black"}
                       >
@@ -1425,13 +1567,10 @@ export default function InteractiveFloorPlan({
                 bottom: "-50px",
                 left: leftPosition,
                 pointerEvents: "auto",
-                margin:"auto"
+                margin: "auto",
               }}
             >
-              <button
-                className="save-button"
-                onClick={handleSaveFloorPlan}
-              >
+              <button className="save-button" onClick={handleSaveFloorPlan}>
                 Save Changes
               </button>
               <button className="undo-button" onClick={handleResetChanges}>

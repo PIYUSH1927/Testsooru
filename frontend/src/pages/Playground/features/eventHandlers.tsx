@@ -45,6 +45,15 @@ interface FloorPlanData {
   rooms: Room[];
 }
 
+let globalSelectedRoomType: string | null = null;
+
+export function setGlobalSelectedRoomType(roomType: string | null) {
+  globalSelectedRoomType = roomType;
+}
+
+export function getGlobalSelectedRoomType() {
+  return globalSelectedRoomType;
+}
 
 export function useEventHandlers(
   dragState: DragState,
@@ -173,17 +182,47 @@ export function useEventHandlers(
   };
 }
 
+let infoToolPanelActive = false;
+let activeInfoOption: string | null = null;
+
+export function setInfoToolPanelState(
+  isActive: boolean,
+  option: string | null
+) {
+  infoToolPanelActive = isActive;
+  activeInfoOption = option;
+}
+
+export function getInfoToolPanelState() {
+  return { isActive: infoToolPanelActive, activeOption: activeInfoOption };
+}
+
 export function handleRoomSelection(
   roomId: string,
   event: React.MouseEvent | React.TouchEvent,
   selectedRoomIds: string[],
-  setSelectedRoomIds: React.Dispatch<React.SetStateAction<string[]>>
+  setSelectedRoomIds: React.Dispatch<React.SetStateAction<string[]>>,
+  handleRoomTypeUpdate?: (roomId: string, roomType: string) => void
 ) {
   event.stopPropagation();
 
+  const infoPanelState = getInfoToolPanelState();
+
+  if (infoPanelState.isActive) {
+    if (
+      infoPanelState.activeOption === "setRoomtype" &&
+      globalSelectedRoomType &&
+      handleRoomTypeUpdate
+    ) {
+      handleRoomTypeUpdate(roomId, globalSelectedRoomType);
+    }
+
+    return;
+  }
+
   if ("ctrlKey" in event) {
     const isMultiSelectMode = event.ctrlKey || event.metaKey;
-    
+
     if (isMultiSelectMode) {
       setSelectedRoomIds((prev) => {
         if (prev.includes(roomId)) {
@@ -195,9 +234,7 @@ export function handleRoomSelection(
     } else {
       setSelectedRoomIds([roomId]);
     }
-  } 
-
-  else if ("touches" in event) {
+  } else if ("touches" in event) {
     if (selectedRoomIds.length > 0) {
       if (!selectedRoomIds.includes(roomId)) {
         setSelectedRoomIds([...selectedRoomIds, roomId]);
@@ -206,4 +243,19 @@ export function handleRoomSelection(
       setSelectedRoomIds([roomId]);
     }
   }
+}
+
+let isPlacingLabel = false;
+let pendingLabelText: string | null = null;
+
+export function setLabelPlacementState(
+  isPlacing: boolean,
+  text: string | null
+) {
+  isPlacingLabel = isPlacing;
+  pendingLabelText = text;
+}
+
+export function getLabelPlacementState() {
+  return { isPlacing: isPlacingLabel, text: pendingLabelText };
 }

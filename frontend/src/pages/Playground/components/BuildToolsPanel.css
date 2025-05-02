@@ -6,14 +6,16 @@
 .build-tool-item {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   transition: background-color 0.2s;
   border-radius: 4px;
+  background-color: #f5f5f5;
+  margin-bottom: 4px;
 }
 
 .build-tool-item:hover {
-  background-color: #f5f5f5;
+  background-color: #d9d9d9;
 }
 
 .build-tool-icon {
@@ -31,6 +33,7 @@
   font-size: 14px;
   color: #333;
 }
+
 
 .submenu-indicator {
   font-size: 18px;

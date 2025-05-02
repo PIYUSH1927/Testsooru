@@ -76,7 +76,6 @@ export function saveFloorPlan(
     
     setHasChanges(false);
     
-    alert("Floor plan saved successfully!");
     
     return finalFloorPlanData;
   } catch (error) {

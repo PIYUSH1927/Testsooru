@@ -158,7 +158,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackToLogin }) => {
       });
 
       const data = await response.json();
-      console.log("Registration response:", response.status, data);
+     
 
       if (response.ok) {
         onBackToLogin("Registration successful! Please log in.");

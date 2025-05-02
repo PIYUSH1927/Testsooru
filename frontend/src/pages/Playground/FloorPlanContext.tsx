@@ -1,6 +1,14 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { initialFloorPlanData } from './features/initialData';
-import { FloorPlanData, BuildTool } from './features/types';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+  useCallback,
+} from "react";
+import { initialFloorPlanData } from "./features/initialData";
+import { FloorPlanData, BuildTool, Point, Label } from "./features/types";
+import { saveFloorPlan } from "./features/save";
 
 export interface VisualizationOptions {
   showMeasurements: boolean;
@@ -8,7 +16,7 @@ export interface VisualizationOptions {
   showGrid: boolean;
   darkMode: boolean;
   wallThickness: number;
-  colorScheme: 'standard' | 'monochrome' | 'pastel' | 'contrast';
+  colorScheme: "standard" | "monochrome" | "pastel" | "contrast";
 }
 
 interface FloorPlanContextType {
@@ -32,6 +40,16 @@ interface FloorPlanContextType {
   setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
   defaultScale: number;
   isZoomingDisabled: boolean;
+  hasChanges: boolean;
+  setHasChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  roomRotations: { [key: string]: number };
+  setRoomRotations: React.Dispatch<
+    React.SetStateAction<{ [key: string]: number }>
+  >;
+  handleRoomTypeUpdate: (roomId: string, newRoomType: string) => void;
+  saveFloorPlanChanges: () => void;
+  resetFloorPlanChanges: () => void;
+  addLabel: (text: string, position: Point) => void;
 }
 
 export const defaultVisualizationOptions: VisualizationOptions = {
@@ -40,25 +58,36 @@ export const defaultVisualizationOptions: VisualizationOptions = {
   showGrid: false,
   darkMode: false,
   wallThickness: 5,
-  colorScheme: 'standard',
+  colorScheme: "standard",
 };
 
-const FloorPlanContext = createContext<FloorPlanContextType | undefined>(undefined);
+const FloorPlanContext = createContext<FloorPlanContextType | undefined>(
+  undefined
+);
 
-export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [visualizationOptions, setVisualizationOptions] = useState<VisualizationOptions>(
-    defaultVisualizationOptions
-  );
-  const [activeTool, setActiveTool] = useState<string>('design');
-  const [floorPlanData, setFloorPlanData] = useState<FloorPlanData>(initialFloorPlanData);
+export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [visualizationOptions, setVisualizationOptions] =
+    useState<VisualizationOptions>(defaultVisualizationOptions);
+  const [activeTool, setActiveTool] = useState<string>("design");
+  const [floorPlanData, setFloorPlanData] =
+    useState<FloorPlanData>(initialFloorPlanData);
   const [activeBuildTool, setActiveBuildTool] = useState<BuildTool>(null);
   const [isDrawingActive, setIsDrawingActive] = useState(false);
-  
+  const [hasChanges, setHasChanges] = useState(false);
+  const [roomRotations, setRoomRotations] = useState<{ [key: string]: number }>(
+    {}
+  );
+
+  const [originalFloorPlanData, setOriginalFloorPlanData] =
+    useState<FloorPlanData>(initialFloorPlanData);
+
   const defaultScale = window.innerWidth < 850 ? 1.6 : 2.5;
-  
+
   const [scale, setScale] = useState(defaultScale);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  
+
   const isZoomingDisabled = activeBuildTool !== null;
 
   const updateVisualizationOption = <K extends keyof VisualizationOptions>(
@@ -75,6 +104,70 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
     setVisualizationOptions(defaultVisualizationOptions);
   };
 
+  const handleRoomTypeUpdate = useCallback(
+    (roomId: string, newRoomType: string) => {
+      if (!hasChanges) {
+        setOriginalFloorPlanData(JSON.parse(JSON.stringify(floorPlanData)));
+      }
+
+      setFloorPlanData((prevData) => {
+        const updatedRooms = prevData.rooms.map((room) =>
+          room.id === roomId ? { ...room, room_type: newRoomType } : { ...room }
+        );
+
+        const newData = {
+          ...prevData,
+          rooms: updatedRooms,
+        };
+
+        return newData;
+      });
+
+      setHasChanges(true);
+    },
+    [floorPlanData, hasChanges]
+  );
+
+  const addLabel = useCallback(
+    (text: string, position: Point) => {
+      if (!hasChanges) {
+        setOriginalFloorPlanData(JSON.parse(JSON.stringify(floorPlanData)));
+      }
+
+      setFloorPlanData((prevData) => {
+        const labels = prevData.labels || [];
+
+        const newLabel: Label = {
+          id: `label-${Date.now()}`,
+          text,
+          position,
+          fontSize: 12,
+          color: "#000000",
+        };
+
+        const newData = {
+          ...prevData,
+          labels: [...labels, newLabel],
+        };
+
+        return newData;
+      });
+
+      setHasChanges(true);
+    },
+    [floorPlanData, hasChanges]
+  );
+
+  const saveFloorPlanChanges = useCallback(() => {
+    saveFloorPlan(floorPlanData, roomRotations, setHasChanges);
+    setOriginalFloorPlanData(JSON.parse(JSON.stringify(floorPlanData)));
+  }, [floorPlanData, roomRotations]);
+
+  const resetFloorPlanChanges = useCallback(() => {
+    setFloorPlanData(JSON.parse(JSON.stringify(originalFloorPlanData)));
+    setHasChanges(false);
+  }, [originalFloorPlanData]);
+
   useEffect(() => {
     if (activeBuildTool) {
       setScale(1);
@@ -90,9 +183,9 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [activeBuildTool]);
 
@@ -115,7 +208,15 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
         position,
         setPosition,
         defaultScale,
-        isZoomingDisabled
+        isZoomingDisabled,
+        hasChanges,
+        setHasChanges,
+        roomRotations,
+        setRoomRotations,
+        handleRoomTypeUpdate,
+        saveFloorPlanChanges,
+        resetFloorPlanChanges,
+        addLabel,
       }}
     >
       {children}
@@ -126,7 +227,7 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({ children 
 export const useFloorPlan = () => {
   const context = useContext(FloorPlanContext);
   if (context === undefined) {
-    throw new Error('useFloorPlan must be used within a FloorPlanProvider');
+    throw new Error("useFloorPlan must be used within a FloorPlanProvider");
   }
   return context;
 };

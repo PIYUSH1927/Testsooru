@@ -121,7 +121,7 @@ svg {
 .room-label {
   pointer-events: none;
   user-select: none;
-  font-size: 9px !important;
+  font-size: 8px !important;
   text-anchor: middle;
   fill: #000000 !important;
 }
@@ -133,7 +133,7 @@ svg {
 }
 .room-name1 {
   font-weight: bold;
-  font-size: 11px !important;
+  font-size: 9px !important;
   fill: #000000 !important;
 }
 
@@ -276,7 +276,7 @@ button {
     fill: #000000 !important;
   }
   .room-name1 {
-    font-size: 8px !important;
+    font-size: 7px !important;
     fill: #000000 !important;
 
   }
