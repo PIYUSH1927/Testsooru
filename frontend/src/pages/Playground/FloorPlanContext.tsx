@@ -106,11 +106,11 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
 
   const handleRoomTypeUpdate = useCallback(
     (roomId: string, newRoomType: string) => {
-      if (!hasChanges) {
-        setOriginalFloorPlanData(JSON.parse(JSON.stringify(floorPlanData)));
-      }
-
       setFloorPlanData((prevData) => {
+        if (!hasChanges) {
+          setOriginalFloorPlanData(JSON.parse(JSON.stringify(prevData)));
+        }
+
         const updatedRooms = prevData.rooms.map((room) =>
           room.id === roomId ? { ...room, room_type: newRoomType } : { ...room }
         );
@@ -120,21 +120,20 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
           rooms: updatedRooms,
         };
 
+        setHasChanges(true);
         return newData;
       });
-
-      setHasChanges(true);
     },
-    [floorPlanData, hasChanges]
+    [hasChanges]
   );
 
   const addLabel = useCallback(
     (text: string, position: Point) => {
-      if (!hasChanges) {
-        setOriginalFloorPlanData(JSON.parse(JSON.stringify(floorPlanData)));
-      }
-
       setFloorPlanData((prevData) => {
+        if (!hasChanges) {
+          setOriginalFloorPlanData(JSON.parse(JSON.stringify(prevData)));
+        }
+
         const labels = prevData.labels || [];
 
         const newLabel: Label = {
@@ -150,12 +149,11 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
           labels: [...labels, newLabel],
         };
 
+        setHasChanges(true);
         return newData;
       });
-
-      setHasChanges(true);
     },
-    [floorPlanData, hasChanges]
+    [hasChanges]
   );
 
   const saveFloorPlanChanges = useCallback(() => {

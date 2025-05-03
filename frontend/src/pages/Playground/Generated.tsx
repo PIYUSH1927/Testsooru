@@ -112,6 +112,8 @@ export default function InteractiveFloorPlan({
   const [scale, setScale] = useState(window.innerWidth < 850 ? 1.6 : 2.5);
   const floorPlanRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const [selectedLabelId, setSelectedLabelId] = useState<string | null>(null);
+  const [isLabelPlacementMode, setIsLabelPlacementMode] = useState(false);
 
   const [overlappingRooms, setOverlappingRooms] = useState<string[][]>([]);
 
@@ -151,6 +153,9 @@ export default function InteractiveFloorPlan({
   const handleUndo = useCallback(() => {
     undo((state) => {
       if (state) {
+        const undoData = JSON.parse(JSON.stringify(state.floorPlanData));
+        const undoRotations = JSON.parse(JSON.stringify(state.roomRotations));
+
         setFloorPlanData(state.floorPlanData);
         setRoomRotations(state.roomRotations);
       }
@@ -452,15 +457,21 @@ export default function InteractiveFloorPlan({
           ".resize-handle, .resize-edge"
         );
         const isClickOnToolbar = target.closest(".selection-toolbar");
+        const isClickOnLabel = target.closest(".floor-plan-label");
 
         if (
           !isClickInsideRoom &&
           !isClickOnRotateButton &&
           !isClickOnResizeHandle &&
           !isClickOnToolbar &&
+          !isClickOnLabel &&
           selectedRoomIds.length > 0
         ) {
           setSelectedRoomIds([]);
+        }
+
+        if (!isClickOnLabel && selectedLabelId !== null) {
+          setSelectedLabelId(null);
         }
       }
     };
@@ -472,7 +483,13 @@ export default function InteractiveFloorPlan({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [selectedRoomIds, dragState.active, isDrawingActive, activeBuildTool]);
+  }, [
+    selectedRoomIds,
+    selectedLabelId,
+    dragState.active,
+    isDrawingActive,
+    activeBuildTool,
+  ]);
 
   useEffect(() => {
     if (contextFloorPlanData) {
@@ -480,46 +497,84 @@ export default function InteractiveFloorPlan({
     }
   }, [contextFloorPlanData]);
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (
-        (e.key === "Delete" || e.key === "Backspace") &&
-        selectedRoomIds.length > 0
-      ) {
-        captureStateBeforeChange();
-
-        setFloorPlanData((prevData) => {
-          const updatedRooms = prevData.rooms.filter(
-            (room) => !selectedRoomIds.includes(room.id)
-          );
-          const totalArea = updatedRooms.reduce((sum, room) => {
-            if (room.room_type !== "Wall") {
-              return sum + room.area;
-            }
-            return sum;
-          }, 0);
-
-          return {
-            ...prevData,
-            rooms: updatedRooms,
-            room_count: updatedRooms.length,
-            total_area: parseFloat(totalArea.toFixed(2)),
-          };
-        });
-
-        setSelectedRoomIds([]);
-        setHasChanges(true);
-      }
-    },
-    [selectedRoomIds, captureStateBeforeChange]
-  );
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Delete" || e.key === "Backspace") {
+        if (selectedRoomIds.length > 0) {
+          captureStateBeforeChange();
+
+          setFloorPlanData((prevData) => {
+            const updatedRooms = prevData.rooms.filter(
+              (room) => !selectedRoomIds.includes(room.id)
+            );
+
+            const totalArea = updatedRooms.reduce((sum, room) => {
+              if (room.room_type !== "Wall") {
+                return sum + room.area;
+              }
+              return sum;
+            }, 0);
+
+            const updatedData = {
+              ...prevData,
+              rooms: updatedRooms,
+              room_count: updatedRooms.length,
+              total_area: parseFloat(totalArea.toFixed(2)),
+            };
+
+            if (setContextFloorPlanData) {
+              setTimeout(() => {
+                setContextFloorPlanData(updatedData);
+              }, 0);
+            }
+
+            return updatedData;
+          });
+
+          setSelectedRoomIds([]);
+          setSelectedRoomId(null);
+          setHasChanges(true);
+          checkAndUpdateOverlaps();
+        } else if (selectedLabelId) {
+          captureStateBeforeChange();
+
+          setFloorPlanData((prevData) => {
+            const updatedData = {
+              ...prevData,
+              labels: prevData.labels
+                ? prevData.labels.filter(
+                    (label) => label.id !== selectedLabelId
+                  )
+                : [],
+            };
+
+            if (setContextFloorPlanData) {
+              setTimeout(() => {
+                setContextFloorPlanData(updatedData);
+              }, 0);
+            }
+
+            return updatedData;
+          });
+
+          setSelectedLabelId(null);
+          setHasChanges(true);
+        }
+      }
+    };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleKeyDown]);
+  }, [
+    selectedRoomIds,
+    selectedLabelId,
+    captureStateBeforeChange,
+    setContextFloorPlanData,
+    checkAndUpdateOverlaps,
+  ]);
 
   const bounds = useMemo(
     () => calculateBounds(floorPlanData.rooms),
@@ -544,23 +599,22 @@ export default function InteractiveFloorPlan({
         labelState.isPlacing &&
         labelState.text
       ) {
-        const target = e.target as Element;
-        const isFloorPlanClick =
-          target.closest("svg") &&
-          !target.closest(
-            ".room-polygon, .resize-handle, .edge-indicator, .rotate-button, .tool-panel"
-          );
-
-        if (isFloorPlanClick && svgRef.current) {
+        setIsLabelPlacementMode(true);
+        if (svgRef.current) {
           const rect = svgRef.current.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
 
           const floorPlanCoords = reverseTransformCoordinates(x, y);
-
+          captureStateBeforeChange();
           addLabel(labelState.text, floorPlanCoords);
 
+          setHasChanges(true);
           setLabelPlacementState(false, null);
+
+          setIsLabelPlacementMode(false);
+
+          window.dispatchEvent(new CustomEvent("labelPlaced"));
 
           e.stopPropagation();
           e.preventDefault();
@@ -575,7 +629,34 @@ export default function InteractiveFloorPlan({
         capture: true,
       });
     };
-  }, [reverseTransformCoordinates, addLabel]);
+  }, [reverseTransformCoordinates, addLabel, setHasChanges]);
+
+  useEffect(() => {
+    if (floorPlanData && setContextFloorPlanData) {
+      setContextFloorPlanData(floorPlanData);
+    }
+  }, [floorPlanData, setContextFloorPlanData]);
+
+  useEffect(() => {
+    if (contextFloorPlanData) {
+      setFloorPlanData(contextFloorPlanData);
+    }
+  }, [contextFloorPlanData, contextFloorPlanData?.labels]);
+
+  useEffect(() => {
+    const labelState = getLabelPlacementState();
+    setIsLabelPlacementMode(labelState.isPlacing);
+  }, [getLabelPlacementState().isPlacing]);
+
+  useEffect(() => {
+    if (contextFloorPlanData && floorPlanData) {
+      const contextLabelsLength = contextFloorPlanData.labels?.length || 0;
+      const currentLabelsLength = floorPlanData.labels?.length || 0;
+      if (contextLabelsLength !== currentLabelsLength) {
+        setHasChanges(true);
+      }
+    }
+  }, [floorPlanData?.labels, contextFloorPlanData?.labels]);
 
   const eventHandlers = useEventHandlers(
     dragState,
@@ -626,14 +707,17 @@ export default function InteractiveFloorPlan({
   };
 
   const handleResetChanges = () => {
-    handleUndoChanges(
-      initialFloorPlanData,
-      setFloorPlanData,
-      setSelectedRoomId,
-      setHasChanges,
-      setRoomRotations
-    );
+    const resetData = JSON.parse(JSON.stringify(initialFloorPlanData));
+
+    setFloorPlanData(resetData);
+    setSelectedRoomId(null);
+    setHasChanges(false);
+    setRoomRotations({});
     setSelectedRoomIds([]);
+
+    if (setContextFloorPlanData) {
+      setContextFloorPlanData(resetData);
+    }
   };
 
   const handleWallCreated = (wallPoints: Point[]) => {
@@ -793,8 +877,14 @@ export default function InteractiveFloorPlan({
     .room-polygon.overlapping {
       stroke-width: ${options.wallThickness}px;
     }
-  `;
-
+   .room-polygon.disable-interaction {
+    pointer-events: none;
+  }
+  
+  .floor-plan-label {
+    z-index: 1000;
+  }
+`;
   const coordinateSystem = useMemo(
     () => (
       <g className="coordinate-system">
@@ -875,11 +965,9 @@ export default function InteractiveFloorPlan({
     [bounds, contentHeight, contentWidth, padding, scale, transformCoordinates]
   );
 
-  // Update context only when explicitly saving
   const handleSaveFloorPlan = useCallback(() => {
     saveFloorPlan(floorPlanData, roomRotations, setHasChanges);
 
-    // Update context after saving
     if (setContextFloorPlanData) {
       setContextFloorPlanData(floorPlanData);
     }
@@ -954,39 +1042,6 @@ export default function InteractiveFloorPlan({
               backgroundColor: "transparent",
             }}
           >
-            {floorPlanData.labels &&
-              floorPlanData.labels.map((label) => {
-                const position = transformCoordinates(label.position);
-
-                return (
-                  <g key={label.id} className="floor-plan-label">
-                    {/* Background for better visibility */}
-                    <rect
-                      x={position.x - 4 * label.text.length}
-                      y={position.y - 12}
-                      width={8 * label.text.length}
-                      height={18}
-                      fill="rgba(255, 255, 255, 0.7)"
-                      rx="3"
-                      ry="3"
-                      stroke="#000000"
-                      strokeWidth="0.5"
-                      opacity="0.8"
-                    />
-                    <text
-                      x={position.x}
-                      y={position.y}
-                      fill={label.color || "#000000"}
-                      fontSize={label.fontSize || 12}
-                      fontWeight="bold"
-                      textAnchor="middle"
-                      pointerEvents="none"
-                    >
-                      {label.text}
-                    </text>
-                  </g>
-                );
-              })}
             <defs>
               <marker
                 id="arrow"
@@ -1170,7 +1225,8 @@ export default function InteractiveFloorPlan({
                         if (
                           isDrawingActive ||
                           activeBuildTool === "drawWall" ||
-                          activeBuildTool === "drawRoom"
+                          activeBuildTool === "drawRoom" ||
+                          isLabelPlacementMode
                         ) {
                           return;
                         }
@@ -1310,7 +1366,7 @@ export default function InteractiveFloorPlan({
                         : ""
                     } ${isOverlapping ? "overlapping" : ""} ${
                       isWall ? "wall-polygon" : ""
-                    }`}
+                    } ${isLabelPlacementMode ? "disable-interaction" : ""}`}
                     points={polygonPoints}
                     fill={getRoomColor(room.room_type)}
                     strokeWidth={isWall ? 2 : options.wallThickness}
@@ -1556,6 +1612,56 @@ export default function InteractiveFloorPlan({
                 onDrawingStateChange={setIsDrawingActive}
               />
             )}
+
+            {floorPlanData.labels &&
+              floorPlanData.labels.map((label) => {
+                const position = transformCoordinates(label.position);
+
+                return (
+                  <g
+                    key={label.id}
+                    className={`floor-plan-label ${
+                      selectedLabelId === label.id ? "selected-label" : ""
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedLabelId(
+                        selectedLabelId === label.id ? null : label.id
+                      );
+                    }}
+                  >
+                    <rect
+                      x={position.x - 4 * label.text.length}
+                      y={position.y - 12}
+                      width={8 * label.text.length}
+                      height={18}
+                      fill={
+                        selectedLabelId === label.id
+                          ? "rgba(33, 150, 243, 0.3)"
+                          : "rgba(255, 255, 255, 0.7)"
+                      }
+                      rx="3"
+                      ry="3"
+                      stroke={
+                        selectedLabelId === label.id ? "#2196F3" : "#000000"
+                      }
+                      strokeWidth={selectedLabelId === label.id ? "1.5" : "0.5"}
+                      opacity="0.8"
+                    />
+                    <text
+                      x={position.x}
+                      y={position.y}
+                      fill={label.color || "#000000"}
+                      fontSize={label.fontSize || 12}
+                      fontWeight="bold"
+                      textAnchor="middle"
+                      pointerEvents="none"
+                    >
+                      {label.text}
+                    </text>
+                  </g>
+                );
+              })}
           </svg>
 
           {hasChanges && (

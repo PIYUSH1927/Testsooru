@@ -41,6 +41,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
   const [waitingForLabelPlacement, setWaitingForLabelPlacement] =
     useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [storedLabelText, setStoredLabelText] = useState<string | null>(null);
 
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
   const safeFloorPlanData = floorPlanData || {
@@ -57,11 +58,57 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       activeInfoOption === "placeLabel" &&
       waitingForLabelPlacement
     ) {
-      setLabelPlacementState(true, labelText);
+      setLabelPlacementState(true, storedLabelText || labelText);
     } else {
       setLabelPlacementState(false, null);
     }
-  }, [activeTool, activeInfoOption, waitingForLabelPlacement, labelText]);
+  }, [
+    activeTool,
+    activeInfoOption,
+    waitingForLabelPlacement,
+    labelText,
+    storedLabelText,
+  ]);
+
+  useEffect(() => {
+    const handleLabelPlaced = () => {
+      setWaitingForLabelPlacement(false);
+      setStoredLabelText(null);
+    };
+
+    window.addEventListener("labelPlaced", handleLabelPlaced);
+
+    return () => {
+      window.removeEventListener("labelPlaced", handleLabelPlaced);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleDocumentClick = (e: MouseEvent) => {
+      const target = e.target as Element;
+      const isClickOnFloorPlan =
+        target.closest("svg") &&
+        !target.closest(
+          ".room-polygon, .resize-handle, .edge-indicator, .rotate-button, .tool-panel"
+        );
+
+      if (waitingForLabelPlacement && isClickOnFloorPlan) {
+        setTimeout(() => {
+          setWaitingForLabelPlacement(false);
+          setStoredLabelText(null);
+          setLabelText("");
+        }, 200);
+      }
+    };
+
+    document.addEventListener("click", handleDocumentClick, { capture: true });
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick, {
+        capture: true,
+      });
+    };
+  }, [waitingForLabelPlacement]);
 
   useEffect(() => {
     return () => {
@@ -116,6 +163,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [selectedRoomId]);
+
   const selectedRoom = selectedRoomId
     ? safeFloorPlanData.rooms.find((room: Room) => room.id === selectedRoomId)
     : null;
@@ -126,6 +174,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       if (room && room.room_type !== selectedRoomType) {
         handleRoomTypeUpdate(roomId, selectedRoomType);
         setHasLocalChanges(true);
+        setHasChanges(true);
       }
     } else {
       setSelectedRoomId(roomId === selectedRoomId ? null : roomId);
@@ -140,8 +189,11 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && labelText.trim()) {
       e.preventDefault();
+      setStoredLabelText(labelText);
+      setLabelText("");
       setWaitingForLabelPlacement(true);
       setLabelPlacementState(true, labelText);
+      setHasChanges(true);
     }
   };
 
@@ -156,6 +208,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
   const resetLabelState = () => {
     setWaitingForLabelPlacement(false);
     setLabelText("");
+    setStoredLabelText(null);
     setLabelPlacementState(false, null);
   };
 
@@ -201,6 +254,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     const y = (point.z - bounds.minZ) * scale + padding;
     return { x, y };
   };
+
   const getRoomColor = (roomType: string, isSelected: boolean) => {
     if (roomType === "Wall") {
       return "#333333";
@@ -498,6 +552,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
               type="text"
               value={labelText}
               onChange={(e) => setLabelText(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Enter label text"
               className="label-input"
             />
@@ -520,8 +575,11 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
               }}
               onClick={() => {
                 if (labelText.trim()) {
+                  setStoredLabelText(labelText);
                   setWaitingForLabelPlacement(true);
                   setLabelPlacementState(true, labelText);
+                  setHasChanges(true);
+                  setLabelText("");
                 }
               }}
               disabled={!labelText.trim()}

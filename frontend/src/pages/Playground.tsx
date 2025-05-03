@@ -8,12 +8,7 @@ import VerticalToolbar from "./Playground/components/VerticalToolbar";
 import ToolPanel from "./Playground/components/ToolPanel";
 import VisualizationPanel from "./Playground/components/VisualizationPanel";
 import { FloorPlanProvider, useFloorPlan } from "./Playground/FloorPlanContext";
-import {
-  Download,
-  ArrowBack,
-  Share,
-  
-} from "@mui/icons-material";
+import { Download, ArrowBack, Share } from "@mui/icons-material";
 
 const roomData = [
   { name: "Master Bedroom", count: 0, width: 12, length: 10, open: false },
@@ -90,25 +85,25 @@ const PlaygroundContent = () => {
     };
   }, [activeBuildTool]);
 
-
   useEffect(() => {
     const preventNavigation = (e: TouchEvent) => {
       if (isDragging) {
         e.preventDefault();
       }
     };
-    document.addEventListener('touchmove', preventNavigation, { passive: false });
-    
+    document.addEventListener("touchmove", preventNavigation, {
+      passive: false,
+    });
+
     return () => {
-      document.removeEventListener('touchmove', preventNavigation);
+      document.removeEventListener("touchmove", preventNavigation);
     };
   }, [isDragging]);
 
   const scaledPosition = {
     x: position.x * scale,
-    y: position.y * scale
+    y: position.y * scale,
   };
-
 
   const exitDrawingMode = () => {
     setActiveBuildTool(null);
@@ -260,7 +255,14 @@ const PlaygroundContent = () => {
         );
       };
     }
-  }, [scale, isDragging, lastMousePosition, touchStartDistance, isModalOpen, activeBuildTool]);
+  }, [
+    scale,
+    isDragging,
+    lastMousePosition,
+    touchStartDistance,
+    isModalOpen,
+    activeBuildTool,
+  ]);
 
   const handleWheel = (e: React.WheelEvent) => {
     if (
@@ -376,13 +378,13 @@ const PlaygroundContent = () => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      style={{ 
-        overflow: "hidden", 
-        width: "100%", 
+      style={{
+        overflow: "hidden",
+        width: "100%",
         height: "100%",
         position: "fixed",
         overscrollBehavior: "none",
-        touchAction: "pan-y" 
+        touchAction: "pan-y",
       }}
     >
       <InfiniteGrid
@@ -488,29 +490,29 @@ const PlaygroundContent = () => {
           alignItems: "center",
         }}
       >
-    <div
-  onClick={() => navigate("/projects")}
-  style={{
-    display: "flex",
-    alignItems: "center",
-    border: "1px solid black",
-    borderRadius: "8px",
-    padding: "8px 14px",
-    cursor: "pointer",
-    backgroundColor: "white",
-    color: "black",
-    fontWeight: "bold",
-    fontSize: "14px",
-  }}
->
-  <ArrowBack
-    style={{
-      marginRight: "8px",
-      fontSize: "22px",
-    }}
-  />
-  Back
-</div>
+        <div
+          onClick={() => navigate("/projects")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid black",
+            borderRadius: "8px",
+            padding: "8px 14px",
+            cursor: "pointer",
+            backgroundColor: "white",
+            color: "black",
+            fontWeight: "bold",
+            fontSize: "14px",
+          }}
+        >
+          <ArrowBack
+            style={{
+              marginRight: "8px",
+              fontSize: "22px",
+            }}
+          />
+          Back
+        </div>
 
         <div
           style={{
