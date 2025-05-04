@@ -109,7 +109,7 @@ export default function InteractiveFloorPlan({
 
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
-  const [scale, setScale] = useState(window.innerWidth < 850 ? 1.6 : 2.5);
+  const [scale, setScale] = useState(window.innerWidth < 850 ? 1.6 : 2.6);
   const floorPlanRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedLabelId, setSelectedLabelId] = useState<string | null>(null);
@@ -497,7 +497,6 @@ export default function InteractiveFloorPlan({
     }
   }, [contextFloorPlanData]);
 
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Delete" || e.key === "Backspace") {
@@ -657,6 +656,41 @@ export default function InteractiveFloorPlan({
       }
     }
   }, [floorPlanData?.labels, contextFloorPlanData?.labels]);
+
+  useEffect(() => {
+    const handleTemporaryBoundsUpdate = (event: CustomEvent) => {
+      if (!event.detail) return;
+
+      const tempBounds = event.detail;
+
+      const paddedBounds = {
+        minX: tempBounds.minX - padding,
+        maxX: tempBounds.maxX + padding,
+        minZ: tempBounds.minZ - padding,
+        maxZ: tempBounds.maxZ + padding,
+      };
+
+      const newContentWidth = paddedBounds.maxX - paddedBounds.minX;
+      const newContentHeight = paddedBounds.maxZ - paddedBounds.minZ;
+
+      if (floorPlanRef.current) {
+        floorPlanRef.current.style.width = `${newContentWidth * scale}px`;
+        floorPlanRef.current.style.height = `${newContentHeight * scale}px`;
+      }
+    };
+
+    window.addEventListener(
+      "temporaryBoundsUpdate",
+      handleTemporaryBoundsUpdate as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "temporaryBoundsUpdate",
+        handleTemporaryBoundsUpdate as EventListener
+      );
+    };
+  }, [padding, scale]);
 
   const eventHandlers = useEventHandlers(
     dragState,
@@ -1000,6 +1034,7 @@ export default function InteractiveFloorPlan({
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            border: "0.5px solid rgba(0, 0, 0, 0.6)", 
           }}
         >
           {options.showMeasurements && (

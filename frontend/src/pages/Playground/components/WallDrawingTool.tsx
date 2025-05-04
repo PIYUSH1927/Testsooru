@@ -1,8 +1,9 @@
 // components/WallDrawingTool.tsx
-import React, { useEffect, useState, useRef } from 'react';
-import { Point } from '../features/types';
-import { createWallPolygon } from '../features/drawingTools';
-import { useFloorPlan } from '../FloorPlanContext';
+import React, { useEffect, useState, useRef } from "react";
+import { Point } from "../features/types";
+import { createWallPolygon } from "../features/drawingTools";
+import { useFloorPlan } from "../FloorPlanContext";
+import { calculateBounds } from "../features/coordinates";
 
 interface WallDrawingToolProps {
   isActive: boolean;
@@ -21,16 +22,15 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
   transformCoordinates,
   scale,
   onWallCreated,
-  onDrawingStateChange
+  onDrawingStateChange,
 }) => {
   const [startPoint, setStartPoint] = useState<Point | null>(null);
   const [currentPoint, setCurrentPoint] = useState<Point | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  
-  // Store the SVG element's current transformation matrix
+
   const transformMatrixRef = useRef<DOMMatrix | null>(null);
-  
-  const { setActiveBuildTool } = useFloorPlan();
+
+  const { setActiveBuildTool, floorPlanData } = useFloorPlan();
 
   useEffect(() => {
     if (!isActive) {
@@ -45,14 +45,13 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
     setActiveBuildTool(null);
   };
 
-  // Function to get accurate mouse position in SVG coordinate space
   const getMousePosition = (e: MouseEvent, svg: SVGSVGElement) => {
     const CTM = svg.getScreenCTM();
     if (!CTM) return { x: 0, y: 0 };
-    
+
     return {
       x: (e.clientX - CTM.e) / CTM.a,
-      y: (e.clientY - CTM.f) / CTM.d
+      y: (e.clientY - CTM.f) / CTM.d,
     };
   };
 
@@ -63,15 +62,13 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
 
     const handleSvgMouseDown = (e: MouseEvent) => {
       if (!isActive) return;
-      
-      // Get direct SVG coordinates using the current transformation matrix
+
       const rect = svg.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      
-      // Get world coordinates that properly account for both scale and position
+
       const point = reverseTransformCoordinates(x, y);
-      
+
       if (!isDrawing) {
         setStartPoint(point);
         setCurrentPoint(point);
@@ -94,19 +91,39 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
 
     const handleSvgMouseMove = (e: MouseEvent) => {
       if (!isActive || !isDrawing) return;
-      
-      // Get direct SVG coordinates using the current transformation matrix
+
       const rect = svg.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      
-      // Get world coordinates that properly account for both scale and position
+
       const point = reverseTransformCoordinates(x, y);
       setCurrentPoint(point);
+
+      if (startPoint) {
+        const tempWallPolygon = createWallPolygon(startPoint, point);
+
+        const tempWall = {
+          id: "temp-drawing-wall",
+          room_type: "Wall",
+          area: 0,
+          height: 0,
+          width: 0,
+          floor_polygon: tempWallPolygon,
+        };
+
+        const tempRooms = [...floorPlanData.rooms, tempWall];
+
+        const newBounds = calculateBounds(tempRooms);
+
+        const boundsEvent = new CustomEvent("temporaryBoundsUpdate", {
+          detail: newBounds,
+        });
+        window.dispatchEvent(boundsEvent);
+      }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isDrawing) {
+      if (e.key === "Escape" && isDrawing) {
         setIsDrawing(false);
         setStartPoint(null);
         setCurrentPoint(null);
@@ -115,20 +132,30 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
       }
     };
 
-    svg.addEventListener('mousedown', handleSvgMouseDown);
-    svg.addEventListener('mousemove', handleSvgMouseMove);
-    window.addEventListener('keydown', handleKeyDown);
+    svg.addEventListener("mousedown", handleSvgMouseDown);
+    svg.addEventListener("mousemove", handleSvgMouseMove);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      svg.removeEventListener('mousedown', handleSvgMouseDown);
-      svg.removeEventListener('mousemove', handleSvgMouseMove);
-      window.removeEventListener('keydown', handleKeyDown);
+      svg.removeEventListener("mousedown", handleSvgMouseDown);
+      svg.removeEventListener("mousemove", handleSvgMouseMove);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isActive, isDrawing, startPoint, reverseTransformCoordinates, scale, svgRef, onWallCreated, onDrawingStateChange, setActiveBuildTool]);
+  }, [
+    isActive,
+    isDrawing,
+    startPoint,
+    reverseTransformCoordinates,
+    scale,
+    svgRef,
+    onWallCreated,
+    onDrawingStateChange,
+    setActiveBuildTool,
+    floorPlanData,
+  ]);
 
   if (!isActive || !startPoint || !currentPoint || !isDrawing) return null;
 
-  // Create wall polygon and transform it to screen coordinates
   const wallPoints = createWallPolygon(startPoint, currentPoint);
   const transformedStart = transformCoordinates(wallPoints[0]);
   const transformedEnd = transformCoordinates(wallPoints[1]);
@@ -140,8 +167,8 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
         y1={transformedStart.y}
         x2={transformedEnd.x}
         y2={transformedEnd.y}
-        stroke="#333333"  
-        strokeWidth={2}  
+        stroke="#333333"
+        strokeWidth={2}
         strokeDasharray="5,5"
       />
       <circle
