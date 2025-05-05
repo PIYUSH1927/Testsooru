@@ -109,7 +109,7 @@ export default function InteractiveFloorPlan({
 
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
-  const [scale, setScale] = useState(window.innerWidth < 850 ? 1.6 : 2.6);
+  const [scale, setScale] = useState(window.innerWidth < 850 ? 1.6 : 2.5);
   const floorPlanRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedLabelId, setSelectedLabelId] = useState<string | null>(null);
@@ -492,12 +492,6 @@ export default function InteractiveFloorPlan({
   ]);
 
   useEffect(() => {
-    if (contextFloorPlanData) {
-      setFloorPlanData(contextFloorPlanData);
-    }
-  }, [contextFloorPlanData]);
-
-  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Delete" || e.key === "Backspace") {
         if (selectedRoomIds.length > 0) {
@@ -630,17 +624,45 @@ export default function InteractiveFloorPlan({
     };
   }, [reverseTransformCoordinates, addLabel, setHasChanges]);
 
+  ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    if (floorPlanData && setContextFloorPlanData) {
+    // Only update context if there are actual changes and not during dragging so here i am adding && !dragState.active and this in dependency dragState.active
+    if (floorPlanData && setContextFloorPlanData && !dragState.active) {
       setContextFloorPlanData(floorPlanData);
     }
-  }, [floorPlanData, setContextFloorPlanData]);
+  }, [floorPlanData, setContextFloorPlanData, dragState.active]);
 
+  /*
   useEffect(() => {
     if (contextFloorPlanData) {
       setFloorPlanData(contextFloorPlanData);
     }
-  }, [contextFloorPlanData, contextFloorPlanData?.labels]);
+  }, [contextFloorPlanData, contextFloorPlanData?.labels]); */
+
+  const isContextInitialized = useRef(false);
+  const prevRoomTypesRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    if (!contextFloorPlanData) return;
+    const contextRoomTypes = contextFloorPlanData.rooms.map(
+      (r) => `${r.id}-${r.room_type}`
+    );
+
+    const isInitialLoad = !isContextInitialized.current;
+    const hasLabelChange =
+      floorPlanData?.labels?.length !== contextFloorPlanData?.labels?.length;
+    const hasRoomTypeChange =
+      JSON.stringify(contextRoomTypes) !==
+      JSON.stringify(prevRoomTypesRef.current);
+
+    if (isInitialLoad || hasLabelChange || hasRoomTypeChange) {
+      prevRoomTypesRef.current = contextRoomTypes;
+      isContextInitialized.current = true;
+      setFloorPlanData(contextFloorPlanData);
+    }
+  }, [contextFloorPlanData]);
+
+  ///////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
     const labelState = getLabelPlacementState();
@@ -931,6 +953,12 @@ export default function InteractiveFloorPlan({
           strokeWidth="1"
         />
         <text
+          style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}
           x={padding * scale + 10}
           y={contentHeight * scale - padding * scale + 5}
           fontSize="12"
@@ -950,6 +978,12 @@ export default function InteractiveFloorPlan({
           markerEnd="url(#arrow)"
         />
         <text
+          style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}
           x={(contentWidth * scale) / 3}
           y={contentHeight * scale - padding * scale + 14}
           fontSize="10"
@@ -969,6 +1003,12 @@ export default function InteractiveFloorPlan({
           markerEnd="url(#arrow)"
         />
         <text
+          style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}
           x={padding * scale - 40}
           y={(contentHeight * scale) / 2 + 22}
           fontSize="10"
@@ -1034,7 +1074,7 @@ export default function InteractiveFloorPlan({
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            border: "0.5px solid rgba(0, 0, 0, 0.6)", 
+            //border: "0.5px solid rgba(0, 0, 0, 0.6)",
           }}
         >
           {options.showMeasurements && (
@@ -1049,6 +1089,10 @@ export default function InteractiveFloorPlan({
                 color: "#000",
                 fontSize: "small",
                 width: "100%",
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                MozUserSelect: "none",
+                msUserSelect: "none",
               }}
               className="always-black-text"
             >
@@ -1103,8 +1147,10 @@ export default function InteractiveFloorPlan({
               </marker>
             </defs>
 
+            {/* 
             {coordinateSystem}
-
+            */}
+            
             {options.showMeasurements && (
               <>
                 <line
@@ -1134,6 +1180,12 @@ export default function InteractiveFloorPlan({
                   markerEnd="url(#arrow)"
                 />
                 <text
+                  style={{
+                    userSelect: "none",
+                    WebkitUserSelect: "none",
+                    MozUserSelect: "none",
+                    msUserSelect: "none",
+                  }}
                   x={
                     transformCoordinates({
                       x: bounds.minX - 10,
@@ -1201,6 +1253,12 @@ export default function InteractiveFloorPlan({
                   markerEnd="url(#arrow)"
                 />
                 <text
+                  style={{
+                    userSelect: "none",
+                    WebkitUserSelect: "none",
+                    MozUserSelect: "none",
+                    msUserSelect: "none",
+                  }}
                   x={
                     transformCoordinates({
                       x: (bounds.minX + bounds.maxX) / 2,
@@ -1712,10 +1770,10 @@ export default function InteractiveFloorPlan({
               }}
             >
               <button className="save-button" onClick={handleSaveFloorPlan}>
-                Save Changes
+                <b>Save Changes</b>
               </button>
               <button className="undo-button" onClick={handleResetChanges}>
-                Reset Changes
+                <b>Reset Changes</b>
               </button>
             </div>
           )}

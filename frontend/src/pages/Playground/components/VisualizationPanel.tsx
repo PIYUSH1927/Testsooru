@@ -18,6 +18,7 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
     e.stopPropagation();
     e.preventDefault(); 
   };
+  
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
@@ -97,6 +98,17 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
                 onChange={() => handleToggle('showRoomLabels')}
               />
               Show Room Labels
+            </label>
+          </div>
+          
+          <div className="toggle-option">
+            <label>
+              <input
+                type="checkbox"
+                checked={visualizationOptions.showGrid}
+                onChange={() => handleToggle('showGrid')}
+              />
+              Show Grid
             </label>
           </div>
           

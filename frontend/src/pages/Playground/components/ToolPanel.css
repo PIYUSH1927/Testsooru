@@ -1,4 +1,4 @@
-/* Base ToolPanel Styles (keeping existing ones) */
+
 .tool-panel {
   position: fixed; 
   left: 75px; 
@@ -60,7 +60,6 @@
   padding: 16px;
 }
 
-/* New Mini Floor Plan Styles */
 .mini-floor-plan-container {
   width: 228px;
   height: 120px;
@@ -136,7 +135,6 @@
   color: #666;
 }
 
-/* Project Options Menu */
 .project-options {
   display: flex;
   flex-direction: column;
@@ -184,7 +182,6 @@
   color: #aaa;
 }
 
-/* Existing Panel Option Styles */
 .panel-options {
   display: flex;
   flex-direction: column;
@@ -288,7 +285,6 @@
   text-decoration: underline;
 }
 
-/* Info Panel Styles */
 .info-options {
   display: flex;
   flex-direction: column;
@@ -318,7 +314,6 @@
   }
 }
 
-/* Option Header with Back Button - FIXED */
 .option-header {
   display: flex;
   align-items: center;
@@ -348,14 +343,12 @@
  
 }
 
-/* Instruction text */
 .instruction-text {
   margin: 0 0 0px 0;
   font-size: 13px;
   color: #666;
 }
 
-/* Room Type Grid Layout - FIXED */
 .room-type-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -386,7 +379,6 @@
   color: black;
 }
 
-/* Label input styles */
 .label-input-container {
   margin-top: 6px;
 }
@@ -411,45 +403,12 @@
   margin-top: 6px;
   font-style: italic;
 }
-
-/* Action Buttons for Save/Cancel */
 .action-buttons {
   display: flex;
   gap: 10px;
   margin-top: 15px;
 }
 
-.save-button {
-  padding: 8px 12px;
-  background-color: #4CAF50 !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 4px;
-  cursor: pointer;
-  flex: 1;
-  font-weight: 500;
-}
-
-.save-button:hover {
-  background-color: #45a049 !important;
-}
-
-.cancel-button {
-  padding: 8px 12px;
-  background-color: #f44336 !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 4px;
-  cursor: pointer;
-  flex: 1;
-  font-weight: 500;
-}
-
-.cancel-button:hover {
-  background-color: #d32f2f !important;
-}
-
-/* Room Type Manager */
 .room-type-manager {
   display: flex;
   flex-direction: column;

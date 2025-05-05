@@ -20,7 +20,7 @@ export const floorPlanStyles = `
 }
 
 .room-polygon {
-  opacity: 0.8 !important;
+  opacity: 0.9 !important;
   stroke: #000 !important;  
   stroke-width: 4px;  
   cursor: move;
@@ -178,21 +178,29 @@ button {
 }
 
 .save-button {
-  background-color: rgb(69, 160, 73) !important;
+  background-color: rgba(0, 0, 0, 0.9) !important;
   color: white !important;
 }
 
 .save-button:hover {
-  background-color: #45a049 !important;
+  background-color: black !important;
 }
 
 .undo-button {
-  background-color: #EA4B3F !important;
-  color: white !important;
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #000000 !important;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: none;
+  outline: none;
+  text-transform: none;
 }
 
 .undo-button:hover {
-  background-color: #d32f2f !important;
+  background-color: #F9F9F9 !important;
 }
 
 .buttons-container {

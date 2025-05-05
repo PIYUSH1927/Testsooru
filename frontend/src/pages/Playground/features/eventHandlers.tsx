@@ -148,6 +148,8 @@ export function useEventHandlers(
   }, [dragState.active]);
 
   useEffect(() => {
+    
+    
     if (dragState.active) {
       document.addEventListener("mousemove", handleMouseMoveCallback);
       document.addEventListener("mouseup", handleMouseUpCallback);

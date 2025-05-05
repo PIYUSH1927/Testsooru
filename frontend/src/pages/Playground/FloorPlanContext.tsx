@@ -55,7 +55,7 @@ interface FloorPlanContextType {
 export const defaultVisualizationOptions: VisualizationOptions = {
   showMeasurements: true,
   showRoomLabels: true,
-  showGrid: false,
+  showGrid: true,
   darkMode: false,
   wallThickness: 5,
   colorScheme: "standard",

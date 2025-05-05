@@ -171,7 +171,7 @@ export default function View3D() {
         <div ref={containerRef} style={{ width: "100vw", height: "100vh", zIndex: -1 }} />
         <div
         className="three-d-icon"
-        onClick={() => navigate("/playground")}
+        
         style={{
           display: "flex",
           border: "1px solid #ccc",
@@ -182,6 +182,7 @@ export default function View3D() {
         }}
       >
         <div
+        onClick={() => navigate("/playground")}
           style={{
             flex: 1,
             padding: "8px 0",

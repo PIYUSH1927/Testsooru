@@ -440,7 +440,6 @@ const PlaygroundContent = () => {
             transform: "translateX(-50%)",
             padding: "10px 20px",
             width: "auto",
-            minWidth: "450px",
             backgroundColor: "rgba(33, 150, 243, 0.8)",
             color: "white",
             borderRadius: "4px",
@@ -465,7 +464,7 @@ const PlaygroundContent = () => {
             left: "7%",
             transform: "translateX(-50%)",
             zIndex: 1000,
-            padding: "5px 15px",
+            padding: "5px 12px",
             backgroundColor: "rgba(255, 0, 0, 0.7)",
             color: "white",
             borderRadius: "5px",
@@ -477,7 +476,7 @@ const PlaygroundContent = () => {
           }}
           onClick={exitDrawingMode}
         >
-          <span style={{ fontSize: "18px" }}>✕</span>
+          <span style={{ fontSize: "16px" }}>✕</span>
           Exit Drawing Mode
         </div>
       )}
@@ -559,10 +558,9 @@ const PlaygroundContent = () => {
 
       <div
         className="three-d-icon"
-        onClick={() => navigate("/3D")}
         style={{
           display: "flex",
-          border: "1px solid #ccc",
+          border: "1px solid black",
           borderRadius: "8px",
           overflow: "hidden",
           backgroundColor: "#f5f5f5",
@@ -584,6 +582,7 @@ const PlaygroundContent = () => {
           2D
         </div>
         <div
+        onClick={() => navigate("/3D")}
           style={{
             flex: 1,
             padding: "8px 0",
