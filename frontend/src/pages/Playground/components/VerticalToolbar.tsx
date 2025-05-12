@@ -8,7 +8,7 @@ const toolbarItems = [
   { id: 'info', icon: 'ℹ️', label: 'Info', tooltip: 'Information' },
   { id: 'objects', icon: '🛋️', label: 'Objects', tooltip: 'Furniture and objects' },
   { id: 'colors', icon: '🎨', label: 'Appearance', tooltip: 'Control appearance and display options' },
-  { id: 'styleboards', icon: '🖼️', label: 'Styleboards', tooltip: 'Style options' },
+  //{ id: 'styleboards', icon: '🖼️', label: 'Styleboards', tooltip: 'Style options' },
   // { id: 'finishes', icon: '🧰', label: 'Finishes', tooltip: 'Finishing touches' },
   { id: 'exports', icon: '💾', label: 'Exports', tooltip: 'Export options' },
   { id: 'help', icon: '❓', label: 'Help', tooltip: 'Help center' },
