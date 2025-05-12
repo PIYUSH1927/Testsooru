@@ -32,7 +32,6 @@ interface FloorPlanData {
     rooms: Room[];
 }
 
-
 function getCenter(points: Array<Point>) {
     const center = new t.Vector3();
     for (let i = 0; i < points.length; i++) {
@@ -89,7 +88,7 @@ export default function View3D() {
             0.1,
             1000,
         );
-        camera.position.set(0, 0, 10);
+        camera.position.set(30, 40, 10);
 
         const renderer = new t.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -124,13 +123,13 @@ export default function View3D() {
 
         const clock = new t.Clock();
         function animate() {
-            player.update(clock.getDelta());
             if (player.model && player.model.visible) {
+                player.update(clock.getDelta());
                 const ppos = player.model.position.clone();
                 ppos.y += 6;
                 controls.target.set(ppos.x, ppos.y, ppos.z);
-                controls.update();
             }
+            controls.update();
 
             renderer.render(scene, camera);
         }
@@ -142,10 +141,11 @@ export default function View3D() {
 
     function CameraSwitchToggle() {
         const [mode, setMode] = useState("orbit");
-        function onCameraModeChange(_event: React.MouseEvent<HTMLElement, MouseEvent>, mode: string) {
-            setMode(mode);
-            if (mode === "orbit") enableCameraMode();
+        function onCameraModeChange(_event: React.MouseEvent<HTMLElement, MouseEvent>, new_mode: string) {
+            if (new_mode == null) return;
+            if (new_mode !== "person") enableCameraMode();
             else enablePlayerMode();
+            setMode(new_mode);
         }
 
         return (
@@ -168,50 +168,48 @@ export default function View3D() {
     const navigate = useNavigate();
 
     return (<>
-        <div ref={containerRef} style={{ width: "100vw", height: "100vh", zIndex: -1 }} />
+        <div ref={containerRef} style={{ width: "100vw", height: "100vh" }} />
         <div
-        className="three-d-icon"
-        
-        style={{
-          display: "flex",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          overflow: "hidden",
-          backgroundColor: "#f5f5f5",
-          width: "100px",
-        }}
-      >
-        <div
-        onClick={() => navigate("/playground")}
-          style={{
-            flex: 1,
-            padding: "8px 0",
-            backgroundColor: "transparent",
-            color: "#555",
-            fontWeight: "bold",
-            textAlign: "center",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
+            className="three-d-icon"
+            style={{
+                display: "flex",
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+                overflow: "hidden",
+                backgroundColor: "#f5f5f5",
+                width: "100px",
+            }}
         >
-          2D
+            <div
+                onClick={() => navigate("/playground")}
+                style={{
+                    flex: 1,
+                    padding: "8px 0",
+                    backgroundColor: "transparent",
+                    color: "#555",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                }}
+            >
+                2D
+            </div>
+            <div
+                style={{
+                    flex: 1,
+                    padding: "8px 0",
+                    backgroundColor: "black",
+                    color: "white",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                }}
+            >
+                3D
+            </div>
         </div>
-        <div
-          style={{
-            flex: 1,
-            padding: "8px 0",
-            backgroundColor: "black",
-            color: "white",
-            fontWeight: "bold",
-            textAlign: "center",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
-        >
-          3D
-        </div>
-        </div>
-        
         <CameraSwitchToggle />
     </>);
 }

@@ -60,13 +60,13 @@
   font-size: 1.125rem;
 }
 
-.north {
+.south {
   top: 8px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-.south {
+.north {
   bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
@@ -96,13 +96,13 @@
 .needle-top {
   height: 50%;
   width: 100%;
-  background-color: red;
+  background-color: rgb(68, 67, 67);
 }
 
 .needle-bottom {
   height: 50%;
   width: 100%;
-  background-color: rgb(68, 67, 67);
+  background-color: red;
 }
 
 @media screen and (max-width: 767px) {

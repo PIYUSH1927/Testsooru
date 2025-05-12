@@ -148,8 +148,6 @@ export function useEventHandlers(
   }, [dragState.active]);
 
   useEffect(() => {
-    
-    
     if (dragState.active) {
       document.addEventListener("mousemove", handleMouseMoveCallback);
       document.addEventListener("mouseup", handleMouseUpCallback);
@@ -193,6 +191,12 @@ export function setInfoToolPanelState(
 ) {
   infoToolPanelActive = isActive;
   activeInfoOption = option;
+
+  if (isActive && option === "setRoomtype") {
+    document.body.classList.add('roomtype-mode');
+  } else {
+    document.body.classList.remove('roomtype-mode');
+  }
 }
 
 export function getInfoToolPanelState() {
@@ -204,23 +208,20 @@ export function handleRoomSelection(
   event: React.MouseEvent | React.TouchEvent,
   selectedRoomIds: string[],
   setSelectedRoomIds: React.Dispatch<React.SetStateAction<string[]>>,
-  handleRoomTypeUpdate?: (roomId: string, roomType: string) => void
+  handleRoomTypeUpdate?: (roomId: string, roomType: string) => void,
+  openProjectPanel?: (roomId: string) => void
 ) {
   event.stopPropagation();
 
   const infoPanelState = getInfoToolPanelState();
 
-  if (infoPanelState.isActive) {
-    if (
-      infoPanelState.activeOption === "setRoomtype" &&
-      globalSelectedRoomType &&
-      handleRoomTypeUpdate
-    ) {
-      handleRoomTypeUpdate(roomId, globalSelectedRoomType);
-    }
+  // if (infoPanelState.isActive && infoPanelState.activeOption === "setRoomtype") {
+  //   if (globalSelectedRoomType && handleRoomTypeUpdate) {
+  //     handleRoomTypeUpdate(roomId, globalSelectedRoomType);
+  //   }
+  //   return; 
+  // }
 
-    return;
-  }
 
   if ("ctrlKey" in event) {
     const isMultiSelectMode = event.ctrlKey || event.metaKey;
@@ -234,15 +235,30 @@ export function handleRoomSelection(
         }
       });
     } else {
+      const isNewSelection =
+        selectedRoomIds.length !== 1 || selectedRoomIds[0] !== roomId;
+
       setSelectedRoomIds([roomId]);
+
+      if (isNewSelection && openProjectPanel) {
+        openProjectPanel(roomId);
+      }
     }
   } else if ("touches" in event) {
     if (selectedRoomIds.length > 0) {
       if (!selectedRoomIds.includes(roomId)) {
         setSelectedRoomIds([...selectedRoomIds, roomId]);
+
+        if (openProjectPanel) {
+          openProjectPanel(roomId);
+        }
       }
     } else {
       setSelectedRoomIds([roomId]);
+
+      if (openProjectPanel) {
+        openProjectPanel(roomId);
+      }
     }
   }
 }

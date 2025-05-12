@@ -1,4 +1,3 @@
-//rotation.tsx
 import { checkRoomOverlap } from "./overlap1";
 
 export const handleRotateRoom = (
@@ -37,7 +36,13 @@ export const checkAndUpdateOverlaps = (
   roomRotations: { [key: string]: number },
   setOverlappingRooms: React.Dispatch<React.SetStateAction<string[][]>>
 ) => {
-  const overlaps = checkRoomOverlap(floorPlanData, roomRotations);
-  setOverlappingRooms(overlaps);
-  return overlaps.length > 0;
+  const overlaps = checkRoomOverlap(floorPlanData, roomRotations)
+  const filteredOverlaps = overlaps.filter(pair => {
+    const room1 = floorPlanData.rooms.find((r: any) => r.id === pair[0]);
+    const room2 = floorPlanData.rooms.find((r: any) => r.id === pair[1]);
+    return room1?.room_type !== "Wall" && room2?.room_type !== "Wall";
+  });
+  
+  setOverlappingRooms(filteredOverlaps);
+  return filteredOverlaps.length > 0;
 };

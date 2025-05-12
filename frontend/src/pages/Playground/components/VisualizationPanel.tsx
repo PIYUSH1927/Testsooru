@@ -66,6 +66,10 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
       onClick={blockAllEvents}
       onDoubleClick={blockAllEvents} 
       onWheel={blockWheelEvents}
+      style={{userSelect: "none",
+        WebkitUserSelect: "none",
+        MozUserSelect: "none",
+        msUserSelect: "none",}}
     >
       <div className="panel-header">
         <h2>Visualization Options</h2>

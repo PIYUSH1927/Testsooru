@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import { initialFloorPlanData } from "./features/initialData";
 import { FloorPlanData, BuildTool, Point, Label } from "./features/types";
@@ -18,6 +19,7 @@ export interface VisualizationOptions {
   wallThickness: number;
   colorScheme: "standard" | "monochrome" | "pastel" | "contrast";
 }
+
 
 interface FloorPlanContextType {
   visualizationOptions: VisualizationOptions;
@@ -50,6 +52,10 @@ interface FloorPlanContextType {
   saveFloorPlanChanges: () => void;
   resetFloorPlanChanges: () => void;
   addLabel: (text: string, position: Point) => void;
+  captureOriginalState: () => void;
+  selectedRoomIds: string[];
+  setSelectedRoomIds: React.Dispatch<React.SetStateAction<string[]>>;
+  openProjectPanel: (roomId: string) => void;
 }
 
 export const defaultVisualizationOptions: VisualizationOptions = {
@@ -80,15 +86,36 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
     {}
   );
 
-  const [originalFloorPlanData, setOriginalFloorPlanData] =
-    useState<FloorPlanData>(initialFloorPlanData);
+  const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+
+  const originalFloorPlanDataRef = useRef<FloorPlanData>(JSON.parse(JSON.stringify(initialFloorPlanData)));
+  const originalRoomRotationsRef = useRef<{ [key: string]: number }>({});
+  const hasStoredOriginal = useRef<boolean>(false);
 
   const defaultScale = window.innerWidth < 850 ? 1.6 : 2.5;
 
   const [scale, setScale] = useState(defaultScale);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const isZoomingDisabled = activeBuildTool !== null;
+  const [isZoomingDisabled, setIsZoomingDisabled] = useState(false);
+
+  const openProjectPanel = useCallback((roomId: string) => {
+    setSelectedRoomIds([roomId]);
+    setActiveTool("project");
+  }, []);
+
+  const captureOriginalState = useCallback(() => {
+    originalFloorPlanDataRef.current = JSON.parse(JSON.stringify(floorPlanData));
+    originalRoomRotationsRef.current = JSON.parse(JSON.stringify(roomRotations));
+    hasStoredOriginal.current = true;
+  }, [floorPlanData, roomRotations]);
+
+
+  useEffect(() => {
+    if (!hasStoredOriginal.current) {
+      captureOriginalState();
+    }
+  }, [captureOriginalState]);
 
   const updateVisualizationOption = <K extends keyof VisualizationOptions>(
     option: K,
@@ -106,11 +133,11 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
 
   const handleRoomTypeUpdate = useCallback(
     (roomId: string, newRoomType: string) => {
-      setFloorPlanData((prevData) => {
-        if (!hasChanges) {
-          setOriginalFloorPlanData(JSON.parse(JSON.stringify(prevData)));
-        }
+      if (!hasChanges) {
+        captureOriginalState();
+      }
 
+      setFloorPlanData((prevData) => {
         const updatedRooms = prevData.rooms.map((room) =>
           room.id === roomId ? { ...room, room_type: newRoomType } : { ...room }
         );
@@ -124,16 +151,16 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
         return newData;
       });
     },
-    [hasChanges]
+    [hasChanges, captureOriginalState]
   );
 
   const addLabel = useCallback(
     (text: string, position: Point) => {
-      setFloorPlanData((prevData) => {
-        if (!hasChanges) {
-          setOriginalFloorPlanData(JSON.parse(JSON.stringify(prevData)));
-        }
+      if (!hasChanges) {
+        captureOriginalState();
+      }
 
+      setFloorPlanData((prevData) => {
         const labels = prevData.labels || [];
 
         const newLabel: Label = {
@@ -153,25 +180,39 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
         return newData;
       });
     },
-    [hasChanges]
+    [hasChanges, captureOriginalState]
   );
 
   const saveFloorPlanChanges = useCallback(() => {
     saveFloorPlan(floorPlanData, roomRotations, setHasChanges);
-    setOriginalFloorPlanData(JSON.parse(JSON.stringify(floorPlanData)));
+    originalFloorPlanDataRef.current = JSON.parse(JSON.stringify(floorPlanData));
+    originalRoomRotationsRef.current = { ...roomRotations };
   }, [floorPlanData, roomRotations]);
 
   const resetFloorPlanChanges = useCallback(() => {
-    setFloorPlanData(JSON.parse(JSON.stringify(originalFloorPlanData)));
+    const resetData = JSON.parse(JSON.stringify(originalFloorPlanDataRef.current));
+    const resetRotations = { ...originalRoomRotationsRef.current };
+    setFloorPlanData(resetData);
+    setRoomRotations(resetRotations);
     setHasChanges(false);
-  }, [originalFloorPlanData]);
+
+    setTimeout(() => {
+      const event = new CustomEvent('floorPlanReset', { detail: resetData });
+      window.dispatchEvent(event);
+    }, 0);
+    
+  }, []);
 
   useEffect(() => {
-    if (activeBuildTool) {
+    if (activeTool !== "design" && activeTool !== "project" && activeTool !== "") {
       setScale(1);
       setPosition({ x: 0, y: 0 });
+      setIsZoomingDisabled(true);
+    } else {
+      setIsZoomingDisabled(false);
     }
-  }, [activeBuildTool, defaultScale]);
+  }, [activeTool]); 
+  
 
   useEffect(() => {
     const handleResize = () => {
@@ -215,6 +256,10 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
         saveFloorPlanChanges,
         resetFloorPlanChanges,
         addLabel,
+        captureOriginalState,
+        selectedRoomIds,
+        setSelectedRoomIds,
+        openProjectPanel
       }}
     >
       {children}

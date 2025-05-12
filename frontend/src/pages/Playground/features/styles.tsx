@@ -1,5 +1,4 @@
 // features/styles.tsx
-
 export const roomColors: Record<string, string> = {
   MasterRoom: "#FFD3B6",
   LivingRoom: "#FFAAA5",
@@ -183,7 +182,8 @@ button {
 }
 
 .save-button:hover {
-  background-color: black !important;
+  background-color: #444444 !important;
+  border: 1px solid #000000 !important;t;
 }
 
 .undo-button {
@@ -200,7 +200,7 @@ button {
 }
 
 .undo-button:hover {
-  background-color: #F9F9F9 !important;
+  background-color: #F0F0F0 !important;
 }
 
 .buttons-container {
@@ -321,13 +321,27 @@ button {
   }
 
   .save-button {
+  font-size: 11px;
+  padding: 8px 6px;
+}
+
+.undo-button {
+  font-size: 11px;
+  padding: 8px 6px;
+}
+}
+
+@media (max-width: 550px) {
+  .save-button {
   font-size: 10px;
-  padding: 6px 7px;
+  padding: 7px 5px;
+  width: 90px;
 }
 
 .undo-button {
   font-size: 10px;
-  padding: 6px 7px;
+  padding: 7px 5px;
+  width: 90px;
 }
 }
 

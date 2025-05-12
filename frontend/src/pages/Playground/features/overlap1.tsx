@@ -36,7 +36,6 @@ function rotatePoint(point: Point, center: { x: number, z: number }, angleDegree
   };
 }
 
-
 function getPolygonCenter(polygon: Point[]): { x: number, z: number } {
   const sumX = polygon.reduce((sum, p) => sum + p.x, 0);
   const sumZ = polygon.reduce((sum, p) => sum + p.z, 0);
@@ -45,7 +44,6 @@ function getPolygonCenter(polygon: Point[]): { x: number, z: number } {
     z: sumZ / polygon.length
   };
 }
-
 
 export function applyRotationToPolygon(polygon: Point[], rotation: number): Point[] {
   if (rotation === 0) return polygon; 
@@ -129,6 +127,10 @@ export function checkRoomOverlap(
     for (let j = i + 1; j < floorPlanData.rooms.length; j++) {
       const room1 = floorPlanData.rooms[i];
       const room2 = floorPlanData.rooms[j];
+
+      if (room1.room_type === "Wall" || room2.room_type === "Wall") {
+        continue;
+      }
 
       const rotation1 = roomRotations[room1.id] || 0;
       const rotation2 = roomRotations[room2.id] || 0;

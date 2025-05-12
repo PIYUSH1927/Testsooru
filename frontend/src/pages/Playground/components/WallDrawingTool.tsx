@@ -55,6 +55,17 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
     };
   };
 
+  const getTouchPosition = (e: TouchEvent, svg: SVGSVGElement) => {
+    const CTM = svg.getScreenCTM();
+    if (!CTM || e.touches.length === 0) return { x: 0, y: 0 };
+
+    const touch = e.touches[0];
+    return {
+      x: (touch.clientX - CTM.e) / CTM.a,
+      y: (touch.clientY - CTM.f) / CTM.d,
+    };
+  };
+
   useEffect(() => {
     if (!isActive || !svgRef.current) return;
 
@@ -122,6 +133,76 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
       }
     };
 
+    const handleSvgTouchStart = (e: TouchEvent) => {
+      if (!isActive) return;
+      e.preventDefault(); 
+
+      if (e.touches.length !== 1) return; 
+
+      const touch = e.touches[0];
+      const rect = svg.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      const point = reverseTransformCoordinates(x, y);
+
+      if (!isDrawing) {
+        setStartPoint(point);
+        setCurrentPoint(point);
+        setIsDrawing(true);
+        onDrawingStateChange(true);
+      } else {
+        setIsDrawing(false);
+        onDrawingStateChange(false);
+
+        if (startPoint && calculateDistance(startPoint, point) > 5 / scale) {
+          const wallPolygon = createWallPolygon(startPoint, point);
+          onWallCreated(wallPolygon);
+        }
+
+        setStartPoint(null);
+        setCurrentPoint(null);
+        exitDrawingMode();
+      }
+    };
+
+    const handleSvgTouchMove = (e: TouchEvent) => {
+      if (!isActive || !isDrawing) return;
+      e.preventDefault();
+
+      if (e.touches.length !== 1) return;
+
+      const touch = e.touches[0];
+      const rect = svg.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      const point = reverseTransformCoordinates(x, y);
+      setCurrentPoint(point);
+
+      if (startPoint) {
+        const tempWallPolygon = createWallPolygon(startPoint, point);
+
+        const tempWall = {
+          id: "temp-drawing-wall",
+          room_type: "Wall",
+          area: 0,
+          height: 0,
+          width: 0,
+          floor_polygon: tempWallPolygon,
+        };
+
+        const tempRooms = [...floorPlanData.rooms, tempWall];
+
+        const newBounds = calculateBounds(tempRooms);
+
+        const boundsEvent = new CustomEvent("temporaryBoundsUpdate", {
+          detail: newBounds,
+        });
+        window.dispatchEvent(boundsEvent);
+      }
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isDrawing) {
         setIsDrawing(false);
@@ -134,11 +215,15 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
 
     svg.addEventListener("mousedown", handleSvgMouseDown);
     svg.addEventListener("mousemove", handleSvgMouseMove);
+    svg.addEventListener("touchstart", handleSvgTouchStart);
+    svg.addEventListener("touchmove", handleSvgTouchMove);
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       svg.removeEventListener("mousedown", handleSvgMouseDown);
       svg.removeEventListener("mousemove", handleSvgMouseMove);
+      svg.removeEventListener("touchstart", handleSvgTouchStart);
+      svg.removeEventListener("touchmove", handleSvgTouchMove);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [

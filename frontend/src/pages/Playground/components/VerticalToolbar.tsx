@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './VerticalToolbar.css';
+import { useFloorPlan } from '../FloorPlanContext';
 
 const toolbarItems = [
   { id: 'project', icon: '📋', label: 'Project', tooltip: 'Project view' },
@@ -18,10 +19,15 @@ interface VerticalToolbarProps {
 }
 
 const VerticalToolbar: React.FC<VerticalToolbarProps> = ({ onToolSelected }) => {
-  const [activeToolId, setActiveToolId] = useState<string | null>(null);
+  // Add setScale and setPosition to the destructured imports from useFloorPlan
+  const { activeTool, setActiveTool, setScale, setPosition } = useFloorPlan();
 
   const handleToolClick = (toolId: string) => {
-    setActiveToolId(toolId);
+    setActiveTool(toolId);
+    if (toolId !== "design") {
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    }
     onToolSelected(toolId);
   };
 
@@ -81,11 +87,14 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({ onToolSelected }) => 
 
   return (
     <div className="vertical-toolbar">
-      <div className="toolbar-items">
+      <div className="toolbar-items" style={{  userSelect: "none",
+                WebkitUserSelect: "none",
+                MozUserSelect: "none",
+                msUserSelect: "none",}}>
         {toolbarItems.map(item => (
           <div 
             key={item.id} 
-            className={`toolbar-item ${activeToolId === item.id ? 'active' : ''}`}
+            className={`toolbar-item ${activeTool === item.id ? 'active' : ''}`}
             onClick={() => handleToolClick(item.id)}
             title={item.tooltip}
           >

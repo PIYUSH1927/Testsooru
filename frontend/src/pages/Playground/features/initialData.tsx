@@ -23,22 +23,7 @@ interface FloorPlanData {
 const SCALE_FACTOR = 20;
 
 export const flipFloorPlan = (data: FloorPlanData): FloorPlanData => {
-  const maxZ = Math.max(
-    ...data.rooms.flatMap(room => 
-      room.floor_polygon.map(point => point.z)
-    )  
-  );
-
-  return {
-    ...data,
-    rooms: data.rooms.map(room => ({
-      ...room,
-      floor_polygon: room.floor_polygon.map(point => ({
-        x: point.x,
-        z: maxZ - point.z 
-      }))
-    }))
-  };
+  return data;
 };
 
 const apiData: FloorPlanData = {

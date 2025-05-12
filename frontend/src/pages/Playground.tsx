@@ -9,6 +9,9 @@ import ToolPanel from "./Playground/components/ToolPanel";
 import VisualizationPanel from "./Playground/components/VisualizationPanel";
 import { FloorPlanProvider, useFloorPlan } from "./Playground/FloorPlanContext";
 import { Download, ArrowBack, Share } from "@mui/icons-material";
+import {
+  getInfoToolPanelState,
+} from "./Playground/features/eventHandlers";
 
 const roomData = [
   { name: "Master Bedroom", count: 0, width: 12, length: 10, open: false },
@@ -28,6 +31,7 @@ const PlaygroundWithProvider = () => {
     </FloorPlanProvider>
   );
 };
+
 const PlaygroundContent = () => {
   const {
     visualizationOptions,
@@ -36,6 +40,11 @@ const PlaygroundContent = () => {
     activeBuildTool,
     setActiveBuildTool,
     isDrawingActive,
+    hasChanges,
+    saveFloorPlanChanges,
+    resetFloorPlanChanges,
+    selectedRoomIds,
+    isZoomingDisabled,
   } = useFloorPlan();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -115,24 +124,44 @@ const PlaygroundContent = () => {
     if (!targetElement) return;
 
     const handleWheel = (e: WheelEvent) => {
-      if (activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") {
+      if (isZoomingDisabled || activeBuildTool === "drawWall" || activeBuildTool === "drawRoom") {
         e.preventDefault();
         return;
       }
-
+    
       if (isModalOpen || isDrawingActive) return;
-
+    
+      const isMouseWheel = Math.abs(e.deltaY) >= 100 || e.deltaMode === 1;
+    
+      if (isMouseWheel) {
+        if (e.ctrlKey) {
+          e.preventDefault();
+          const delta = e.deltaY > 0 ? 0.9 : 1.1;
+          setScale((prevScale) =>
+            Math.min(Math.max(0.1, prevScale * delta), 4000)
+          );
+        } else {
+          e.preventDefault();
+        }
+        return;
+      }
+      
       if (e.ctrlKey) {
         e.preventDefault();
-        const delta = e.deltaY > 0 ? 0.9 : 1.1;
-        setScale((prevScale) =>
-          Math.min(Math.max(0.1, prevScale * delta), 4000)
-        );
+        
+        if (!isZoomingDisabled) {
+          const delta = e.deltaY > 0 ? 0.9 : 1.1;
+          setScale((prevScale) =>
+            Math.min(Math.max(0.1, prevScale * delta), 4000)
+          );
+        }
       } else {
-        setPosition((prev) => ({
-          x: prev.x - e.deltaX,
-          y: prev.y - e.deltaY,
-        }));
+        if (activeTool === "project" || activeTool === "design" || activeTool === "") {
+          setPosition((prev) => ({
+            x: prev.x - e.deltaX,
+            y: prev.y - e.deltaY,
+          }));
+        }
       }
     };
 
@@ -141,7 +170,21 @@ const PlaygroundContent = () => {
     return () => {
       targetElement.removeEventListener("wheel", handleWheel);
     };
-  }, [isModalOpen, scale, isDrawingActive, activeBuildTool]);
+  }, [isModalOpen, scale, isDrawingActive, activeBuildTool, isZoomingDisabled, activeTool]);
+
+  useEffect(() => {
+    const infoPanelState = getInfoToolPanelState();
+
+    if (
+      selectedRoomIds &&
+      selectedRoomIds.length > 0 &&
+      activeTool !== "project" &&
+      (!infoPanelState.isActive ||
+        infoPanelState.activeOption !== "setRoomtype")
+    ) {
+      setActiveTool("project");
+    }
+  }, [selectedRoomIds, activeTool]);
 
   const getDistance = (touches: React.TouchList): number => {
     if (touches.length < 2) return 0;
@@ -179,16 +222,20 @@ const PlaygroundContent = () => {
       e.preventDefault();
       return;
     }
-
+  
     if (isModalOpen || isDrawingActive) return;
-
+  
     if (document.body.getAttribute("data-room-touch-interaction") === "true") {
       return;
     }
-
+  
     e.preventDefault();
-
+  
     if (e.touches.length === 2) {
+      if (isZoomingDisabled && activeTool !== "project") {
+        return;
+      }
+      
       const distance = getDistance(e.touches);
       if (touchStartDistance > 0) {
         const delta = distance / touchStartDistance;
@@ -198,14 +245,16 @@ const PlaygroundContent = () => {
         setTouchStartDistance(distance);
       }
     } else if (e.touches.length === 1 && isDragging) {
-      const touch = e.touches[0];
-      const dx = touch.clientX - lastMousePosition.x;
-      const dy = touch.clientY - lastMousePosition.y;
-      setPosition((prev) => ({
-        x: prev.x + dx / scale,
-        y: prev.y + dy / scale,
-      }));
-      setLastMousePosition({ x: touch.clientX, y: touch.clientY });
+      if (activeTool === "project" || activeTool === "design" || activeTool === "") {
+        const touch = e.touches[0];
+        const dx = touch.clientX - lastMousePosition.x;
+        const dy = touch.clientY - lastMousePosition.y;
+        setPosition((prev) => ({
+          x: prev.x + dx / scale,
+          y: prev.y + dy / scale,
+        }));
+        setLastMousePosition({ x: touch.clientX, y: touch.clientY });
+      }
     }
   };
 
@@ -213,6 +262,37 @@ const PlaygroundContent = () => {
     setIsDragging(false);
     setTouchStartDistance(0);
   };
+
+  useEffect(() => {
+    const infoPanelState = getInfoToolPanelState();
+
+    if (
+      selectedRoomIds &&
+      selectedRoomIds.length > 0 &&
+      activeTool !== "project" &&
+      (!infoPanelState.isActive ||
+        infoPanelState.activeOption !== "setRoomtype")
+    ) {
+      setActiveTool("project");
+    }
+  }, [selectedRoomIds, activeTool]);
+
+  useEffect(() => {
+    if (activeTool === "colors") {
+      setShowVisualizationPanel(true);
+      setShowToolPanel(false);
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    } else if (activeTool !== "design" && activeTool !== "") {
+      setShowToolPanel(true);
+      setShowVisualizationPanel(false);
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    } else {
+      setShowToolPanel(false);
+      setShowVisualizationPanel(false);
+    }
+  }, [activeTool]);
 
   useEffect(() => {
     const element = document.querySelector(".absolute.inset-0") as HTMLElement;
@@ -262,6 +342,11 @@ const PlaygroundContent = () => {
     touchStartDistance,
     isModalOpen,
     activeBuildTool,
+    isZoomingDisabled, 
+  activeTool,       
+  handleTouchStart,  
+  handleTouchMove,  
+  handleTouchEnd     
   ]);
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -300,13 +385,15 @@ const PlaygroundContent = () => {
       isDrawingActive ||
       activeBuildTool === "drawWall" ||
       activeBuildTool === "drawRoom"
-    )
+    ) 
       return;
-
-    const dx = event.clientX - lastMousePosition.x;
-    const dy = event.clientY - lastMousePosition.y;
-    setPosition((prev) => ({ x: prev.x + dx / scale, y: prev.y + dy / scale }));
-    setLastMousePosition({ x: event.clientX, y: event.clientY });
+  
+    if (activeTool === "project" || activeTool === "design" || activeTool === "") {
+      const dx = event.clientX - lastMousePosition.x;
+      const dy = event.clientY - lastMousePosition.y;
+      setPosition((prev) => ({ x: prev.x + dx / scale, y: prev.y + dy / scale }));
+      setLastMousePosition({ x: event.clientX, y: event.clientY });
+    }
   };
 
   const handleMouseUp = () => {
@@ -359,6 +446,14 @@ const PlaygroundContent = () => {
     setActiveTool("design");
   };
 
+  const handleSaveChanges = () => {
+    saveFloorPlanChanges();
+  };
+
+  const handleResetChanges = () => {
+    resetFloorPlanChanges();
+  };
+
   const totalArea = rooms.reduce(
     (sum, room) => sum + room.count * room.width * room.length,
     0
@@ -367,12 +462,13 @@ const PlaygroundContent = () => {
   const totalRooms = rooms.reduce((sum, room) => sum + room.count, 0);
   const navigate = useNavigate();
 
+  const isMobile = window.innerWidth < 850;
+
   return (
     <div
       ref={containerRef}
-      className={`absolute inset-0 overflow-hidden ${
-        visualizationOptions.darkMode ? "dark-mode" : ""
-      }`}
+      className={`absolute inset-0 overflow-hidden ${visualizationOptions.darkMode ? "dark-mode" : ""
+        }`}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -397,27 +493,28 @@ const PlaygroundContent = () => {
       />
 
       {/* 
-      <div
-        style={{
-          position: "absolute",
-          top: "49%",
-          left: "51%",
-          transform: `translate(-50%, -50%) translate(${scaledPosition.x}px, ${scaledPosition.y}px) scale(${scale}) rotate(${rotation}deg)`,
-          transformOrigin: "center center",
-          zIndex: 10
-        }}
-      >
-        <Generated
-          rotation={rotation}
-          visualizationOptions={visualizationOptions}
-        />
-      </div>
-      */}
+<div
+  style={{
+    position: "absolute",
+    top: "49%",
+    left: "51%",
+    transform: `translate(-50%, -50%) translate(${scaledPosition.x}px, ${scaledPosition.y}px) scale(${scale}) rotate(${rotation}deg)`,
+    transformOrigin: "center center",
+    zIndex: 10
+  }}
+>
+  <Generated
+    rotation={rotation}
+    visualizationOptions={visualizationOptions}
+  />
+</div>
+*/}
 
       <VerticalToolbar onToolSelected={handleToolSelected} />
-      {showToolPanel && (
-        <ToolPanel activeTool={activeTool} onClose={handleCloseToolPanel} />
-      )}
+      {(activeTool === "project" ||
+        (activeTool && activeTool !== "design" && activeTool !== "colors")) && (
+          <ToolPanel activeTool={activeTool} onClose={handleCloseToolPanel} />
+        )}
 
       {showVisualizationPanel && (
         <VisualizationPanel onClose={handleCloseVisualizationPanel} />
@@ -436,7 +533,7 @@ const PlaygroundContent = () => {
           style={{
             position: "fixed",
             top: "15px",
-            left: "50%",
+            left: "49.5%",
             transform: "translateX(-50%)",
             padding: "10px 20px",
             width: "auto",
@@ -448,6 +545,10 @@ const PlaygroundContent = () => {
             zIndex: 2000,
             textAlign: "center",
             boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
           }}
         >
           {activeBuildTool === "drawWall"
@@ -460,8 +561,8 @@ const PlaygroundContent = () => {
         <div
           style={{
             position: "fixed",
-            bottom: "13px",
-            left: "7%",
+            bottom: "30px",
+            left: "8%",
             transform: "translateX(-50%)",
             zIndex: 1000,
             padding: "5px 12px",
@@ -473,8 +574,16 @@ const PlaygroundContent = () => {
             display: "flex",
             alignItems: "center",
             gap: "10px",
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
           }}
           onClick={exitDrawingMode}
+          onTouchEnd={(e) => {
+            e.preventDefault(); 
+            exitDrawingMode();
+          }}
         >
           <span style={{ fontSize: "16px" }}>✕</span>
           Exit Drawing Mode
@@ -487,6 +596,10 @@ const PlaygroundContent = () => {
           display: "flex",
           gap: "20px",
           alignItems: "center",
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
         }}
       >
         <div
@@ -503,6 +616,7 @@ const PlaygroundContent = () => {
             fontWeight: "bold",
             fontSize: "14px",
           }}
+          className="back"
         >
           <ArrowBack
             style={{
@@ -565,6 +679,10 @@ const PlaygroundContent = () => {
           overflow: "hidden",
           backgroundColor: "#f5f5f5",
           width: "100px",
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
         }}
       >
         <div
@@ -582,7 +700,7 @@ const PlaygroundContent = () => {
           2D
         </div>
         <div
-        onClick={() => navigate("/3D")}
+          onClick={() => navigate("/3D")}
           style={{
             flex: 1,
             padding: "8px 0",
@@ -598,11 +716,41 @@ const PlaygroundContent = () => {
         </div>
       </div>
 
+      {hasChanges && (
+        <div className="save-reset-container" style={{
+          position: "fixed",
+          display: "flex",
+
+          bottom: "30px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          pointerEvents: "auto",
+          margin: "auto",
+          zIndex: 1000,
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
+        }}>
+          <button className="save-button" onClick={handleSaveChanges}>
+            <b>Save Changes</b>
+          </button>
+          <button className="undo-button" onClick={handleResetChanges}>
+            <b>Reset Changes</b>
+          </button>
+        </div>
+      )}
+
       {isModalOpen && (
-        <div className="modal-overlay" style={{ zIndex: 1000 }}>
+        <div className="modal-overlay" style={{
+          zIndex: 1000
+        }}>
           <div className="modal">
             <div className="modal-header">
-              <h2 style={{ fontWeight: "bolder" }}>House Parameters</h2>
+              <h2 style={{ fontWeight: "bolder", userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none", }}>House Parameters</h2>
               <button
                 className="close-btn"
                 onClick={() => {
@@ -759,21 +907,39 @@ const PlaygroundContent = () => {
       )}
 
       {isMiniModalOpen && (
-        <div className="modal-overlay1 mini">
+        <div className="modal-overlay1 mini" >
           <div className="modal mini-modal">
             <div className="modal-header">
-              <h2 style={{ fontWeight: "bolder", color: "black" }}>
-                House Parameters
-              </h2>
-              <button
-                className="close-btn"
-                onClick={() => {
-                  setIsMiniModalOpen(false);
-                  setIsModalOpen(true);
+              <h2
+              
+                style={{
+                  fontWeight: "bolder",
+                  color: "black",
+                  userSelect: "none",
+                  WebkitUserSelect: "none",
+                  MozUserSelect: "none",
+                  msUserSelect: "none",
                 }}
               >
-                ➕
-              </button>
+                House Parameters
+              </h2>
+               <button
+          className="close-btn"
+          style={{
+            cursor: "pointer",
+            zIndex: 2000,
+            padding: "8px",
+            fontSize: "18px"
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log("Expand button clicked");
+            setIsMiniModalOpen(false);
+            setIsModalOpen(true);
+          }}
+        >
+          ➕
+        </button>
             </div>
           </div>
         </div>

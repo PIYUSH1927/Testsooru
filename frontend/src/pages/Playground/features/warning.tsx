@@ -23,11 +23,18 @@ export const getOverlappingRoomNames = (
   overlappingRooms: string[][],
   getRoomType: (id: string) => string | undefined
 ) => {
-  const roomNamePairs = overlappingRooms.map(([id1, id2]) => {
-    const room1Type = getRoomType(id1);
-    const room2Type = getRoomType(id2);
-    return `${room1Type} and ${room2Type}`;
-  });
+  const roomNamePairs = overlappingRooms
+    .map(([id1, id2]) => {
+      const room1Type = getRoomType(id1);
+      const room2Type = getRoomType(id2);
+      
+      if (room1Type === "Wall" || room2Type === "Wall") {
+        return null;
+      }
+      
+      return `${room1Type} and ${room2Type}`;
+    })
+    .filter(pair => pair !== null) as string[];
 
   if (roomNamePairs.length === 1) {
     return roomNamePairs[0];

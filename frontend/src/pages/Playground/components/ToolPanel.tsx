@@ -10,6 +10,121 @@ import {
   setLabelPlacementState,
 } from "../features/eventHandlers";
 
+interface TouchDragSystem {
+  isDragging: boolean;
+  roomType: string | null;
+  dropTarget: string | null;
+  ghostElement: HTMLDivElement | null;
+  startDrag: (roomType: string, getRoomColor: (roomType: string, isSelected: boolean) => string) => void;
+  updatePosition: (x: number, y: number) => void;
+  endDrag: (
+    handleRoomTypeUpdate: (roomId: string, roomType: string) => void,
+    setHasChanges: (value: boolean) => void,
+    floorPlanData: any
+  ) => void;
+}
+
+declare global {
+  interface Window {
+    touchDragSystem?: TouchDragSystem;
+  }
+}
+
+
+
+const createTouchDragSystem = (): TouchDragSystem => {
+  if (window.touchDragSystem) return window.touchDragSystem;
+
+  const system: TouchDragSystem = {
+    isDragging: false,
+    roomType: null,
+    dropTarget: null,
+    ghostElement: null,
+
+    startDrag(roomType: string, getRoomColor: (roomType: string, isSelected: boolean) => string) {
+      this.isDragging = true;
+      this.roomType = roomType;
+
+      this.ghostElement = document.createElement('div');
+      this.ghostElement.id = 'touch-drag-ghost';
+      this.ghostElement.textContent = roomType;
+      this.ghostElement.style.position = 'fixed';
+      this.ghostElement.style.zIndex = '10000';
+      this.ghostElement.style.backgroundColor = getRoomColor(roomType, false);
+      this.ghostElement.style.padding = '8px 12px';
+      this.ghostElement.style.borderRadius = '4px';
+      this.ghostElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+      this.ghostElement.style.pointerEvents = 'none';
+      this.ghostElement.style.transform = 'translate(-50%, -50%)';
+      this.ghostElement.style.fontWeight = 'bold';
+      document.body.appendChild(this.ghostElement);
+
+      document.body.setAttribute('data-touch-dragging-room-type', roomType);
+    },
+
+    updatePosition(x: number, y: number) {
+      if (!this.isDragging || !this.ghostElement) return;
+
+      this.ghostElement.style.left = `${x}px`;
+      this.ghostElement.style.top = `${y}px`;
+
+      const elementsAtPoint = document.elementsFromPoint(x, y);
+      const roomElement = elementsAtPoint.find(el =>
+        el.classList && el.classList.contains('room-polygon') && !el.classList.contains('wall-polygon')
+      ) as HTMLElement | undefined;
+
+      const prevHighlighted = document.querySelectorAll('.touch-drop-target');
+      prevHighlighted.forEach(el => el.classList.remove('touch-drop-target'));
+
+      if (roomElement) {
+        roomElement.classList.add('touch-drop-target');
+        this.dropTarget = roomElement.id;
+      } else {
+        this.dropTarget = null;
+      }
+    },
+
+    endDrag(handleRoomTypeUpdate, setHasChanges, floorPlanData) {
+      if (!this.isDragging) return;
+
+      if (this.dropTarget && this.roomType) {
+        const roomId = this.dropTarget;
+        const room = floorPlanData.rooms.find((r: any) => r.id === roomId);
+
+        if (room && room.room_type !== this.roomType) {
+          handleRoomTypeUpdate(roomId, this.roomType);
+          setHasChanges(true);
+
+          const roomElement = document.getElementById(roomId);
+          if (roomElement) {
+            roomElement.classList.add('room-updated');
+            setTimeout(() => {
+              roomElement.classList.remove('room-updated');
+            }, 300);
+          }
+        }
+      }
+
+      if (this.ghostElement) {
+        document.body.removeChild(this.ghostElement);
+        this.ghostElement = null;
+      }
+
+      document.body.removeAttribute('data-touch-dragging-room-type');
+
+      const highlightedElements = document.querySelectorAll('.touch-drop-target');
+      highlightedElements.forEach(el => el.classList.remove('touch-drop-target'));
+
+      this.isDragging = false;
+      this.roomType = null;
+      this.dropTarget = null;
+    }
+  };
+
+  window.touchDragSystem = system;
+  return system;
+};
+
 interface ToolPanelProps {
   activeTool: string;
   onClose: () => void;
@@ -31,9 +146,21 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     saveFloorPlanChanges,
     resetFloorPlanChanges,
     addLabel,
+    selectedRoomIds,
+    setSelectedRoomIds,
+    setScale,  
+    setPosition,
   } = useFloorPlan();
 
-  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+  useEffect(() => {
+    if (activeTool && activeTool !== "design") {
+      setScale(1);
+      setPosition({ x: 0, y: 0 });
+    }
+  }, [activeTool, setScale, setPosition]);
+
+  const selectedRoomId = selectedRoomIds && selectedRoomIds.length > 0 ? selectedRoomIds[0] : null;
+
   const [activeInfoOption, setActiveInfoOption] = useState<string | null>(null);
   const [selectedLabelId, setSelectedLabelId] = useState<string | null>(null);
   const [selectedRoomType, setSelectedRoomType] = useState<string | null>(null);
@@ -76,10 +203,10 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       setStoredLabelText(null);
     };
 
-    window.addEventListener("labelPlaced", handleLabelPlaced);
+    window.addEventListener("labelPlaced", handleLabelPlaced as EventListener);
 
     return () => {
-      window.removeEventListener("labelPlaced", handleLabelPlaced);
+      window.removeEventListener("labelPlaced", handleLabelPlaced as EventListener);
     };
   }, []);
 
@@ -153,7 +280,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
         const isClickOnRoom = (event.target as Element).closest(".mini-room");
 
         if (isClickInFloorPlan && !isClickOnRoom) {
-          setSelectedRoomId(null);
+          setSelectedRoomIds([]);
         }
       }
     };
@@ -162,7 +289,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [selectedRoomId]);
+  }, [selectedRoomId, setSelectedRoomIds]);
 
   const selectedRoom = selectedRoomId
     ? safeFloorPlanData.rooms.find((room: Room) => room.id === selectedRoomId)
@@ -176,13 +303,18 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
         setHasLocalChanges(true);
         setHasChanges(true);
       }
+
+      return;
     } else {
-      setSelectedRoomId(roomId === selectedRoomId ? null : roomId);
+      if (roomId === selectedRoomId) {
+        setSelectedRoomIds([]);
+      } else {
+        setSelectedRoomIds([roomId]);
+      }
     }
   };
 
   const handleSelectRoomType = (roomType: string) => {
-    setSelectedRoomType(roomType);
     setGlobalSelectedRoomType(roomType);
   };
 
@@ -255,7 +387,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     return { x, y };
   };
 
-  const getRoomColor = (roomType: string, isSelected: boolean) => {
+  const getRoomColor = (roomType: string, isSelected: boolean): string => {
     if (roomType === "Wall") {
       return "#333333";
     }
@@ -278,6 +410,19 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     return colorMap[roomType] || "#D0D0D0";
   };
 
+
+  const handleMouseEvent = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleTouchEvent = (e: React.TouchEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleWheelEvent = (e: React.WheelEvent) => {
+    e.stopPropagation();
+  };
+
   if (!activeTool || activeTool === "design") return null;
 
   const shouldRenderProject = activeTool === "project";
@@ -285,7 +430,12 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
   const renderProjectPanel = () => {
     return (
       <>
-        <div className="mini-floor-plan-container">
+        <div className="mini-floor-plan-container" style={{
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
+        }}>
           <svg
             width={previewWidth}
             height={previewHeight}
@@ -440,7 +590,12 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     if (activeInfoOption === "setRoomtype") {
       return (
         <div className="panel-options">
-          <div className="option-header">
+          <div className="option-header" style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}>
             <button
               className="back-button"
               onClick={() => {
@@ -476,11 +631,11 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
           </div>
 
           <p className="instruction-text">
-            Select a room type, then click on a room in the floor plan to apply
-            it.
+            Drag a room type and drop it onto a room in the floor plan to apply it.
           </p>
 
           <div className="room-type-grid">
+
             {[
               "LivingRoom",
               "Kitchen",
@@ -493,10 +648,62 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
             ].map((roomType, index) => (
               <button
                 key={roomType + index}
-                className={`room-type-item ${
-                  selectedRoomType === roomType ? "selected" : ""
-                }`}
+                className="room-type-item"
                 onClick={() => handleSelectRoomType(roomType)}
+                draggable="true"
+                onDragStart={(e) => {
+                  e.dataTransfer.setData("roomType", roomType);
+                  e.currentTarget.classList.add("dragging");
+
+                  const dragImage = document.createElement('div');
+                  dragImage.textContent = roomType;
+                  dragImage.style.backgroundColor = getRoomColor(roomType, false);
+                  dragImage.style.padding = '10px';
+                  dragImage.style.border = '1px solid #aaa';
+                  dragImage.style.borderRadius = '4px';
+                  dragImage.style.position = 'absolute';
+                  dragImage.style.top = '-1000px';
+                  document.body.appendChild(dragImage);
+
+                  e.dataTransfer.setDragImage(dragImage, 25, 25);
+
+                  setTimeout(() => {
+                    document.body.removeChild(dragImage);
+                  }, 100);
+                }}
+                onDragEnd={(e) => {
+                  e.currentTarget.classList.remove("dragging");
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+
+                  const touchSystem = createTouchDragSystem();
+                  const touch = e.touches[0];
+
+                  touchSystem.startDrag(roomType, getRoomColor);
+                  touchSystem.updatePosition(touch.clientX, touch.clientY);
+
+                  const button = e.currentTarget;
+                  button.classList.add('touch-dragging');
+                  button.style.opacity = '0.7';
+                }}
+                onTouchMove={(e) => {
+                  e.stopPropagation();
+
+                  const touchSystem = createTouchDragSystem();
+                  const touch = e.touches[0];
+
+                  touchSystem.updatePosition(touch.clientX, touch.clientY);
+                }}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+
+                  const touchSystem = createTouchDragSystem();
+                  touchSystem.endDrag(handleRoomTypeUpdate, setHasChanges, floorPlanData);
+                  const button = e.currentTarget;
+                  button.classList.remove('touch-dragging');
+                  button.style.opacity = '1';
+                }}
               >
                 {roomType}
               </button>
@@ -506,7 +713,12 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       );
     } else if (activeInfoOption === "placeLabel") {
       return (
-        <div className="panel-options">
+        <div className="panel-options" style={{
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
+        }}>
           <div className="option-header">
             <button
               className="back-button"
@@ -606,7 +818,12 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       );
     } else {
       return (
-        <div className="panel-options info-options">
+        <div className="panel-options info-options" style={{
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
+        }}>
           <button
             className="menu-option"
             onClick={() => setActiveInfoOption("setRoomtype")}
@@ -720,14 +937,19 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
         return renderProjectPanel();
 
       case "build":
-        return <BuildToolsPanel onSelectTool={(toolId: string) => {}} />;
+        return <BuildToolsPanel onSelectTool={(toolId: string) => { }} />;
 
       case "info":
         return renderInfoPanel();
 
       case "objects":
         return (
-          <div className="panel-options furniture-options">
+          <div className="panel-options furniture-options" style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}>
             <div className="furniture-item">
               <div className="furniture-icon">🛋️</div>
               <span>Sofa</span>
@@ -757,14 +979,24 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
 
       case "styleboards":
         return (
-          <div className="panel-options">
+          <div className="panel-options" style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}>
             <p>Style options for your project</p>
           </div>
         );
 
       case "exports":
         return (
-          <div className="panel-options">
+          <div className="panel-options" style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}>
             <button className="export-button">PNG Image</button>
             <button className="export-button">PDF Document</button>
             <button className="export-button">CAD File</button>
@@ -781,7 +1013,12 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
 
       case "help":
         return (
-          <div className="panel-options">
+          <div className="panel-options" style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}>
             <p>Need help with something?</p>
             <ul className="help-links">
               <li>
@@ -826,21 +1063,49 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       case "colors":
         return "Colors";
       default:
-        return `${
-          activeTool.charAt(0).toUpperCase() + activeTool.slice(1)
-        } Tools`;
+        return `${activeTool.charAt(0).toUpperCase() + activeTool.slice(1)
+          } Tools`;
     }
   };
 
   return (
-    <div className="tool-panel" ref={panelRef}>
+    <div
+      className="tool-panel"
+      style={{
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        MozUserSelect: "none",
+        msUserSelect: "none",
+      }}
+      ref={panelRef}
+      onMouseDown={handleMouseEvent}
+      onMouseMove={handleMouseEvent}
+      onMouseUp={handleMouseEvent}
+      onWheel={handleWheelEvent}
+      onClick={handleMouseEvent}
+      onTouchStart={handleTouchEvent}
+      onTouchMove={handleTouchEvent}
+      onTouchEnd={handleTouchEvent}
+    >
       <div className="panel-header">
         <h2>{getPanelTitle()}</h2>
         <button className="close-panel" onClick={handleClose}>
           ×
         </button>
       </div>
-      <div className="panel-content">{renderPanelContent()}</div>
+      <div
+        className="panel-content"
+        onMouseDown={handleMouseEvent}
+        onMouseMove={handleMouseEvent}
+        onMouseUp={handleMouseEvent}
+        onWheel={handleWheelEvent}
+        onClick={handleMouseEvent}
+        onTouchStart={handleTouchEvent}
+        onTouchMove={handleTouchEvent}
+        onTouchEnd={handleTouchEvent}
+      >
+        {renderPanelContent()}
+      </div>
     </div>
   );
 };

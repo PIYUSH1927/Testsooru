@@ -17,6 +17,7 @@
               0px -4px 6px rgba(0, 0, 0, 0.1),  
               0px 4px 6px rgba(0, 0, 0, 0.1);  
   border-radius: 5px;
+                          
 }
 
 .panel-header {
@@ -75,7 +76,7 @@
 
 .mini-floor-plan {
   background-color: #f8f9fa;
-}
+ }
 
 .mini-room {
   cursor: pointer;
@@ -188,6 +189,10 @@
   gap: 12px;
 }
 
+.panel-options p {
+  color: #333 !important;
+}
+
 .panel-options button {
   padding: 8px 12px;
   background-color: #f0f0f0;
@@ -244,6 +249,9 @@
   padding: 8px;
   border-radius: 4px;
   transition: background-color 0.2s ease;
+}
+.furniture-item {
+  color: #333 !important;
 }
 
 .furniture-item:hover {
@@ -304,13 +312,7 @@
 
 @media (max-width: 768px) {
   .tool-panel {
-    width: 90%;
-    left: 5%;
-    max-height: 70vh;
-  }
-  
-  .mini-floor-plan-container {
-    width: 100%;
+   display: none;
   }
 }
 
@@ -346,7 +348,7 @@
 .instruction-text {
   margin: 0 0 0px 0;
   font-size: 13px;
-  color: #666;
+  color: #666 !important;
 }
 
 .room-type-grid {
@@ -371,12 +373,6 @@
 
 .room-type-item:hover {
   background-color: #e9ecef;
-}
-
-.room-type-item.selected {
-  background-color: #2196F3;
-  border-color: black;
-  color: black;
 }
 
 .label-input-container {
@@ -414,3 +410,31 @@
   flex-direction: column;
   gap: 10px;
 }
+
+.touch-dragging {
+  opacity: 0.7;
+}
+
+.touch-drop-target {
+  stroke: #2196F3 !important;
+  stroke-width: 3px !important;
+  stroke-dasharray: 5,3 !important;
+  animation: pulse-border 1s infinite !important;
+}
+
+@keyframes pulse-border {
+  0% { stroke-opacity: 0.4; }
+  50% { stroke-opacity: 0.8; }
+  100% { stroke-opacity: 0.4; }
+}
+
+.room-updated {
+  transition: fill 0.3s ease-out;
+  fill: #2196F3 !important;
+}
+
+.touch-dragging {
+  background-color: rgba(33, 150, 243, 0.2) !important;
+}
+
+

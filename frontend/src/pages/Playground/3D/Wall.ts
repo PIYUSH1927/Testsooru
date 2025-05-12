@@ -1,6 +1,6 @@
 import * as t from "three";
 
-export const height = 10;
+export const height = 20;
 const width = 1;
 const indices = [0, 1, 2, 1, 3, 2];
 const indicesReverse = [0, 2, 1, 1, 2, 3];
@@ -27,7 +27,7 @@ export default class wall {
             .multiplyScalar(width / 2);
 
         const innerWallOffset = normal.clone().multiplyScalar(width / 2);
-        const outerWallOffset = normal.clone().multiplyScalar(-width / 2);
+        const outerWallOffset = normal.clone().multiplyScalar((- width / 2) - 0.01);
 
         this.innerStart = start.clone().add(innerWallOffset).sub(wallDelta);
         this.outerStart = start.clone().add(outerWallOffset).add(wallDelta);

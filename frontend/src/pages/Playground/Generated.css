@@ -1,6 +1,5 @@
 .generated-container{
-    color: black;
-    
+    color: black;  
 }
 
 .always-black-text,
@@ -12,8 +11,6 @@
 .always-black-text span[style*="color: #666"] {
   color: #666 !important;
 }
-
-
 
 .generated-container {
   position: relative;
@@ -99,10 +96,6 @@
   transition: background-color 0.2s;
 }
 
-
-
-
-
 .thin-walls .room-polygon {
   stroke-width: 1px;
 }
@@ -141,3 +134,114 @@
     font-size: 14px;
   }
 }
+
+.room-type-item {
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.room-type-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.room-type-item.dragging {
+  opacity: 0.7;
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.room-polygon.drop-target {
+  stroke: #2196F3 !important;
+  stroke-width: 3px !important;
+  stroke-dasharray: 5,5;
+  opacity: 0.9;
+}
+
+
+@keyframes room-updated-flash {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.room-polygon.room-updated {
+  animation: room-updated-flash 0.3s ease-in-out;
+}
+
+.room-polygon {
+  pointer-events: auto;
+}
+
+.room-polygon.drop-target {
+  stroke: #2196F3 !important;
+  stroke-width: 3px !important;
+  stroke-dasharray: 5,5;
+  opacity: 0.9;
+}
+
+.room-type-item {
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+
+.room-type-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.room-type-item.dragging {
+  opacity: 0.7;
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+body.is-dropping {
+  pointer-events: none;
+}
+body.is-dropping .room-polygon {
+  pointer-events: auto;
+}
+
+
+/* Add to Generated.css */
+body.drag-in-progress {
+  cursor: grabbing !important;
+}
+
+body.drag-complete {
+  pointer-events: none !important;
+}
+
+body.drag-complete * {
+  pointer-events: none !important;
+}
+
+body.drag-complete::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+}
+
+#touch-drag-ghost {
+  font-family: sans-serif;
+  color: #333;
+  pointer-events: none;
+  user-select: none;
+  transition: transform 0.1s ease-out;
+}
+
+.room-polygon.touch-drop-target {
+  fill-opacity: 0.8;
+}
+
+[data-touch-dragging-room-type] {
+  cursor: grabbing !important;
+}
+
+

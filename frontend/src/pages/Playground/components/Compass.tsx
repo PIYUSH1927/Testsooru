@@ -46,7 +46,10 @@ export const Compass = ({ size, rotation, onRotate }: CompassProps) => {
           transform: `rotate(${rotation}deg)`,
         }}
       >
-        <div className="compass-dial">
+        <div className="compass-dial" style={{  userSelect: "none",
+                WebkitUserSelect: "none",
+                MozUserSelect: "none",
+                msUserSelect: "none",}}>
           <div className="compass-text north">N</div>
           <div className="compass-text south">S</div>
           <div className="compass-text east">E</div>

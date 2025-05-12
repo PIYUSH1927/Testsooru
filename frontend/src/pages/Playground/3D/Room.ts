@@ -1,12 +1,12 @@
 import * as t from "three";
 import wall from "./Wall";
 
-const height = 10;
+const height = 20;
 
 const roofMaterial = new t.MeshBasicMaterial({
     color: 0x03a9fc,
     transparent: true,
-    opacity: 0.5,
+    opacity: 0.4,
     side: t.DoubleSide,
 });
 
@@ -76,7 +76,7 @@ export default class room {
             let b = (i + 1) % points.length;
             let c = (i + 2) % points.length;
             while (
-                this.antiClockwise(
+                this.clockwise(
                     points[a].position
                         .clone()
                         .sub(points[b].position)
@@ -128,10 +128,10 @@ export default class room {
         return [floorMesh, roofMesh];
     }
 
-    antiClockwise(vecA: t.Vector3, vecB: t.Vector3) {
+    clockwise(vecA: t.Vector3, vecB: t.Vector3) {
         const cross = vecA.cross(vecB);
         const vn = new t.Vector3(0, 1, 0);
-        return vn.dot(cross) > 0;
+        return vn.dot(cross) <= 0;
     }
 
     pointInsideTriangle(vecA: t.Vector3, vecB: t.Vector3, vecC: t.Vector3, points: Array<Vertex>) {
