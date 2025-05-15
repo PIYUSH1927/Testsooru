@@ -3,6 +3,9 @@ import "./ToolPanel.css";
 import { useFloorPlan } from "../FloorPlanContext";
 import { Room, Point } from "../features/types";
 import BuildToolsPanel from "./BuildToolsPanel";
+import ObjectsPanel from "./ObjectsPanel";
+import ExportsPanel from "./ExportsPanel";
+import HelpPanel from "./HelpPanel";
 import {
   setGlobalSelectedRoomType,
   getGlobalSelectedRoomType,
@@ -29,8 +32,6 @@ declare global {
     touchDragSystem?: TouchDragSystem;
   }
 }
-
-
 
 const createTouchDragSystem = (): TouchDragSystem => {
   if (window.touchDragSystem) return window.touchDragSystem;
@@ -148,8 +149,9 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     addLabel,
     selectedRoomIds,
     setSelectedRoomIds,
-    setScale,  
+    setScale,
     setPosition,
+    setActiveTool
   } = useFloorPlan();
 
   useEffect(() => {
@@ -169,8 +171,9 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [storedLabelText, setStoredLabelText] = useState<string | null>(null);
-
+  const [activeTab, setActiveTab] = useState("signs");
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
+  const [selectedSignSymbol, setSelectedSignSymbol] = useState<string | null>(null);
   const safeFloorPlanData = floorPlanData || {
     rooms: [],
     total_area: 0,
@@ -201,6 +204,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     const handleLabelPlaced = () => {
       setWaitingForLabelPlacement(false);
       setStoredLabelText(null);
+      setSelectedSignSymbol(null);
     };
 
     window.addEventListener("labelPlaced", handleLabelPlaced as EventListener);
@@ -259,6 +263,25 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       }
     }
   };
+
+  useEffect(() => {
+    setInfoToolPanelState(activeTool === "info", activeInfoOption);
+    if (
+      activeTool === "info" &&
+      (activeInfoOption === "placeLabel" || activeInfoOption === "placesignandsymbol") &&
+      waitingForLabelPlacement
+    ) {
+      setLabelPlacementState(true, storedLabelText || labelText);
+    } else {
+      setLabelPlacementState(false, null);
+    }
+  }, [
+    activeTool,
+    activeInfoOption,
+    waitingForLabelPlacement,
+    labelText,
+    storedLabelText,
+  ]);
 
   useEffect(() => {
     positionPanel();
@@ -334,6 +357,11 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
     setInfoToolPanelState(false, null);
     setLabelPlacementState(false, null);
     setWaitingForLabelPlacement(false);
+    setSelectedSignSymbol(null);
+
+    setSelectedRoomIds([]);
+
+    setActiveTool('design');
     onClose();
   };
 
@@ -420,6 +448,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
   };
 
   const handleWheelEvent = (e: React.WheelEvent) => {
+
     e.stopPropagation();
   };
 
@@ -816,6 +845,232 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
           )}
         </div>
       );
+    } else if (activeInfoOption === "placesignandsymbol") {
+      const signsList = [
+        "Arrow01", "Arrow02", "NorthArrow", "NorthArrowB", "North Arrow 2017c",
+        "v397_northsymbol", "Windroos", "v15_circlex0", "v95_circlex1", "v241_circlex2",
+        "v977_circlex3", "v309_circlex4", "v129_circlex5", "v986_circlex6", "v942_circlex7",
+        "v473_circlex8", "v630_circlex9", "circle_A", "circle_B", "circle_C", "circle_D",
+        "circle_E", "circle_F", "circle_G", "circle_H", "circle_I", "circle_J", "circle_K",
+        "circle_L", "circle_M", "circle_N", "circle_O", "circle_P", "circle_Q", "circle_R",
+        "circle_S", "circle_T", "circle_U", "circle_V", "circle_W", "circle_X", "circle_Y",
+        "circle_Z", "v674_balloon1", "v862_arrow1", "v549_balloon2", "v522_balloon5",
+        "v441_balloon3", "v676_balloon4", "v261_eikpunt", "You Are Here_MP", "v314_arrows",
+        "Evacuation Path_MP", "Arrow Sign Right", "EXITsignB", "v18_exit2", "Exit_MPb", "Exit_MP",
+        "v171_emergencyxexit2", "Emergency icon", "emergency_exit", "v306_firstxaid", "Defibrillator",
+        "Emergency Phone Sign", "v294_meetingxpoint", "Pickup Point", "Doctor Sign", "Safety shower",
+        "Evac-Chair", "BHV-Kast", "First Aid Kit_MP", "EmergencyPhone_MP", "v333_firexhose",
+        "Fire Hose Signb", "Fire Plan_MP", "v683_firexextinguisher", "Fire Extinguisher Sign",
+        "Fire Hydrant_MP", "v157_emergencyxbutton", "Fire Pull Station_MP", "Fire Phone Sign",
+        "v587_escapexladder", "Fire Ladder Sign", "Fire Helmet Sign", "BranbareStoffenB", "SchadelijkB",
+        "Giftig", "wet_sign", "Electrical Hazard_MP", "Generator_MP", "Radiation Hazard_MP",
+        "Waterafsluiter", "Oxigen Valve_MP", "elevator", "telefoon", "exit", "ToiletMen_Sign",
+        "ToiletWomen_Sign", "toiletsign", "rolstoel", "kantoor", "pin", "To Clean up_MP",
+        "To Repair_MP", "To Drain_MP", "To Seal_MP", "To Install_MP", "To Inspect_MP",
+        "To Paint_MP", "To Remove_MP", "To Dry_MP", "To Move_MP"
+      ];
+
+      const symbolsList = [
+        "v996_aanslxtelefoon", "aansl_tel rechts", "aansl_cai rechts", "v572_aanslxcai",
+        "v192_stopcontactxenkel", "v411_stopcontactxenkel", "v404_stopcontactxdubbel",
+        "v973_outlet", "v547_gfixoutlet", "v370_quadxoutlet", "v187_floorxoutlet",
+        "v745_telecomoutlet", "v598_tvxoutlet", "v551_switch", "v818_switchxthreeway",
+        "v503_switchxfourway", "v908_switchxdimmer", "Switch_ThreewayDimmer", "v15_smokedetector",
+        "v874_surfaceceilinglight", "v271_dropcordceilinglight", "v609_recessedceilinglight",
+        "v885_walllight", "v326_thermostat", "v801_doorbell", "v396_doorbelchime",
+        "DoorbelTransformerb", "v931_servicepanel", "v33_verbrxkoelkast", "Stereo_Outletb",
+        "TV_Outletb", "DoorbelChimeb", "SmokeDetectorb", "Thermostatb", "v244_verbrxventilator",
+        "v650_verbrxverwarmaccu", "verbr_boiler", "v779_verbrxwandverlichting", "v248_verbrxbel",
+        "v5_verbrxvaatwasmachine", "v671_verbrxvaatwasmachine", "v865_verbrxdiepvriezer",
+        "v466_verbrxtransformator", "v486_verbrxdroogkast", "v33_verbrxkoelkast (1)",
+        "v722_verbrxmotor", "v882_verbrxkwhteller", "pomp", "type microwave", "type electrische oven",
+        "Ceiling Light MP", "Emergency Light MP", "Fan MP", "Flood Light MP", "Fluorescent Light MP",
+        "Light Socket MP", "Motor MP", "Projector MP", "Self Contained Emergency Light MP",
+        "Spot Light MP", "Pull-Cord Switch MP", "Clock MP", "TV Cable MP", "Bell MP 2",
+        "Single-stroke Bell MP", "Buzzer MP", "Duplex Outlet with Switch MP c", "Pushbutton w Pilot MP",
+        "Pushbutton MP", "Restricted Pushbutton MP", "Switch MP b", "Dimmer Switch MP",
+        "Switch 2 Way 1 Pole MP", "Single Outlet MP", "Duplex Outlet MP", "Data Cable MP",
+        "Ground Fault Outlet MP", "Ground Fault Duplex Outlet MP", "Ground Fault Duplex Outlet and Switch MP",
+        "Ground Fault Outlet and Switch MP", "Isolaterd Duplex Outlet MP", "Switch 2 Pole MP",
+        "Switch with Pilot Light MP", "Battery MP", "Ground MP", "Water Heater MP",
+        "SecuritySystem_MP", "Door Window Contact_MP", "GlassBreakSensor_MP", "CO Detector_MP",
+        "Motion Detector_MP", "Sensor_MP", "Smoke Detector_MP", "Thermostat_MP", "Surveillance Camera_MP",
+        "Smoke Detector_MP (1)", "Heat Detector_MP", "Onsite Treatment System", "Pit", "Chamber",
+        "Gully", "Grease Interceptor", "Capped Point", "Provisional Drain Pip", "Waste Stack",
+        "Vertical Pipe", "Vent Pipe", "Inspection Shaft", "Boundary Trap", "Inspection Opening",
+        "Vertical Junction", "Sloped Junction", "Onback Junction", "Pump Unit", "Reflux Valve",
+        "Shower2D", "Shower2Db", "Stopcontact", "v5_powersocketsingle", "v708_powersocketdouble",
+        "TV_NET_socket", "Wifi", "Internet_Data_Outlet_", "Cable_Antenna_Outlet", "Fridge symbol",
+        "Washing machine symbol", "Dryer symbol", "Washer Dryer symbol", "Dishwasher symbol",
+        "Oven symbol", "Microwave symbol", "Microwave oven symbol", "Stove 2 symbol", "Stove 4 symbol",
+        "Sink symbol", "Sink round symbol", "Double sink symbol", "Central Heating symbol",
+        "Electricity symbol", "Water symbol", "Water and Electricity symbol", "Fresh air supply",
+        "Air flow direction", "Air transit", "Dirty air discharge"
+      ];
+
+      const handleSignSymbolClick = (item: string, type: string) => {
+        const svgPath = `/${type === 'signs' ? 'Signs' : 'Symbols'}/${item}.svg`;
+        setStoredLabelText(svgPath);
+        setWaitingForLabelPlacement(true);
+        setLabelPlacementState(true, svgPath);
+        setHasChanges(true);
+        setSelectedSignSymbol(item);
+      };
+
+      return (
+        <div className="panel-options signs-symbols-panel" style={{
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
+
+        }}>
+          <div className="option-header">
+            <button
+              className="back-button"
+              onClick={() => {
+                setActiveInfoOption(null);
+                resetLabelState();
+                setSelectedSignSymbol(null);
+              }}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19 12H5"
+                  stroke="#555555"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 19L5 12L12 5"
+                  stroke="#555555"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <span className="section-title1">Signs & Symbols</span>
+          </div>
+
+          <div className="tabs-container" style={{
+            display: "flex",
+          }}>
+            <button
+              className={`tab-button ${activeTab === "signs" ? "active" : ""}`}
+              onClick={() => setActiveTab("signs")}
+              style={{
+                flex: 1,
+                padding: "10px",
+                backgroundColor: activeTab === "signs" ? "#000" : "#f5f5f5",
+                color: activeTab === "signs" ? "#fff" : "#000",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "bold",
+                borderRadius: activeTab === "signs" ? "4px 4px 0 0" : "0",
+              }}
+            >
+              Signs
+            </button>
+            <button
+              className={`tab-button ${activeTab === "symbols" ? "active" : ""}`}
+              onClick={() => setActiveTab("symbols")}
+              style={{
+                flex: 1,
+                padding: "10px",
+                backgroundColor: activeTab === "symbols" ? "#000" : "#f5f5f5",
+                color: activeTab === "symbols" ? "#fff" : "#000",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "bold",
+                borderRadius: activeTab === "symbols" ? "4px 4px 0 0" : "0",
+              }}
+            >
+              Symbols
+            </button>
+          </div>
+          {waitingForLabelPlacement && (
+            <div
+              className="click-instruction"
+              style={{
+                color: "#2196F3",
+                textAlign: "center",
+                fontSize: "small",
+                fontWeight: "bold",
+                zIndex: "10000000"
+              }}
+            >
+              Now click on the floor plan where you want to place this sign/symbol
+            </div>
+          )}
+
+          <div className="signs-symbols-grid" style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "12px",
+            padding: "0px",
+            position: "relative",
+            left: "0.3rem",
+            overflowY: "auto",
+          }}>
+            {(activeTab === "signs" ? signsList : symbolsList).map((item) => (
+              <div
+                key={item}
+                className="sign-symbol-item"
+                onClick={() => handleSignSymbolClick(item, activeTab)}
+                style={{
+                  width: "60px",
+                  height: "60px",
+                  backgroundColor: waitingForLabelPlacement && storedLabelText === `/${activeTab === 'signs' ? 'Signs' : 'Symbols'}/${item}.svg` ? "#2196F3" : "#f8f8f8",
+                  border: waitingForLabelPlacement && storedLabelText === `/${activeTab === 'signs' ? 'Signs' : 'Symbols'}/${item}.svg` ? "2px solid #1976D2" : "1px solid #ddd",
+                  borderRadius: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  if (!(waitingForLabelPlacement && storedLabelText === `/${activeTab === 'signs' ? 'Signs' : 'Symbols'}/${item}.svg`)) {
+                    e.currentTarget.style.backgroundColor = "#e0e0e0";
+                    e.currentTarget.style.borderColor = "#999";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!(waitingForLabelPlacement && storedLabelText === `/${activeTab === 'signs' ? 'Signs' : 'Symbols'}/${item}.svg`)) {
+                    e.currentTarget.style.backgroundColor = waitingForLabelPlacement && storedLabelText === `/${activeTab === 'signs' ? 'Signs' : 'Symbols'}/${item}.svg` ? "#2196F3" : "#f8f8f8";
+                    e.currentTarget.style.borderColor = waitingForLabelPlacement && storedLabelText === `/${activeTab === 'signs' ? 'Signs' : 'Symbols'}/${item}.svg` ? "2px solid #1976D2" : "#ddd";
+                  }
+                }}
+              >
+                <img
+                  src={`/${activeTab === 'signs' ? 'Signs' : 'Symbols'}/${item}.svg`}
+                  alt={item}
+                  style={{
+                    maxWidth: "40px",
+                    maxHeight: "40px",
+                    objectFit: "contain",
+                  }}
+                  onError={(e) => {
+                    e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='10'%3E%3F%3C/text%3E%3C/svg%3E";
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+
+        </div>
+      );
     } else {
       return (
         <div className="panel-options info-options" style={{
@@ -893,7 +1148,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
             <span className="option-arrow">›</span>
           </button>
 
-          <button className="menu-option">
+          <button className="menu-option" onClick={() => setActiveInfoOption("placesignandsymbol")}>
             <span className="option-icon">
               <svg
                 width="18"
@@ -943,40 +1198,8 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
         return renderInfoPanel();
 
       case "objects":
-        return (
-          <div className="panel-options furniture-options" style={{
-            userSelect: "none",
-            WebkitUserSelect: "none",
-            MozUserSelect: "none",
-            msUserSelect: "none",
-          }}>
-            <div className="furniture-item">
-              <div className="furniture-icon">🛋️</div>
-              <span>Sofa</span>
-            </div>
-            <div className="furniture-item">
-              <div className="furniture-icon">🛏️</div>
-              <span>Bed</span>
-            </div>
-            <div className="furniture-item">
-              <div className="furniture-icon">🪑</div>
-              <span>Chair</span>
-            </div>
-            <div className="furniture-item">
-              <div className="furniture-icon">🪟</div>
-              <span>Window</span>
-            </div>
-            <div className="furniture-item">
-              <div className="furniture-icon">🚪</div>
-              <span>Door</span>
-            </div>
-            <div className="furniture-item">
-              <div className="furniture-icon">🍽️</div>
-              <span>Table</span>
-            </div>
-          </div>
-        );
-
+        return <ObjectsPanel onSelectObject={(objectId: string) => {
+        }} />;
       case "styleboards":
         return (
           <div className="panel-options" style={{
@@ -990,52 +1213,12 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
         );
 
       case "exports":
-        return (
-          <div className="panel-options" style={{
-            userSelect: "none",
-            WebkitUserSelect: "none",
-            MozUserSelect: "none",
-            msUserSelect: "none",
-          }}>
-            <button className="export-button">PNG Image</button>
-            <button className="export-button">PDF Document</button>
-            <button className="export-button">CAD File</button>
-            <div className="checkbox-control">
-              <input type="checkbox" id="include-measurements" />
-              <label htmlFor="include-measurements">Include Measurements</label>
-            </div>
-            <div className="checkbox-control">
-              <input type="checkbox" id="include-furniture" />
-              <label htmlFor="include-furniture">Include Furniture</label>
-            </div>
-          </div>
-        );
+        return <ExportsPanel onSelectOption={(optionId: string) => {
+        }} />;
 
       case "help":
-        return (
-          <div className="panel-options" style={{
-            userSelect: "none",
-            WebkitUserSelect: "none",
-            MozUserSelect: "none",
-            msUserSelect: "none",
-          }}>
-            <p>Need help with something?</p>
-            <ul className="help-links">
-              <li>
-                <a href="#">Getting Started Guide</a>
-              </li>
-              <li>
-                <a href="#">Video Tutorials</a>
-              </li>
-              <li>
-                <a href="#">Keyboard Shortcuts</a>
-              </li>
-              <li>
-                <a href="#">Contact Support</a>
-              </li>
-            </ul>
-          </div>
-        );
+        return <HelpPanel onSelectOption={(optionId: string) => {
+        }} />;
 
       default:
         return <p>Select a tool to begin</p>;
@@ -1057,7 +1240,7 @@ const ToolPanel: React.FC<ToolPanelProps> = ({ activeTool, onClose }) => {
       case "finishes":
         return "Finishes";
       case "exports":
-        return "Exports";
+        return "Export";
       case "help":
         return "Help";
       case "colors":

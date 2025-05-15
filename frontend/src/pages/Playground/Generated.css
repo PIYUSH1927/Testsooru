@@ -244,4 +244,19 @@ body.drag-complete::after {
   cursor: grabbing !important;
 }
 
+.floor-plan-label {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
+.floor-plan-label.selected-label {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.floor-plan-label image {
+  pointer-events: all;
+}
+
+.room-polygon.disable-interaction {
+  pointer-events: none !important;
+}

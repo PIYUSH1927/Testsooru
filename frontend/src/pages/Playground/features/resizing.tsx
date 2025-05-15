@@ -1,4 +1,5 @@
 import React, { useState, useCallback, RefObject, useEffect } from "react";
+import { Label } from "./types";
 
 interface Point {
   x: number;
@@ -19,6 +20,7 @@ interface FloorPlanData {
   total_area: number;
   room_types: string[];
   rooms: Room[];
+  labels?: Label[];
 }
 
 interface DragState {
@@ -35,13 +37,12 @@ interface DragState {
   isEdgeResizing: boolean;
   isGroupOperation: boolean;
   initialPolygons?: Record<string, Point[]>;
+  isLabelDragging?: boolean;
+  labelId?: string | null;
+  initialLabelPosition?: Point;
 }
 
 type SVGRef = RefObject<SVGSVGElement | null>;
-
-
-
-
 
 export function showLongPressIndicator(roomId: string, show: boolean) {
   const roomElement = document.getElementById(roomId);
@@ -264,12 +265,10 @@ export function handleTouchStart(
   const touchY = touch.clientY - svgRect.top;
 
   if (selectedRoomIds.length > 0) {
- 
     if (!selectedRoomIds.includes(roomId)) {
       setSelectedRoomIds([...selectedRoomIds, roomId]);
     }
   } else {
- 
     setSelectedRoomIds([roomId]);
   }
 
@@ -291,7 +290,6 @@ export function handleTouchStart(
 
   setHasChanges(true);
 }
-
 
 export function handleVertexTouchStart(
   event: React.TouchEvent,
@@ -434,6 +432,72 @@ export function getEdgeNormal(
   };
 }
 
+export function updateLabelDragPosition(
+  event: MouseEvent | TouchEvent,
+  dragState: DragState,
+  svgRef: SVGRef,
+  scale: number,
+  setFloorPlanData: React.Dispatch<React.SetStateAction<FloorPlanData>>,
+  setDragState: React.Dispatch<React.SetStateAction<DragState>>
+) {
+  if (
+    !dragState.active ||
+    !dragState.isLabelDragging ||
+    !dragState.labelId ||
+    !dragState.initialLabelPosition
+  ) {
+    return;
+  }
+
+  const svgElement = svgRef.current;
+  if (!svgElement) return;
+
+  const svgRect = svgElement.getBoundingClientRect();
+
+  let cursorX: number;
+  let cursorY: number;
+
+  if ("clientX" in event) {
+    cursorX = event.clientX - svgRect.left;
+    cursorY = event.clientY - svgRect.top;
+  } else {
+    const touch = event.touches[0];
+    cursorX = touch.clientX - svgRect.left;
+    cursorY = touch.clientY - svgRect.top;
+  }
+
+  const deltaX = cursorX - dragState.lastX;
+  const deltaY = cursorY - dragState.lastY;
+
+  const scaledDeltaX = deltaX / scale;
+  const scaledDeltaY = deltaY / scale;
+
+  setFloorPlanData((prevData) => {
+    const updatedLabels = (prevData.labels || []).map((label) => {
+      if (label.id === dragState.labelId) {
+        return {
+          ...label,
+          position: {
+            x: label.position.x + scaledDeltaX,
+            z: label.position.z + scaledDeltaY,
+          },
+        };
+      }
+      return label;
+    });
+    return {
+      ...prevData,
+      labels: updatedLabels,
+    };
+  });
+
+  setDragState((prev) => ({
+    ...prev,
+    lastX: cursorX,
+    lastY: cursorY,
+  }));
+}
+
 export function handleMouseMove(
   event: MouseEvent,
   dragState: DragState,
@@ -449,9 +513,10 @@ export function handleMouseMove(
   },
   calculateRoomArea: (polygon: Point[]) => number,
   setFloorPlanData: React.Dispatch<React.SetStateAction<FloorPlanData>>,
-  setDragState: React.Dispatch<React.SetStateAction<DragState>>
+  setDragState: React.Dispatch<React.SetStateAction<DragState>>,
+  checkAndUpdateOverlaps?: () => boolean | void
 ) {
-  if (!dragState.active || !dragState.roomId) return;
+  if (!dragState.active) return;
 
   const svgElement = svgRef.current;
   if (!svgElement) return;
@@ -462,6 +527,24 @@ export function handleMouseMove(
 
   const deltaX = mouseX - dragState.lastX;
   const deltaY = mouseY - dragState.lastY;
+
+  if (
+    dragState.isLabelDragging &&
+    dragState.labelId &&
+    dragState.initialLabelPosition
+  ) {
+    updateLabelDragPosition(
+      event,
+      dragState,
+      svgRef,
+      scale,
+      setFloorPlanData,
+      setDragState
+    );
+    return;
+  }
+
+  if (!dragState.roomId) return;
 
   const totalDeltaX = mouseX - dragState.startX;
   const totalDeltaY = mouseY - dragState.startY;
@@ -509,6 +592,9 @@ export function handleMouseMove(
       setDragState
     );
   }
+  if (checkAndUpdateOverlaps) {
+    checkAndUpdateOverlaps();
+  }
 }
 
 export function handleTouchMove(
@@ -526,19 +612,36 @@ export function handleTouchMove(
   },
   calculateRoomArea: (polygon: Point[]) => number,
   setFloorPlanData: React.Dispatch<React.SetStateAction<FloorPlanData>>,
-  setDragState: React.Dispatch<React.SetStateAction<DragState>>
+  setDragState: React.Dispatch<React.SetStateAction<DragState>>,
+  checkAndUpdateOverlaps?: () => boolean | void
 ) {
-  if (!dragState.active || !dragState.roomId) return;
+  if (!dragState.active) return;
 
+  event.preventDefault();
   event.stopPropagation();
 
+  if (
+    dragState.isLabelDragging &&
+    dragState.labelId &&
+    dragState.initialLabelPosition
+  ) {
+    updateLabelDragPosition(
+      event,
+      dragState,
+      svgRef,
+      scale,
+      setFloorPlanData,
+      setDragState
+    );
+    return;
+  }
+
   const touch = event.touches[0];
-  
+
   const initialTouchX = touch.clientX;
   const initialTouchY = touch.clientY;
   const initialDeltaX = initialTouchX - dragState.startX;
   const initialDeltaY = initialTouchY - dragState.startY;
-  
 
   if (event.touches.length !== 1) return;
 
@@ -599,6 +702,9 @@ export function handleTouchMove(
       setFloorPlanData,
       setDragState
     );
+  }
+  if (checkAndUpdateOverlaps) {
+    checkAndUpdateOverlaps();
   }
 }
 
@@ -709,6 +815,9 @@ export function handleMouseUp(
     isEdgeResizing: false,
     isGroupOperation: false,
     initialPolygons: undefined,
+    isLabelDragging: false,
+    labelId: null,
+    initialLabelPosition: undefined,
   });
 
   checkAndUpdateOverlaps();
@@ -836,13 +945,12 @@ export function renderEdgeHandles(
   return edgeHandles;
 }
 
-
 export function handleTouchEnd(
   setDragState: React.Dispatch<React.SetStateAction<DragState>>,
   checkAndUpdateOverlaps: () => boolean | void
 ) {
   document.body.removeAttribute("data-room-touch-interaction");
-
+  document.body.removeAttribute("data-label-touch-interaction");
 
   setDragState({
     active: false,
@@ -857,12 +965,14 @@ export function handleTouchEnd(
     isResizing: false,
     isEdgeResizing: false,
     isGroupOperation: false,
-    initialPolygons: undefined
+    initialPolygons: undefined,
+    isLabelDragging: false,
+    labelId: null,
+    initialLabelPosition: undefined,
   });
 
   checkAndUpdateOverlaps();
 }
-
 
 function updateMultipleRoomPositions(
   dragState: DragState,

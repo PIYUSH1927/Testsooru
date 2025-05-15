@@ -44,7 +44,7 @@ import { useDarkMode } from "../contexts/DarkModeContext";
 import SooruAILogo from "../SooruAI.svg";
 
 interface MobileNavProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 const ResponsiveAuthContainer = styled.div`
@@ -1034,7 +1034,7 @@ const Navbar: React.FC = () => {
             </MenuButton>
           </NavControls>
         </Nav>
-        <MobileNav isOpen={isOpen}>
+        <MobileNav $isOpen={isOpen}>
           <ScrollLink
             onClick={(e) => {
               setIsOpen(false);

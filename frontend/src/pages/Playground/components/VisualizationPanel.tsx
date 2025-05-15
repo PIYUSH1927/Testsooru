@@ -59,7 +59,7 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
   return (
     <div 
       ref={panelRef}
-      className="visualization-panel"
+      className="vizpanel-container"
       onMouseDown={blockAllEvents}
       onMouseMove={blockAllEvents}
       onMouseUp={blockAllEvents}
@@ -71,19 +71,19 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
         MozUserSelect: "none",
         msUserSelect: "none",}}
     >
-      <div className="panel-header">
+      <div className="vizpanel-header">
         <h2>Visualization Options</h2>
-        <button className="close-panel" onClick={(e) => {
+        <button className="vizpanel-close-btn" onClick={(e) => {
           blockAllEvents(e);
           onClose();
         }}>×</button>
       </div>
       
-      <div className="panel-content">
-        <div className="options-section">
+      <div className="vizpanel-content">
+        <div className="vizpanel-section">
           <h3>Display Options</h3>
           
-          <div className="toggle-option">
+          <div className="vizpanel-toggle-option">
             <label>
               <input
                 type="checkbox"
@@ -94,7 +94,7 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
             </label>
           </div>
           
-          <div className="toggle-option">
+          <div className="vizpanel-toggle-option">
             <label>
               <input
                 type="checkbox"
@@ -105,7 +105,7 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
             </label>
           </div>
           
-          <div className="toggle-option">
+          <div className="vizpanel-toggle-option">
             <label>
               <input
                 type="checkbox"
@@ -118,9 +118,9 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
           
         </div>
         
-        <div className="options-section">
+        <div className="vizpanel-section">
           <h3>Wall Thickness</h3>
-          <div className="slider-option">
+          <div className="vizpanel-slider-option">
             <input
               type="range"
               min="1"
@@ -130,10 +130,10 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
               onChange={(e) => handleSliderChange('wallThickness', parseInt(e.target.value))}
               onWheel={blockWheelEvents}
             />
-            <span className="slider-value">{visualizationOptions.wallThickness}px</span>
+            <span className="vizpanel-slider-value">{visualizationOptions.wallThickness}px</span>
             
             <div 
-              className="thickness-preview" 
+              className="vizpanel-thickness-preview" 
               style={{
                 height: '14px',
                 width: '40px',
@@ -146,9 +146,9 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
           </div>
         </div>
         
-        <div className="options-section">
+        <div className="vizpanel-section">
           <h3>Color Scheme</h3>
-          <div className="select-option">
+          <div className="vizpanel-select-option">
             <select
               value={visualizationOptions.colorScheme}
               onChange={(e) => handleSelectChange('colorScheme', e.target.value as any)}
@@ -160,9 +160,9 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
             </select>
           </div>
           
-          <div className="color-preview">
+          <div className="vizpanel-color-preview">
             <div 
-              className={`color-sample standard ${visualizationOptions.colorScheme === 'standard' ? 'selected' : ''}`}
+              className={`vizpanel-color-sample vizpanel-color-standard ${visualizationOptions.colorScheme === 'standard' ? 'vizpanel-color-selected' : ''}`}
               title="Standard"
               onClick={(e) => {
                 blockAllEvents(e);
@@ -170,7 +170,7 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
               }}
             ></div>
             <div 
-              className={`color-sample monochrome ${visualizationOptions.colorScheme === 'monochrome' ? 'selected' : ''}`}
+              className={`vizpanel-color-sample vizpanel-color-monochrome ${visualizationOptions.colorScheme === 'monochrome' ? 'vizpanel-color-selected' : ''}`}
               title="Monochrome"
               onClick={(e) => {
                 blockAllEvents(e);
@@ -178,7 +178,7 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
               }}
             ></div>
             <div 
-              className={`color-sample pastel ${visualizationOptions.colorScheme === 'pastel' ? 'selected' : ''}`}
+              className={`vizpanel-color-sample vizpanel-color-pastel ${visualizationOptions.colorScheme === 'pastel' ? 'vizpanel-color-selected' : ''}`}
               title="Pastel"
               onClick={(e) => {
                 blockAllEvents(e);
@@ -186,7 +186,7 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
               }}
             ></div>
             <div 
-              className={`color-sample contrast ${visualizationOptions.colorScheme === 'contrast' ? 'selected' : ''}`}
+              className={`vizpanel-color-sample vizpanel-color-contrast ${visualizationOptions.colorScheme === 'contrast' ? 'vizpanel-color-selected' : ''}`}
               title="High Contrast"
               onClick={(e) => {
                 blockAllEvents(e);
@@ -196,9 +196,9 @@ const VisualizationPanel: React.FC<VisualizationPanelProps> = ({ onClose }) => {
           </div>
         </div>
         
-        <div className="options-actions">
+        <div className="vizpanel-actions">
           <button 
-            className="reset-button" 
+            className="vizpanel-reset-btn" 
             onClick={(e) => {
               blockAllEvents(e);
               resetVisualizationOptions();

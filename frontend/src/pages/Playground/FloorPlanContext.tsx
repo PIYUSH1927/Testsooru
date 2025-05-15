@@ -20,7 +20,6 @@ export interface VisualizationOptions {
   colorScheme: "standard" | "monochrome" | "pastel" | "contrast";
 }
 
-
 interface FloorPlanContextType {
   visualizationOptions: VisualizationOptions;
   updateVisualizationOption: <K extends keyof VisualizationOptions>(
@@ -56,6 +55,9 @@ interface FloorPlanContextType {
   selectedRoomIds: string[];
   setSelectedRoomIds: React.Dispatch<React.SetStateAction<string[]>>;
   openProjectPanel: (roomId: string) => void;
+  drawingWallWidth: number;
+  setDrawingWallWidth: React.Dispatch<React.SetStateAction<number>>;
+  updateLabel: (labelId: string, updates: Partial<Label>) => void;
 }
 
 export const defaultVisualizationOptions: VisualizationOptions = {
@@ -87,6 +89,7 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+  const [drawingWallWidth, setDrawingWallWidth] = useState<number>(5);
 
   const originalFloorPlanDataRef = useRef<FloorPlanData>(JSON.parse(JSON.stringify(initialFloorPlanData)));
   const originalRoomRotationsRef = useRef<{ [key: string]: number }>({});
@@ -203,6 +206,29 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
     
   }, []);
 
+  const updateLabel = useCallback(
+  (labelId: string, updates: Partial<Label>) => {
+    if (!hasChanges) {
+      captureOriginalState();
+    }
+
+    setFloorPlanData((prevData) => {
+      const updatedLabels = (prevData.labels || []).map((label) =>
+        label.id === labelId ? { ...label, ...updates } : label
+      );
+
+      const newData = {
+        ...prevData,
+        labels: updatedLabels,
+      };
+
+      setHasChanges(true);
+      return newData;
+    });
+  },
+  [hasChanges, captureOriginalState]
+);
+
   useEffect(() => {
     if (activeTool !== "design" && activeTool !== "project" && activeTool !== "") {
       setScale(1);
@@ -259,7 +285,10 @@ export const FloorPlanProvider: React.FC<{ children: ReactNode }> = ({
         captureOriginalState,
         selectedRoomIds,
         setSelectedRoomIds,
-        openProjectPanel
+        openProjectPanel,
+        drawingWallWidth,
+        setDrawingWallWidth,
+        updateLabel,
       }}
     >
       {children}

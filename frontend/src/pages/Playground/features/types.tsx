@@ -44,6 +44,9 @@ export interface DragState {
   isEdgeResizing: boolean;
   isGroupOperation: boolean;
   initialPolygons?: Record<string, Point[]>;
+  isLabelDragging?: boolean;
+  labelId?: string | null;
+  initialLabelPosition?: Point;
 }
 
 export interface VisualizationOptions {

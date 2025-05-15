@@ -41,6 +41,8 @@ import {
   setLabelPlacementState,
   getInfoToolPanelState,
   getGlobalSelectedRoomType,
+  handleLabelMouseDown,
+  handleLabelTouchStart,
 } from "./features/eventHandlers";
 import { saveFloorPlan } from "./features/save";
 import { initialFloorPlanData } from "./features/initialData";
@@ -91,6 +93,8 @@ export default function InteractiveFloorPlan({
     setActiveTool,
     openProjectPanel,
     visualizationOptions: contextVisualizationOptions,
+    drawingWallWidth,
+    updateLabel,
   } = useFloorPlan();
 
   const options: VisualizationOptions = {
@@ -439,21 +443,16 @@ export default function InteractiveFloorPlan({
     return checkRoomOverlaps(floorPlanData, roomRotations, setOverlappingRooms);
   }, [floorPlanData, roomRotations]);
 
-  useInterval(() => {
-    if (!dragState.active) {
-      checkAndUpdateOverlaps();
-    }
-  }, 300);
+
 
   useEffect(() => {
     checkAndUpdateOverlaps();
   }, []);
 
   useInterval(() => {
-    if (!dragState.active) {
-      checkAndUpdateOverlaps();
-    }
-  }, 500);
+    checkAndUpdateOverlaps();
+  }, 100);
+
 
   const getRoomType = (roomId: string) => {
     const room = floorPlanData.rooms.find((r) => r.id === roomId);
@@ -621,7 +620,7 @@ export default function InteractiveFloorPlan({
 
       if (
         infoPanelState.isActive &&
-        infoPanelState.activeOption === "placeLabel" &&
+        (infoPanelState.activeOption === "placeLabel" || infoPanelState.activeOption === "placesignandsymbol") &&
         labelState.isPlacing &&
         labelState.text
       ) {
@@ -841,7 +840,7 @@ export default function InteractiveFloorPlan({
           angle,
           length,
           point1,
-        point2,
+          point2,
         });
       } else {
         verticalWalls.push({
@@ -849,7 +848,7 @@ export default function InteractiveFloorPlan({
           angle,
           length,
           point1,
-        point2,
+          point2,
         });
       }
     }
@@ -909,7 +908,7 @@ export default function InteractiveFloorPlan({
       const offsetDistance = 7;
 
       let labelAngle = heightWall.angle;
-  
+
       if (labelAngle > 90 || labelAngle < -90) {
         labelAngle += 180;
       }
@@ -1051,7 +1050,7 @@ export default function InteractiveFloorPlan({
       room_type: "Wall",
       area: 0,
       height: 0,
-      width: 0,
+      width: drawingWallWidth,
       floor_polygon: simpleLine,
     };
 
@@ -1073,6 +1072,7 @@ export default function InteractiveFloorPlan({
     setHasChanges(true);
     checkAndUpdateOverlaps();
   };
+
 
   const handleRoomCreated = (roomPolygon: Point[]) => {
     captureStateBeforeChange();
@@ -1178,6 +1178,20 @@ export default function InteractiveFloorPlan({
     });
   }, [floorPlanData.rooms, selectedRoomIds]);
 
+  const labelStyles = `
+  .floor-plan-label.selected-label {
+    cursor: move;
+  }
+  
+  .floor-plan-label:not(.selected-label) {
+    cursor: pointer;
+  }
+  
+  .floor-plan-label.dragging {
+    opacity: 0.7;
+  }
+`;
+
   const edgeStyles = `
     .resize-edge {
       cursor: move;
@@ -1234,6 +1248,7 @@ export default function InteractiveFloorPlan({
         <style>{floorPlanStyles}</style>
         <style>{edgeStyles}</style>
         <style>{wallStyles}</style>
+        <style>{labelStyles}</style>
 
         <div
           ref={floorPlanRef}
@@ -1288,17 +1303,6 @@ export default function InteractiveFloorPlan({
               >
                 <b>Total Area:</b> {floorPlanData.total_area.toFixed(2)} m²
                 &nbsp;|&nbsp; <b>Total Rooms:</b> {floorPlanData.room_count}
-                {hasUndoState && !isMobile && (
-                  <span
-                    style={{
-                      fontSize: "0.8em",
-                      marginLeft: "10px",
-                      color: "#666",
-                    }}
-                  >
-                    (Ctrl/Cmd+Z to undo last change)
-                  </span>
-                )}
               </span>
             </p>
           )}
@@ -1499,7 +1503,7 @@ export default function InteractiveFloorPlan({
                       x2={endPoint.x}
                       y2={endPoint.y}
                       stroke={isSelected ? "#2196F3" : "#333333"}
-                      strokeWidth={options.wallThickness}
+                      strokeWidth={room.width || options.wallThickness}
                       strokeLinecap="square"
                       onClick={(e) => {
                         if (
@@ -1640,15 +1644,15 @@ export default function InteractiveFloorPlan({
                     id={room.id}
                     key={`${room.id}-${room.room_type}`}
                     className={`room-polygon ${isSelected
-                        ? isPrimarySelection
-                          ? "primary-selection"
-                          : "secondary-selection"
-                        : ""
+                      ? isPrimarySelection
+                        ? "primary-selection"
+                        : "secondary-selection"
+                      : ""
                       } ${isOverlapping ? "overlapping" : ""} ${isWall ? "wall-polygon" : ""
                       } ${isLabelPlacementMode ? "disable-interaction" : ""}`}
                     points={polygonPoints}
                     fill={getRoomColor(room.room_type)}
-                    strokeWidth={isWall ? 2 : options.wallThickness}
+                    strokeWidth={isWall ? (room.width || 2) : options.wallThickness}
                     style={{
                       strokeWidth: isWall
                         ? "2px"
@@ -1969,50 +1973,363 @@ export default function InteractiveFloorPlan({
             {floorPlanData.labels &&
               floorPlanData.labels.map((label) => {
                 const position = transformCoordinates(label.position);
+                const currentFontSize = label.fontSize || 12;
 
-                return (
-                  <g
-                    key={label.id}
-                    className={`floor-plan-label ${selectedLabelId === label.id ? "selected-label" : ""
-                      }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedLabelId(
-                        selectedLabelId === label.id ? null : label.id
-                      );
-                    }}
-                  >
-                    <rect
-                      x={position.x - 4 * label.text.length}
-                      y={position.y - 12}
-                      width={8 * label.text.length}
-                      height={18}
-                      fill={
-                        selectedLabelId === label.id
-                          ? "rgba(33, 150, 243, 0.3)"
-                          : "rgba(255, 255, 255, 0.7)"
-                      }
-                      rx="3"
-                      ry="3"
-                      stroke={
-                        selectedLabelId === label.id ? "#2196F3" : "#000000"
-                      }
-                      strokeWidth={selectedLabelId === label.id ? "1.5" : "0.5"}
-                      opacity="0.8"
-                    />
-                    <text
-                      x={position.x}
-                      y={position.y}
-                      fill={label.color || "#000000"}
-                      fontSize={label.fontSize || 12}
-                      fontWeight="bold"
-                      textAnchor="middle"
-                      pointerEvents="none"
+                const isSvgPath = label.text.startsWith('/Signs/') || label.text.startsWith('/Symbols/');
+
+                const handleLabelDrag = (e: React.MouseEvent | React.TouchEvent) => {
+                  e.stopPropagation();
+                  if (selectedLabelId === label.id) {
+                    if (!hasChanges) {
+                      captureOriginalState();
+                    }
+                    captureStateBeforeChange();
+
+                    if ('touches' in e) {
+                      handleLabelTouchStart(e, label.id, svgRef, label, setDragState, setHasChanges);
+                    } else {
+                      handleLabelMouseDown(e, label.id, svgRef, label, setDragState, setHasChanges);
+                    }
+                  }
+                };
+
+
+                if (isSvgPath) {
+
+                  return (
+                    <g
+                      key={label.id}
+                      className={`floor-plan-label ${selectedLabelId === label.id ? "selected-label" : ""} ${dragState.isLabelDragging && dragState.labelId === label.id ? "dragging" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedLabelId(selectedLabelId === label.id ? null : label.id);
+                      }}
+                      onMouseDown={(e) => handleLabelDrag(e)}
+                      onTouchStart={(e) => handleLabelDrag(e)}
+
+                      style={{ cursor: selectedLabelId === label.id ? "move" : "pointer" }}
                     >
-                      {label.text}
-                    </text>
-                  </g>
-                );
+                      <image
+                        href={label.text}
+                        x={position.x - currentFontSize}
+                        y={position.y - currentFontSize}
+                        width={currentFontSize * 2}
+                        height={currentFontSize * 2}
+                        preserveAspectRatio="xMidYMid meet"
+                        pointerEvents="all"
+                      />
+                      {selectedLabelId === label.id && (
+                        <>
+                          <rect
+                            x={position.x - currentFontSize - 5}
+                            y={position.y - currentFontSize - 5}
+                            width={currentFontSize * 2 + 10}
+                            height={currentFontSize * 2 + 10}
+                            fill="none"
+                            stroke="#2196F3"
+                            strokeWidth="1.5"
+                            rx="3"
+                            ry="3"
+                          />
+
+                          <g
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (updateLabel) {
+                                if (!hasChanges) {
+                                  captureOriginalState();
+                                }
+                                captureStateBeforeChange();
+
+                                const updatedLabel = {
+                                  ...label,
+                                  fontSize: Math.max(8, currentFontSize - 1)
+                                };
+
+                                updateLabel(label.id, updatedLabel);
+                                setFloorPlanData((prevData) => {
+                                  const updatedLabels = (prevData.labels || []).map((l) =>
+                                    l.id === label.id ? updatedLabel : l
+                                  );
+                                  return {
+                                    ...prevData,
+                                    labels: updatedLabels,
+                                  };
+                                });
+                                setHasChanges(true);
+                              }
+                            }}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <circle
+                              cx={position.x - currentFontSize - 18}
+                              cy={position.y}
+                              r="8"
+                              fill="white"
+                              stroke="black"
+                              strokeWidth="1"
+                            />
+                            <text
+                              x={position.x - currentFontSize - 18}
+                              y={position.y + 5}
+                              fill="black"
+                              fontSize="14"
+                              fontWeight="bold"
+                              textAnchor="middle"
+                              pointerEvents="none"
+                              style={{
+                                userSelect: "none",
+                                WebkitUserSelect: "none",
+                                MozUserSelect: "none",
+                                msUserSelect: "none",
+                              }}
+                            >
+                              −
+                            </text>
+                          </g>
+
+                          <g
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (updateLabel) {
+                                if (!hasChanges) {
+                                  captureOriginalState();
+                                }
+                                captureStateBeforeChange();
+
+                                const updatedLabel = {
+                                  ...label,
+                                  fontSize: Math.min(48, currentFontSize + 1)
+                                };
+
+                                updateLabel(label.id, updatedLabel);
+                                setFloorPlanData((prevData) => {
+                                  const updatedLabels = (prevData.labels || []).map((l) =>
+                                    l.id === label.id ? updatedLabel : l
+                                  );
+                                  return {
+                                    ...prevData,
+                                    labels: updatedLabels,
+                                  };
+                                });
+                                setHasChanges(true);
+                              }
+                            }}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <circle
+                              cx={position.x + currentFontSize + 18}
+                              cy={position.y}
+                              r="8"
+                              fill="white"
+                              stroke="black"
+                              strokeWidth="1"
+                            />
+                            <text
+                              x={position.x + currentFontSize + 18}
+                              y={position.y + 5}
+                              fill="black"
+                              fontSize="14"
+                              fontWeight="bold"
+                              textAnchor="middle"
+                              pointerEvents="none"
+                              style={{
+                                userSelect: "none",
+                                WebkitUserSelect: "none",
+                                MozUserSelect: "none",
+                                msUserSelect: "none",
+                              }}
+                            >
+                              +
+                            </text>
+                          </g>
+                        </>
+                      )}
+                    </g>
+                  );
+                } else {
+
+
+                  const charWidth = currentFontSize * 0.6;
+                  const boxPadding = 8;
+                  const boxWidth = label.text.length * charWidth + boxPadding * 2;
+                  const boxHeight = currentFontSize + boxPadding;
+
+                  return (
+                    <g
+                      key={label.id}
+                      className={`floor-plan-label ${selectedLabelId === label.id ? "selected-label" : ""} ${dragState.isLabelDragging && dragState.labelId === label.id ? "dragging" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedLabelId(
+                          selectedLabelId === label.id ? null : label.id
+                        );
+                      }}
+                      onMouseDown={(e) => handleLabelDrag(e)}
+                      onTouchStart={(e) => handleLabelDrag(e)}
+                      style={{ cursor: selectedLabelId === label.id ? "move" : "pointer" }}
+                    >
+                      <rect
+                        x={position.x - boxWidth / 2}
+                        y={position.y - boxHeight / 2}
+                        width={boxWidth}
+                        height={boxHeight}
+                        fill={
+                          selectedLabelId === label.id
+                            ? "rgba(33, 150, 243, 0.3)"
+                            : "rgba(255, 255, 255, 0.7)"
+                        }
+                        rx="3"
+                        ry="3"
+                        stroke={
+                          selectedLabelId === label.id ? "#2196F3" : "#000000"
+                        }
+                        strokeWidth={selectedLabelId === label.id ? "1.5" : "0.5"}
+                        opacity="0.8"
+                      />
+                      <text
+                        x={position.x}
+                        y={position.y + currentFontSize * 0.35}
+                        fill={label.color || "#000000"}
+                        fontSize={currentFontSize}
+                        fontWeight="bold"
+                        textAnchor="middle"
+                        pointerEvents="none"
+
+                        style={{
+                          userSelect: "none",
+                          WebkitUserSelect: "none",
+                          MozUserSelect: "none",
+                          msUserSelect: "none",
+                        }}
+                      >
+                        {label.text}
+                      </text>
+
+                      {selectedLabelId === label.id && (
+                        <>
+
+                          <g
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (updateLabel) {
+                                if (!hasChanges) {
+                                  captureOriginalState();
+                                }
+                                captureStateBeforeChange();
+
+                                const updatedLabel = {
+                                  ...label,
+                                  fontSize: Math.max(8, currentFontSize - 1)
+                                };
+
+                                updateLabel(label.id, updatedLabel);
+
+
+                                setFloorPlanData((prevData) => {
+                                  const updatedLabels = (prevData.labels || []).map((l) =>
+                                    l.id === label.id ? updatedLabel : l
+                                  );
+                                  return {
+                                    ...prevData,
+                                    labels: updatedLabels,
+                                  };
+                                });
+
+                                setHasChanges(true);
+                              }
+                            }}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <circle
+                              cx={position.x - boxWidth / 2 - 10}
+                              cy={position.y}
+                              r="8"
+                              fill="white"
+                              stroke="black"
+                              strokeWidth="1"
+                            />
+                            <text
+                              x={position.x - boxWidth / 2 - 10}
+                              y={position.y + 5}
+                              fill="black"
+                              fontSize="14"
+                              fontWeight="bold"
+                              textAnchor="middle"
+                              pointerEvents="none"
+                              style={{
+                                userSelect: "none",
+                                WebkitUserSelect: "none",
+                                MozUserSelect: "none",
+                                msUserSelect: "none",
+                              }}
+                            >
+                              −
+                            </text>
+                          </g>
+
+                          <g
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (updateLabel) {
+                                if (!hasChanges) {
+                                  captureOriginalState();
+                                }
+                                captureStateBeforeChange();
+
+                                const updatedLabel = {
+                                  ...label,
+                                  fontSize: Math.min(24, currentFontSize + 1)
+                                };
+
+                                updateLabel(label.id, updatedLabel);
+
+                                setFloorPlanData((prevData) => {
+                                  const updatedLabels = (prevData.labels || []).map((l) =>
+                                    l.id === label.id ? updatedLabel : l
+                                  );
+                                  return {
+                                    ...prevData,
+                                    labels: updatedLabels,
+                                  };
+                                });
+
+                                setHasChanges(true);
+                              }
+                            }}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <circle
+                              cx={position.x + boxWidth / 2 + 10}
+                              cy={position.y}
+                              r="8"
+                              fill="white"
+                              stroke="black"
+                              strokeWidth="1"
+                            />
+                            <text
+                              x={position.x + boxWidth / 2 + 10}
+                              y={position.y + 5}
+                              fill="black"
+                              fontSize="14"
+                              fontWeight="bold"
+                              textAnchor="middle"
+                              pointerEvents="none"
+                              style={{
+                                userSelect: "none",
+                                WebkitUserSelect: "none",
+                                MozUserSelect: "none",
+                                msUserSelect: "none",
+                              }}
+                            >
+                              +
+                            </text>
+                          </g>
+                        </>
+                      )}
+                    </g>
+                  );
+                }
               })}
           </svg>
         </div>

@@ -11,7 +11,14 @@ const BuildToolsPanel: React.FC<BuildToolsProps> = ({ onSelectTool }) => {
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
-  const { setActiveBuildTool, activeBuildTool, setIsDrawingActive } = useFloorPlan();
+  const { 
+    setActiveBuildTool, 
+    activeBuildTool, 
+    setIsDrawingActive,
+    visualizationOptions,
+    drawingWallWidth,
+    setDrawingWallWidth
+  } = useFloorPlan();
   
   useEffect(() => {
     setIsDrawingActive(false);
@@ -43,14 +50,18 @@ const BuildToolsPanel: React.FC<BuildToolsProps> = ({ onSelectTool }) => {
       setActiveSubmenu('doors');
       setSelectedType(null);
       setActiveBuildTool(null);
+      setDrawingWallWidth(5); 
     } else if (toolId === 'placeWindows') {
       setActiveSubmenu('windows');
       setSelectedType(null);
       setActiveBuildTool(null);
+      setDrawingWallWidth(5); 
     } else {
+      if (toolId !== 'drawWall') {
+        setDrawingWallWidth(5); 
+      }
       onSelectTool(toolId);
       setActiveBuildTool(toolId as BuildTool);
-    
     }
   };
 
@@ -73,6 +84,11 @@ const BuildToolsPanel: React.FC<BuildToolsProps> = ({ onSelectTool }) => {
       onSelectTool(toolId);
       setActiveBuildTool(toolId as BuildTool);
     }
+  };
+
+  const adjustWallWidth = (delta: number) => {
+    const newWidth = Math.max(1, Math.min(10, drawingWallWidth + delta));
+    setDrawingWallWidth(newWidth);
   };
   
   if (activeSubmenu === 'doors' && selectedType) {
@@ -231,6 +247,37 @@ const BuildToolsPanel: React.FC<BuildToolsProps> = ({ onSelectTool }) => {
           {tool.hasSubmenu && <div className="submenu-indicator">›</div>}
         </div>
       ))}
+      
+      {activeBuildTool === 'drawWall' && (
+        <div className="wall-width-control">
+          <h4>Wall Width</h4>
+          <div className="wall-width-adjuster">
+            <button 
+              className="wall-width-button"
+              onClick={() => adjustWallWidth(-1)}
+              disabled={drawingWallWidth <= 1}
+            >
+              -
+            </button>
+            <div className="wall-width-display">
+              {drawingWallWidth}px
+            </div>
+            <button 
+              className="wall-width-button"
+              onClick={() => adjustWallWidth(1)}
+              disabled={drawingWallWidth >= 10}
+            >
+              +
+            </button>
+          </div>
+          <div className="wall-preview">
+            <div 
+              className="wall-preview-line"
+              style={{ height: `${drawingWallWidth}px` }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

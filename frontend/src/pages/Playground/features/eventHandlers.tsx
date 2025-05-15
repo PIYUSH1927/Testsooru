@@ -7,6 +7,7 @@ import {
   handleTouchEnd,
   useNonPassiveTouchHandling,
 } from "./resizing";
+import { Label } from "./types";
 
 interface Point {
   x: number;
@@ -27,6 +28,10 @@ interface DragState {
   isEdgeResizing: boolean;
   isGroupOperation: boolean;
   initialPolygons?: Record<string, Point[]>;
+  // Add these new properties
+  isLabelDragging?: boolean;
+  labelId?: string | null;
+  initialLabelPosition?: Point;
 }
 
 interface Room {
@@ -43,6 +48,7 @@ interface FloorPlanData {
   total_area: number;
   room_types: string[];
   rooms: Room[];
+  labels?: Label[]; // Make sure this is here
 }
 
 let globalSelectedRoomType: string | null = null;
@@ -85,7 +91,8 @@ export function useEventHandlers(
         calculateRoomDimensions,
         calculateRoomArea,
         setFloorPlanData,
-        setDragState
+        setDragState,
+        checkAndUpdateOverlaps
       );
     },
     [
@@ -95,6 +102,7 @@ export function useEventHandlers(
       calculateRoomDimensions,
       calculateRoomArea,
       setFloorPlanData,
+      checkAndUpdateOverlaps,
     ]
   );
 
@@ -109,7 +117,8 @@ export function useEventHandlers(
         calculateRoomDimensions,
         calculateRoomArea,
         setFloorPlanData,
-        setDragState
+        setDragState,
+        checkAndUpdateOverlaps
       );
     },
     [
@@ -119,6 +128,7 @@ export function useEventHandlers(
       calculateRoomDimensions,
       calculateRoomArea,
       setFloorPlanData,
+      checkAndUpdateOverlaps
     ]
   );
 
@@ -134,7 +144,9 @@ export function useEventHandlers(
     const preventScroll = (e: TouchEvent) => {
       if (
         dragState.active ||
-        document.body.hasAttribute("data-room-touch-interaction")
+        document.body.hasAttribute("data-room-touch-interaction") ||
+        document.body.hasAttribute("data-label-touch-interaction") ||
+        dragState.isLabelDragging
       ) {
         e.preventDefault();
       }
@@ -145,7 +157,7 @@ export function useEventHandlers(
     return () => {
       document.removeEventListener("touchmove", preventScroll);
     };
-  }, [dragState.active]);
+  }, [dragState.active, dragState.isLabelDragging]);
 
   useEffect(() => {
     if (dragState.active) {
@@ -215,14 +227,6 @@ export function handleRoomSelection(
 
   const infoPanelState = getInfoToolPanelState();
 
-  // if (infoPanelState.isActive && infoPanelState.activeOption === "setRoomtype") {
-  //   if (globalSelectedRoomType && handleRoomTypeUpdate) {
-  //     handleRoomTypeUpdate(roomId, globalSelectedRoomType);
-  //   }
-  //   return; 
-  // }
-
-
   if ("ctrlKey" in event) {
     const isMultiSelectMode = event.ctrlKey || event.metaKey;
 
@@ -276,4 +280,81 @@ export function setLabelPlacementState(
 
 export function getLabelPlacementState() {
   return { isPlacing: isPlacingLabel, text: pendingLabelText };
+}
+
+export function handleLabelMouseDown(
+  event: React.MouseEvent,
+  labelId: string,
+  svgRef: React.RefObject<SVGSVGElement | null>,
+  label: Label,
+  setDragState: React.Dispatch<React.SetStateAction<DragState>>,
+  setHasChanges: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  event.stopPropagation();
+  event.preventDefault();
+
+  if (!svgRef.current) return;
+
+  const rect = svgRef.current.getBoundingClientRect();
+  const startX = event.clientX - rect.left;
+  const startY = event.clientY - rect.top;
+
+  setDragState({
+    active: true,
+    roomId: null,
+    roomIds: [],
+    vertexIndex: null,
+    edgeIndices: null,
+    startX,
+    startY,
+    lastX: startX,
+    lastY: startY,
+    isResizing: false,
+    isEdgeResizing: false,
+    isGroupOperation: false,
+    isLabelDragging: true,
+    labelId: labelId,
+    initialLabelPosition: { ...label.position }
+  });
+
+  setHasChanges(true);
+}
+
+export function handleLabelTouchStart(
+  event: React.TouchEvent,
+  labelId: string,
+  svgRef: React.RefObject<SVGSVGElement | null>,
+  label: Label,
+  setDragState: React.Dispatch<React.SetStateAction<DragState>>,
+  setHasChanges: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  event.stopPropagation();
+
+  if (!svgRef.current) return;
+
+  const touch = event.touches[0];
+  const rect = svgRef.current.getBoundingClientRect();
+  const startX = touch.clientX - rect.left;
+  const startY = touch.clientY - rect.top;
+
+  setDragState({
+    active: true,
+    roomId: null,
+    roomIds: [],
+    vertexIndex: null,
+    edgeIndices: null,
+    startX,
+    startY,
+    lastX: startX,
+    lastY: startY,
+    isResizing: false,
+    isEdgeResizing: false,
+    isGroupOperation: false,
+    isLabelDragging: true,
+    labelId: labelId,
+    initialLabelPosition: { ...label.position }
+  });
+
+  document.body.setAttribute("data-label-touch-interaction", "true");
+  setHasChanges(true);
 }

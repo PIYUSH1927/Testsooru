@@ -107,7 +107,7 @@ export const NavMenu = styled.div`
 `;
 
 interface MobileNavProps {
-  isOpen: boolean;
+  $isOpen: boolean;
 }
 
 export const MobileNav = styled.div<MobileNavProps>`
@@ -119,7 +119,7 @@ export const MobileNav = styled.div<MobileNavProps>`
   background: var(--background);
   padding: 1rem;
   border-bottom: 1px solid var(--border);
-  transform: translateY(${({ isOpen }) => (isOpen ? "0" : "-100%")});
+  transform: translateY(${({ $isOpen }) => ($isOpen ? "0" : "-100%")});
   transition: transform 0.3s ease-in-out, background-color 0.3s ease;
 
   @media screen and (max-width: 768px) {

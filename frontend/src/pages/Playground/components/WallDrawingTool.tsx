@@ -30,7 +30,7 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
 
   const transformMatrixRef = useRef<DOMMatrix | null>(null);
 
-  const { setActiveBuildTool, floorPlanData } = useFloorPlan();
+  const { setActiveBuildTool, floorPlanData, drawingWallWidth, setDrawingWallWidth } = useFloorPlan();
 
   useEffect(() => {
     if (!isActive) {
@@ -43,6 +43,7 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
 
   const exitDrawingMode = () => {
     setActiveBuildTool(null);
+    setDrawingWallWidth(5); 
   };
 
   const getMousePosition = (e: MouseEvent, svg: SVGSVGElement) => {
@@ -237,6 +238,7 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
     onDrawingStateChange,
     setActiveBuildTool,
     floorPlanData,
+    setDrawingWallWidth,
   ]);
 
   if (!isActive || !startPoint || !currentPoint || !isDrawing) return null;
@@ -244,6 +246,8 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
   const wallPoints = createWallPolygon(startPoint, currentPoint);
   const transformedStart = transformCoordinates(wallPoints[0]);
   const transformedEnd = transformCoordinates(wallPoints[1]);
+
+  const wallThickness = drawingWallWidth;
 
   return (
     <>
@@ -253,7 +257,7 @@ const WallDrawingTool: React.FC<WallDrawingToolProps> = ({
         x2={transformedEnd.x}
         y2={transformedEnd.y}
         stroke="#333333"
-        strokeWidth={2}
+        strokeWidth={wallThickness}
         strokeDasharray="5,5"
       />
       <circle
