@@ -995,8 +995,12 @@ function updateMultipleRoomPositions(
 ) {
   setFloorPlanData((prevData) => {
     const updatedRooms = [...prevData.rooms];
-
     const roomsToUpdate = dragState.roomIds;
+    const point1 = reverseTransformCoordinates(0, 0);
+    const point2 = reverseTransformCoordinates(deltaX, deltaY);
+
+    const floorPlanDeltaX = point2.x - point1.x;
+    const floorPlanDeltaZ = point2.z - point1.z;
 
     for (const roomId of roomsToUpdate) {
       const roomIndex = updatedRooms.findIndex((room) => room.id === roomId);
@@ -1004,11 +1008,10 @@ function updateMultipleRoomPositions(
 
       const room = { ...updatedRooms[roomIndex] };
       const updatedPolygon = [...room.floor_polygon];
-
       for (let i = 0; i < updatedPolygon.length; i++) {
         updatedPolygon[i] = {
-          x: updatedPolygon[i].x + deltaX / scale,
-          z: updatedPolygon[i].z + deltaY / scale,
+          x: updatedPolygon[i].x + floorPlanDeltaX,
+          z: updatedPolygon[i].z + floorPlanDeltaZ,
         };
       }
 

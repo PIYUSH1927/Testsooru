@@ -74,6 +74,7 @@ export default function InteractiveFloorPlan({
   rotation?: number;
   visualizationOptions?: Partial<VisualizationOptions>;
 }) {
+
   const {
     floorPlanData: contextFloorPlanData,
     setFloorPlanData: setContextFloorPlanData,
@@ -101,6 +102,7 @@ export default function InteractiveFloorPlan({
     ...contextVisualizationOptions,
     ...propVisualizationOptions,
   };
+
 
   const [leftPosition, setLeftPosition] = useState("10%");
   const [floorPlanData, setFloorPlanData] = useState<FloorPlanData>(
@@ -137,6 +139,40 @@ export default function InteractiveFloorPlan({
     isGroupOperation: false,
   });
 
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [parentScale, setParentScale] = useState(1);
+
+  useEffect(() => {
+    const updateParentScale = () => {
+      const parent = parentRef.current?.parentElement;
+      if (parent) {
+        const transform = window.getComputedStyle(parent).transform;
+        if (transform && transform !== 'none') {
+          const matrix = transform.match(/matrix.*\((.+)\)/)?.[1].split(', ');
+          if (matrix && matrix.length >= 6) {
+            const scaleX = parseFloat(matrix[0]);
+            setParentScale(scaleX);
+          }
+        }
+      }
+    };
+
+    updateParentScale();
+
+    const observer = new MutationObserver(() => {
+      updateParentScale();
+    });
+
+    if (parentRef.current?.parentElement) {
+      observer.observe(parentRef.current.parentElement, {
+        attributes: true,
+        attributeFilter: ['style']
+      });
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   const isInitialMount = useRef(true);
   useEffect(() => {
     if (isInitialMount.current && contextFloorPlanData) {
@@ -144,6 +180,8 @@ export default function InteractiveFloorPlan({
       isInitialMount.current = false;
     }
   }, [contextFloorPlanData]);
+
+
 
   useEffect(() => {
     if (selectedRoomIds.length === 1) {
@@ -610,8 +648,17 @@ export default function InteractiveFloorPlan({
   const contentHeight = bounds.maxZ - bounds.minZ + 2 * padding;
   const isMobile = window.innerWidth < 850;
 
-  const { transformCoordinates, reverseTransformCoordinates } =
+  const { transformCoordinates, reverseTransformCoordinates: originalReverseTransform } =
     useCoordinateTransforms(bounds, padding, scale);
+
+  const reverseTransformCoordinates = useCallback(
+    (x: number, y: number) => {
+      const correctedX = x / parentScale;
+      const correctedY = y / parentScale;
+      return originalReverseTransform(correctedX, correctedY);
+    },
+    [originalReverseTransform, parentScale]
+  );
 
   useEffect(() => {
     const handleFloorPlanClick = (e: MouseEvent) => {
@@ -1238,7 +1285,7 @@ export default function InteractiveFloorPlan({
 `;
 
   return (
-    <div className={`generated-container`}>
+    <div className={`generated-container`} ref={parentRef}>
       {renderOverlapAlert({
         overlappingRooms,
         getOverlappingRoomNames: getOverlappingRoomNamesHelper,

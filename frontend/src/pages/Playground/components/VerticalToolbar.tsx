@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import "./VerticalToolbar.css";
 import { useFloorPlan } from "../FloorPlanContext";
+import {
+  DashboardOutlined,
+} from "@mui/icons-material";
 
 const toolbarItems = [
   { id: "project", icon: "📋", label: "Project", tooltip: "Project view" },
@@ -44,41 +47,7 @@ const VerticalToolbar: React.FC<VerticalToolbarProps> = ({
 
   const renderIcon = (item: { id: string; icon: string }) => {
     if (item.id === "project") {
-      return (
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M4 4H20V20H4V4Z" stroke="currentColor" strokeWidth="1.5" />
-          <rect
-            x="6"
-            y="6"
-            width="5"
-            height="5"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-          <rect
-            x="14"
-            y="8"
-            width="4"
-            height="4"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-          <rect
-            x="8"
-            y="14"
-            width="6"
-            height="3"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-        </svg>
-      );
+      return <DashboardOutlined fontSize="small" />;
     } else if (item.id === "build") {
       return (
         <svg
