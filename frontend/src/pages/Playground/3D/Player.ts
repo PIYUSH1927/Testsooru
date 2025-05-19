@@ -25,7 +25,15 @@ export class Player {
         model.traverse(c => c.castShadow = true);
         const mixer = new t.AnimationMixer(model);
         this.playerAnimation = new PlayerAnimation(mixer);
-        model.position.set(-10, 2.08, -10);
+        
+        // Change initial position to be in front of the building
+        model.position.set(75, 0, 200);
+        
+        // Set initial orientation to face the building
+        if (this.playerControl) {
+            this.playerControl.bodyOrientation = Math.PI; // Face north/toward building center
+            model.rotation.y = this.playerControl.bodyOrientation;
+        }
     }
 
     update(delta: number) {

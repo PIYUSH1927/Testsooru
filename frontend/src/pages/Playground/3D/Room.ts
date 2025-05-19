@@ -10,7 +10,7 @@ const roofMaterial = new t.MeshBasicMaterial({
 });
 
 const floorMaterial = new t.MeshBasicMaterial({
-    color: 0x3e8a58,
+    color: 0xeaeaea,
     side: t.DoubleSide,
 });
 
