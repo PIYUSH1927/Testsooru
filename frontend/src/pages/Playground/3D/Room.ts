@@ -4,14 +4,13 @@ import wall from "./Wall";
 const height = 20;
 
 const roofMaterial = new t.MeshBasicMaterial({
-    color: 0x03a9fc,
-    transparent: true,
+    color: 0x3e8a58,
     opacity: 0.4,
     side: t.DoubleSide,
 });
 
 const floorMaterial = new t.MeshBasicMaterial({
-    color: 0x945922,
+    color: 0x3e8a58,
     side: t.DoubleSide,
 });
 
@@ -125,7 +124,7 @@ export default class room {
         roofGeometry.setIndex(reverseIndices);
         const roofMesh = new t.Mesh(roofGeometry, roofMaterial);
         const floorMesh = new t.Mesh(floorGeometry, floorMaterial);
-        return [floorMesh, roofMesh];
+        return [floorMesh];
     }
 
     clockwise(vecA: t.Vector3, vecB: t.Vector3) {

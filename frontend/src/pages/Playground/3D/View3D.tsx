@@ -94,6 +94,8 @@ export default function View3D() {
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         controls = new OrbitControls(camera, renderer.domElement);
+        controls.minPolarAngle = 0;
+        controls.maxPolarAngle = Math.PI * 0.5;
 
         setRooms(initialFloorPlanData);
 
@@ -107,6 +109,7 @@ export default function View3D() {
             }
             center = getCenter(points);
             controls.target.set(center.x, center.y, center.z);
+            camera.position.set(center.x, center.y + 200, center.z);
             controls.update();
         }
 

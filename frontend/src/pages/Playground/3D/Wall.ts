@@ -4,9 +4,9 @@ export const height = 20;
 const width = 1;
 const indices = [0, 1, 2, 1, 3, 2];
 const indicesReverse = [0, 2, 1, 1, 2, 3];
-const innerMaterial = new t.MeshBasicMaterial({ color: 0x5c8a68 });
-const outerMaterial = new t.MeshBasicMaterial({ color: 0x43e66f });
-const coverMaterial = new t.MeshBasicMaterial({ color: 0x2e030f });
+const innerMaterial = new t.MeshBasicMaterial({ color: 0x8adea7 });
+const outerMaterial = new t.MeshBasicMaterial({ color: 0x8adea7 });
+const coverMaterial = new t.MeshBasicMaterial({ color: 0x8adea7 });
 
 export default class wall {
     group;

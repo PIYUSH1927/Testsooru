@@ -25,7 +25,7 @@ export class Player {
         model.traverse(c => c.castShadow = true);
         const mixer = new t.AnimationMixer(model);
         this.playerAnimation = new PlayerAnimation(mixer);
-        model.position.set(200, 2.08, 150);
+        model.position.set(-10, 2.08, -10);
     }
 
     update(delta: number) {
